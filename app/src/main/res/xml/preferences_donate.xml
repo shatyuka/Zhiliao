@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.shatyuka.zhiliao.PreferenceDonate
+        android:key="preference_donate"
+        android:layout="@layout/layout_donate"
+        android:selectable="false"/>
+</PreferenceScreen>

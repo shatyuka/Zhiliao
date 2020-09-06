@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">知了</string>
+    <string name="app_desc">知乎小插件</string>
+    <string name="pref_general">通用</string>
+    <string name="pref_function">功能</string>
+    <string name="pref_about">關於</string>
+    <string name="pref_mainswitch">啓用知了</string>
+    <string name="pref_mainswitch_desc">知了功能總開關</string>
+    <string name="pref_hideicon">隱藏圖標</string>
+    <string name="pref_hideicon_desc">隱藏啓動器内的圖標</string>
+    <string name="pref_language">語言</string>
+    <string name="pref_language_auto">自動</string>
+    <string name="pref_launchad">去啓動頁廣告</string>
+    <string name="pref_launchad_desc">去除啓動頁全屏廣告</string>
+    <string name="pref_feedad">去信息流廣告</string>
+    <string name="pref_feedad_desc">去除信息流内夾雜的廣告</string>
+    <string name="pref_marketcard">去信息流會員推薦</string>
+    <string name="pref_marketcard_desc">去除信息流裏的會員推薦</string>
+    <string name="pref_answerlistad">去回答列表廣告</string>
+    <string name="pref_answerlistad_desc">去除回答列表內的廣告</string>
+    <string name="pref_sharead">去分享廣告</string>
+    <string name="pref_sharead_desc">去除分享頁面頂部的廣告</string>
+    <string name="pref_answerad">去回答底部廣告</string>
+    <string name="pref_answerad_desc">去除回答底部廣告</string>
+    <string name="pref_club">去回答圈子</string>
+    <string name="pref_club_desc">去除回答底部相關圈子</string>
+    <string name="pref_goods">去商品推薦</string>
+    <string name="pref_goods_desc">去除回答底部商品推薦（實驗性）</string>
+    <string name="pref_version">版本</string>
+    <string name="pref_author">作者</string>
+    <string name="pref_telegram">TG群</string>
+    <string name="pref_telegram_desc">找作者對綫</string>
+    <string name="pref_donate">捐贈</string>
+    <string name="pref_donate_desc">快揭不開鍋了 ( ≧Д≦)</string>
+    <string name="dialog_warnicon">溫馨提示：\n還可以在Xposed Installer或EdXposed Manager裏打開知了哦！</string>
+    <string name="dialog_ok">朕已閱</string>
+    <string name="dialog_cancel">再想想</string>
+    <string name="dialog_eula">免責聲明：\n本軟件僅用於技術交流, 請勿用於商業及非法用途，如產生法律糾紛與本人無關。\n\n本軟件不會收集、上傳您的個人信息，如有個人信息泄露與本人無關。</string>
+    <string name="dialog_accept">接受</string>
+    <string name="dialog_reject">拒絕</string>
+</resources>

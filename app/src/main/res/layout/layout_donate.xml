@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_donate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="请选择扶贫方式：" />
+
+    <ImageView
+        android:id="@+id/imageView_wechat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/donate_wechat" />
+
+    <ImageView
+        android:id="@+id/imageView_alipay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/donate_alipay" />
+</LinearLayout>

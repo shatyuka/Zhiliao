@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="language">
+        <item>@string/pref_language_auto</item>
+        <item>English</item>
+        <item>简体中文</item>
+        <item>繁體中文</item>
+    </string-array>
+
+    <string-array name="language_code">
+        <item>auto</item>
+        <item>en-US</item>
+        <item>zh-CN</item>
+        <item>zh-TW</item>
+    </string-array>
+
+    <string-array name="click_author">
+        <item>干嘛啊，别戳人家啦 ( ≧Д≦)</item>
+        <item>再戳咬掉你的手指 (≧ﾛ≦ )</item>
+        <item>别点啦别点啦 ( ≧Д≦)</item>
+        <item>去点下面的捐赠吧 ( ≧Д≦)</item>
+    </string-array>
+</resources>
