@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="知了设置">
+      <PreferenceScreen android:title="知了" android:key="preference_id_zhiliao" android:summary="当前版本 6.55.0"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="基本的设置" android:key="preference_id_category_base_settings">
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="水印图片" android:key="preference_id_water_pic" android:summary="在上传的图片中添加水印" android:defaultValue="false"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="省流量模式" android:key="preference_id_system_no_picture" android:summary="仅在 Wi-Fi 环境下才会自动加载图片" android:defaultValue="false"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="双击赞同" android:key="preference_id_double_click_voteup" android:summary="在回答与文章正文区支持双击赞同" android:defaultValue="true"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="摇动发送反馈" android:key="preference_id_system_shake_feedback" android:summary="遇到问题？摇一摇手机就能反馈~" android:defaultValue="true"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="提交反对理由" android:key="preference_id_vote_down_feedback" android:summary="可在反对后继续提交反对理由~" android:defaultValue="true"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="可通过手机号找到我" android:key="preference_id_system_contact_permission" android:summary="他人开放通讯录权限后可发现我的知乎帐号" android:defaultValue="false"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="截屏后分享" android:key="preference_id_screen_shot_share" android:summary="开启后截屏时可快捷分享" android:defaultValue="true"/>
+        <PreferenceScreen android:title="字体大小" android:key="preference_id_font_size"/>
+        <PreferenceScreen android:title="视频自动播放" android:key="preference_id_inline_play" android:summary="仅在 Wi-Fi 环境下视频自动播放"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="夜间模式跟随系统设置" android:key="preference_id_auto_switch_theme" android:summary="夜间模式与系统设置的模式一致" android:defaultValue="true"/>
+        <PreferenceScreen android:title="卡片挂件设置" android:key="preference_id_card_widget_entry"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="显示我的盐选会员标识" android:key="preference_id_show_vip_icon" android:defaultValue="false"/>
+        <PreferenceScreen android:title="好物推荐设置" android:key="preference_id_mcn_recommend_setting" android:defaultValue="false"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference android:title="自动下载更新" android:key="preference_id_auto_download" android:summary="仅 Wi-Fi 环境下会自动下载" android:defaultValue="true"/>
+        <PreferenceScreen android:title="清除缓存" android:key="preference_id_screen_clear_cache"/>
+    </PreferenceCategory>
+    <Preference android:enabled="true" android:title="帐号与安全" android:key="preference_id_guest_account_and_safety"/>
+    <PreferenceCategory android:title="通知设置">
+        <PreferenceScreen android:title="全局消息设置" android:key="preference_id_screen_global_notification" android:summary="会影响到客户端与网页版"/>
+        <PreferenceScreen android:title="全局邮件设置" android:key="preference_id_screen_global_email_settings" android:summary="会影响到客户端与网页版"/>
+        <PreferenceScreen android:title="全局推送通知设置" android:key="preference_id_screen_push" android:summary="只影响客户端的通知推送"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="帐号设置">
+        <PreferenceScreen android:title="帐号与安全" android:key="preference_id_screen_account_and_password" android:summary="管理帐号安全，修改帐号密码等"/>
+        <PreferenceScreen android:title="屏蔽设置" android:key="preference_id_block_settings" android:summary="会影响到客户端与网页版"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="关于与帮助">
+        <PreferenceScreen android:title="反馈回复" android:key="preference_id_screen_feedback_reply"/>
+        <PreferenceScreen android:title="去评价" android:key="preference_id_screen_go_high_score"/>
+        <PreferenceScreen android:title="开源许可" android:key="preference_id_screen_open_source_permission"/>
+        <PreferenceScreen android:title="知乎实验室" android:key="preference_id_zhihu_lab"/>
+        <PreferenceScreen android:title="知乎用户满意度调研" android:key="preference_id_zhihu_satisfaction_survey"/>
+        <PreferenceScreen android:title="检查更新" android:key="preference_id_screen_check_for_update"/>
+        <PreferenceScreen android:title="证照中心" android:key="preference_id_certificates"/>
+        <PreferenceScreen android:title="知乎协议" android:key="preference_id_zhihu_protocol"/>
+    </PreferenceCategory>
+</PreferenceScreen>

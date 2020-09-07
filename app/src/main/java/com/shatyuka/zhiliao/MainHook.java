@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.XModuleResources;
+import android.content.res.XmlResourceParser;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -15,10 +18,15 @@ import com.crossbowffs.remotepreferences.RemotePreferences;
 
 import java.io.File;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
@@ -26,14 +34,18 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class MainHook implements IXposedHookLoadPackage, IXposedHookInitPackageResources {
-    String hookPackage = "com.zhihu.android";
+public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
+    final String hookPackage = "com.zhihu.android";
+    private static String MODULE_PATH;
     private Context context;
     private SharedPreferences prefs;
-    private XC_LoadPackage.LoadPackageParam _lpparam;
+
+    private int id_setting;
+    private XModuleResources modRes;
 
     final boolean DEBUG_LOG_CARD_CLASS = false;
     final boolean DEBUG_WEBVIEW = false;
+    final boolean DEBUG_ZHIHU = true;
 
     private boolean shouldBlock(String classname) {
         if (prefs.getBoolean("switch_feedad", true) && classname.equals("com.zhihu.android.api.model.FeedAdvert")) {
@@ -47,11 +59,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookInitPackageR
     }
 
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+    public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (hookPackage.equals(lpparam.packageName)) {
             XposedBridge.log("[Zhiliao] Inject into Zhihu.");
-
-            _lpparam = lpparam;
 
             XposedHelpers.findAndHookMethod(java.io.File.class, "exists", new XC_MethodHook() {
                 @Override
@@ -88,7 +98,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookInitPackageR
                                 XposedBridge.log("[Zhiliao] Version not support: " + pi.versionName);
                                 return;
                         }
-                        Class<?> LaunchAdInterface = XposedHelpers.findClass(LaunchAdInterfaceName, _lpparam.classLoader);
+                        Class<?> LaunchAdInterface = XposedHelpers.findClass(LaunchAdInterfaceName, lpparam.classLoader);
                         XposedHelpers.findAndHookMethod(LaunchAdInterface, "isShowLaunchAd", new XC_MethodHook() {
                             @Override
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -206,6 +216,49 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookInitPackageR
                 }
             });
 
+            XposedHelpers.findAndHookMethod("androidx.preference.i", lpparam.classLoader, "a", int.class, "androidx.preference.PreferenceGroup", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if ((int) param.args[0] == id_setting) {
+                        try (XmlResourceParser parser = modRes.getXml(R.xml.settings)) {
+                            Class<?> XmlPullParser = XposedHelpers.findClass("org.xmlpull.v1.XmlPullParser", lpparam.classLoader);
+                            Class<?> PreferenceGroup = XposedHelpers.findClass("androidx.preference.PreferenceGroup", lpparam.classLoader);
+                            Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, PreferenceGroup);
+                            param.setResult(inflate.invoke(param.thisObject, parser, param.args[1]));
+                        }
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.preference.SettingsFragment", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
+                    Class<?> thisClass = thisObject.getClass();
+
+                    Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
+                    Class<?> OnPreferenceClickListenerClass = XposedHelpers.findClass("androidx.preference.Preference.d", lpparam.classLoader);
+                    Class<?> preferenceScreenClass = XposedHelpers.findClass("androidx.preference.PreferenceScreen", lpparam.classLoader);
+
+                    Method findPreference = thisClass.getMethod("a", CharSequence.class);
+                    Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
+                    Method addPreference = preferenceScreenClass.getMethod("c", preferenceClass);
+
+                    Object preference_zhiliao = findPreference.invoke(thisObject, "preference_id_zhiliao");
+                    Object callback = Proxy.newProxyInstance(lpparam.classLoader, new Class[]{OnPreferenceClickListenerClass}, new InvocationHandler() {
+                        @Override
+                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                            if (method.getName().equals("onPreferenceClick")) {
+                                android.widget.Toast.makeText(context, "哼唧", android.widget.Toast.LENGTH_SHORT).show();
+                                return true;
+                            }
+                            return null;
+                        }
+                    });
+                    setOnPreferenceClickListener.invoke(preference_zhiliao, callback);
+                }
+            });
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
@@ -218,24 +271,23 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookInitPackageR
     }
 
     @Override
-    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resourcesParam) throws Throwable {
-        if (hookPackage.equals(resourcesParam.packageName)) {
-            String[] copyrightNames = {
-                    "avf",
-                    "av2",
-                    "av3",
-                    "av8"
-            };
-            for (String copyrightName : copyrightNames) {
-                int copyrightId = resourcesParam.res.getIdentifier(copyrightName, "string", hookPackage);
-                String copyright = resourcesParam.res.getString(copyrightId);
-                if (copyright.equals("© 2011 – %1$d zhihu.com\nAll rights reserved.")) {
-                    copyright += "\n\n知了 by Shatyuka";
-                    resourcesParam.res.setReplacement(copyrightId, copyright);
-                    return;
+    public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
+        MODULE_PATH = startupParam.modulePath;
+    }
+
+    @Override
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        if (hookPackage.equals(resparam.packageName)) {
+            modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
+            for (char i = 'a'; i <= 'z'; i++) {
+                int id = resparam.res.getIdentifier(String.valueOf(i), "xml", hookPackage);
+                InputStream inputStream = resparam.res.openRawResource(id);
+                if (inputStream.available() > 4000 && inputStream.available() < 5000) {
+                    id_setting = id;
+                    break;
                 }
+                inputStream.close();
             }
-            XposedBridge.log("[Zhiliao] Cannot find copyright string.");
         }
     }
 }
