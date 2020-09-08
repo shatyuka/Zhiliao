@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -17,12 +16,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
-import java.util.Locale;
 import java.util.Random;
 
 public class MySettingsFragment extends PreferenceFragmentCompat {
@@ -90,34 +87,8 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    static Locale system_locale;
     static int version_click = 0;
     static int author_click = 0;
-
-    public void setLang(String lang, boolean refresh) {
-        Locale locale;
-        if (lang.equals("auto"))
-            locale = system_locale;
-        else
-            locale = Locale.forLanguageTag(lang);
-        Locale.setDefault(locale);
-        if (refresh)
-            refreshLang(locale);
-    }
-
-    public void refreshLang(Locale locale) {
-        Configuration config = new Configuration();
-        config.locale = locale;
-        FragmentActivity activity = getActivity();
-        assert activity != null;
-        activity.getBaseContext().getResources().updateConfiguration(config,
-                activity.getBaseContext().getResources().getDisplayMetrics());
-        activity.setContentView(R.layout.activity_main);
-        activity.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences_container, new MySettingsFragment())
-                .commit();
-    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -131,9 +102,6 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             dlg.setCancelable(false);
             dlg.show(activity.getSupportFragmentManager(), null);
         }
-
-        if (system_locale == null)
-            system_locale = Locale.getDefault();
 
         Preference switch_hideicon = findPreference("switch_hideicon");
         assert switch_hideicon != null;
@@ -154,18 +122,6 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
                     }
                 } else
                     p.setComponentEnabledSetting(new ComponentName(activity.getPackageName(), "com.shatyuka.zhiliao.MainActivity"), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                return true;
-            }
-        });
-
-        ListPreference list_language = findPreference("list_language");
-        assert list_language != null;
-        setLang(list_language.getValue(), false);
-        list_language.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String lang = (String) newValue;
-                setLang(lang, true);
                 return true;
             }
         });

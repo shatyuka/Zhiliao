@@ -241,10 +241,12 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     Class<?> preferenceScreenClass = XposedHelpers.findClass("androidx.preference.PreferenceScreen", lpparam.classLoader);
 
                     Method findPreference = thisClass.getMethod("a", CharSequence.class);
+                    Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
                     Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
                     Method addPreference = preferenceScreenClass.getMethod("c", preferenceClass);
 
                     Object preference_zhiliao = findPreference.invoke(thisObject, "preference_id_zhiliao");
+                    setSummary.invoke(preference_zhiliao, "当前版本 " + modRes.getString(R.string.app_version));
                     Object callback = Proxy.newProxyInstance(lpparam.classLoader, new Class[]{OnPreferenceClickListenerClass}, new InvocationHandler() {
                         @Override
                         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

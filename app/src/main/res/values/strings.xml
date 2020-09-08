@@ -1,58 +1,56 @@
 <resources>
-    <string name="app_name">Zhiliao</string>
-    <string name="app_desc">A plugin for Zhihu</string>
+    <string name="app_name">知了</string>
+    <string name="app_desc">知乎小插件</string>
 
-    <string name="pref_general">General</string>
-    <string name="pref_function">Function</string>
-    <string name="pref_about">About</string>
+    <string name="pref_general">通用</string>
+    <string name="pref_function">功能</string>
+    <string name="pref_about">关于</string>
 
-    <string name="pref_mainswitch">Enable Zhiliao</string>
-    <string name="pref_mainswitch_desc">Main switch of Zhiliao</string>
+    <string name="pref_mainswitch">启用知了</string>
+    <string name="pref_mainswitch_desc">知了功能总开关</string>
 
-    <string name="pref_hideicon">Hide icon</string>
-    <string name="pref_hideicon_desc">Hide icon in launcher</string>
+    <string name="pref_hideicon">隐藏图标</string>
+    <string name="pref_hideicon_desc">隐藏启动器内的图标</string>
 
-    <string name="pref_language">Language</string>
-    <string name="pref_language_auto">Auto</string>
+    <string name="pref_language">语言</string>
+    <string name="pref_language_auto">自动</string>
 
-    <string name="pref_launchad">Remove launch ad</string>
-    <string name="pref_launchad_desc">Annoying full-screen advertisement</string>
+    <string name="pref_launchad">去启动页广告</string>
+    <string name="pref_launchad_desc">去除启动页全屏广告</string>
 
-    <string name="pref_feedad">Remove feed ad</string>
-    <string name="pref_feedad_desc">DO NOT FEED AD TO ME</string>
+    <string name="pref_feedad">去信息流广告</string>
+    <string name="pref_feedad_desc">去除信息流内夹杂的广告</string>
 
-    <string name="pref_marketcard">Remove market card</string>
-    <string name="pref_marketcard_desc">I have no money to buy VIP</string>
+    <string name="pref_marketcard">去信息流会员推荐</string>
+    <string name="pref_marketcard_desc">去除信息流里的会员推荐</string>
 
-    <string name="pref_answerlistad">Remove answer list ad</string>
-    <string name="pref_answerlistad_desc">Remove ad in answer list</string>
+    <string name="pref_answerlistad">去回答列表广告</string>
+    <string name="pref_answerlistad_desc">去除回答列表内的广告</string>
 
-    <string name="pref_sharead">Remove share ad</string>
-    <string name="pref_sharead_desc">Remove ad above share page</string>
+    <string name="pref_sharead">去分享广告</string>
+    <string name="pref_sharead_desc">去除分享页面顶部的广告</string>
 
-    <string name="pref_answerad">Remove answer ad</string>
-    <string name="pref_answerad_desc">Remove advertisement in the footer</string>
+    <string name="pref_answerad">去回答底部广告</string>
+    <string name="pref_answerad_desc">去除回答底部广告</string>
 
-    <string name="pref_club">Remove club info</string>
-    <string name="pref_club_desc">Remove club info in the footer</string>
+    <string name="pref_club">去回答圈子</string>
+    <string name="pref_club_desc">去除回答底部相关圈子</string>
 
-    <string name="pref_goods">Remove related goods</string>
-    <string name="pref_goods_desc">Remove related goods in the footer (Experimental)</string>
+    <string name="pref_goods">去商品推荐</string>
+    <string name="pref_goods_desc">去除回答底部商品推荐（实验性）</string>
 
-    <string name="pref_version">Version</string>
-    <string name="pref_author">Author</string>
+    <string name="pref_version">版本</string>
+    <string name="pref_author">作者</string>
+    <string name="pref_telegram">TG群</string>
+    <string name="pref_telegram_desc">找作者对线</string>
+    <string name="pref_donate">捐赠</string>
+    <string name="pref_donate_desc">快揭不开锅了 ( ≧Д≦)</string>
 
-    <string name="pref_telegram">Telegram</string>
-    <string name="pref_telegram_desc">Discuss with us</string>
-
-    <string name="pref_donate">Donate</string>
-    <string name="pref_donate_desc">With appreciation</string>
-
-    <string name="dialog_warnicon">Tip:\nYou can launch Zhiliao in Xposed Installer or EdXposed Manager</string>
-    <string name="dialog_ok">OK</string>
-    <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_eula">EULA:\nThis software is for technical discussion use only, please do not use it for commercial and illegal purposes. If there is a legal dispute, it has nothing to do with me.\\nnThis software won\'t collect or upload your personal information. If your information get leaked, it has nothing to do with me.</string>
-    <string name="dialog_accept">Accept</string>
-    <string name="dialog_reject">Reject</string>
+    <string name="dialog_warnicon">温馨提示：\n还可以在Xposed Installer或EdXposed Manager里打开知了哦！</string>
+    <string name="dialog_ok">朕已阅</string>
+    <string name="dialog_cancel">再想想</string>
+    <string name="dialog_eula">免责声明：\n本软件仅用于技术交流, 请勿用于商业及非法用途，如产生法律纠纷与本人无关。\n\n本软件不会收集、上传您的个人信息，如有个人信息泄露与本人无关。</string>
+    <string name="dialog_accept">接受</string>
+    <string name="dialog_reject">拒绝</string>
 
 </resources>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="知了设置">
-      <PreferenceScreen android:title="知了" android:key="preference_id_zhiliao" android:summary="当前版本 6.55.0"/>
+      <PreferenceScreen android:title="知了" android:key="preference_id_zhiliao"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="基本的设置" android:key="preference_id_category_base_settings">
+    <PreferenceCategory android:title="基本设置" android:key="preference_id_category_base_settings">
         <com.zhihu.android.app.ui.widget.SwitchPreference android:title="水印图片" android:key="preference_id_water_pic" android:summary="在上传的图片中添加水印" android:defaultValue="false"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference android:title="省流量模式" android:key="preference_id_system_no_picture" android:summary="仅在 Wi-Fi 环境下才会自动加载图片" android:defaultValue="false"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference android:title="双击赞同" android:key="preference_id_double_click_voteup" android:summary="在回答与文章正文区支持双击赞同" android:defaultValue="true"/>
