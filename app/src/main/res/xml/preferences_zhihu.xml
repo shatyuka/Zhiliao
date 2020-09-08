@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="通用">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_mainswitch"
+            android:title="启用知了"
+            android:summary="知了功能总开关" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="功能">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_launchad"
+            android:title="去启动页广告"
+            android:summary="去除启动页全屏广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_feedad"
+            android:title="去信息流广告"
+            android:summary="去除信息流内夹杂的广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_marketcard"
+            android:title="去信息流会员推荐"
+            android:summary="去除信息流里的会员推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_answerlistad"
+            android:title="去回答列表广告"
+            android:summary="去除回答列表内的广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_sharead"
+            android:title="去分享广告"
+            android:summary="去除分享页面顶部的广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_answerad"
+            android:title="去回答底部广告"
+            android:summary="去除回答底部广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_club"
+            android:title="去回答圈子"
+            android:summary="去除回答底部相关圈子"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_goods"
+            android:title="去商品推荐"
+            android:summary="去除回答底部商品推荐（实验性）"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="关于">
+        <Preference
+            android:key="preference_author"
+            android:title="作者"
+            android:summary="Shatyuka"/>
+    </PreferenceCategory>
+</PreferenceScreen>

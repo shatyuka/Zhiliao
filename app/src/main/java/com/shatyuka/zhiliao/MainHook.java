@@ -19,9 +19,9 @@ import com.crossbowffs.remotepreferences.RemotePreferences;
 import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -41,11 +41,12 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     private SharedPreferences prefs;
 
     private int id_setting;
+    private int id_debug;
     private XModuleResources modRes;
+    private Object preference_zhiliao;
 
     final boolean DEBUG_LOG_CARD_CLASS = false;
     final boolean DEBUG_WEBVIEW = false;
-    final boolean DEBUG_ZHIHU = true;
 
     private boolean shouldBlock(String classname) {
         if (prefs.getBoolean("switch_feedad", true) && classname.equals("com.zhihu.android.api.model.FeedAdvert")) {
@@ -219,13 +220,20 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             XposedHelpers.findAndHookMethod("androidx.preference.i", lpparam.classLoader, "a", int.class, "androidx.preference.PreferenceGroup", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if ((int) param.args[0] == id_setting) {
-                        try (XmlResourceParser parser = modRes.getXml(R.xml.settings)) {
-                            Class<?> XmlPullParser = XposedHelpers.findClass("org.xmlpull.v1.XmlPullParser", lpparam.classLoader);
-                            Class<?> PreferenceGroup = XposedHelpers.findClass("androidx.preference.PreferenceGroup", lpparam.classLoader);
-                            Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, PreferenceGroup);
-                            param.setResult(inflate.invoke(param.thisObject, parser, param.args[1]));
-                        }
+                    XmlResourceParser parser;
+                    if ((int) param.args[0] == id_setting)
+                        parser = modRes.getXml(R.xml.settings);
+                    else if ((int) param.args[0] == id_debug)
+                        parser = modRes.getXml(R.xml.preferences_zhihu);
+                    else
+                        return;
+                    try {
+                        Class<?> XmlPullParser = XposedHelpers.findClass("org.xmlpull.v1.XmlPullParser", lpparam.classLoader);
+                        Class<?> PreferenceGroup = XposedHelpers.findClass("androidx.preference.PreferenceGroup", lpparam.classLoader);
+                        Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, PreferenceGroup);
+                        param.setResult(inflate.invoke(param.thisObject, parser, param.args[1]));
+                    } finally {
+                        parser.close();
                     }
                 }
             });
@@ -235,29 +243,55 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
                     Class<?> thisClass = thisObject.getClass();
-
                     Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
                     Class<?> OnPreferenceClickListenerClass = XposedHelpers.findClass("androidx.preference.Preference.d", lpparam.classLoader);
-                    Class<?> preferenceScreenClass = XposedHelpers.findClass("androidx.preference.PreferenceScreen", lpparam.classLoader);
 
                     Method findPreference = thisClass.getMethod("a", CharSequence.class);
                     Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
                     Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
-                    Method addPreference = preferenceScreenClass.getMethod("c", preferenceClass);
 
-                    Object preference_zhiliao = findPreference.invoke(thisObject, "preference_id_zhiliao");
+                    preference_zhiliao = findPreference.invoke(thisObject, "preference_id_zhiliao");
                     setSummary.invoke(preference_zhiliao, "当前版本 " + modRes.getString(R.string.app_version));
-                    Object callback = Proxy.newProxyInstance(lpparam.classLoader, new Class[]{OnPreferenceClickListenerClass}, new InvocationHandler() {
-                        @Override
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            if (method.getName().equals("onPreferenceClick")) {
-                                android.widget.Toast.makeText(context, "哼唧", android.widget.Toast.LENGTH_SHORT).show();
-                                return true;
-                            }
-                            return null;
+                    setOnPreferenceClickListener.invoke(preference_zhiliao, thisObject);
+                }
+            });
+
+            final Class<?> DebugFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.DebugFragment", lpparam.classLoader);
+            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.preference.SettingsFragment", lpparam.classLoader, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (param.args[0] == preference_zhiliao) {
+                        Object thisObject = param.thisObject;
+                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
+                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
+                        Method a = thisObject.getClass().getMethod("a", intentClass);
+                        Object intent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
+                        a.invoke(thisObject, intent);
+                        param.setResult(false);
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return null;
+                }
+            });
+            XposedHelpers.findAndHookMethod(DebugFragment, "onCreate", Bundle.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Class<?> PreferenceFragmentCompatClass = XposedHelpers.findClass("androidx.preference.g", lpparam.classLoader);
+                    Class<?> PreferenceManagerClass = XposedHelpers.findClass("androidx.preference.j", lpparam.classLoader);
+                    Method setSharedPreferencesName = PreferenceManagerClass.getMethod("a", String.class);
+                    Field[] fields = PreferenceFragmentCompatClass.getDeclaredFields();
+                    for (Field field : fields) {
+                        Log.d("Zhiliao", field.getType().getName());
+                        if (field.getType() == PreferenceManagerClass) {
+                            field.setAccessible(true);
+                            setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
+                            return;
                         }
-                    });
-                    setOnPreferenceClickListener.invoke(preference_zhiliao, callback);
+                    }
                 }
             });
 
@@ -284,10 +318,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             for (char i = 'a'; i <= 'z'; i++) {
                 int id = resparam.res.getIdentifier(String.valueOf(i), "xml", hookPackage);
                 InputStream inputStream = resparam.res.openRawResource(id);
-                if (inputStream.available() > 4000 && inputStream.available() < 5000) {
+                if (inputStream.available() > 4000 && inputStream.available() < 5000)
                     id_setting = id;
-                    break;
-                }
+                else if (inputStream.available() > 5000)
+                    id_debug = id;
                 inputStream.close();
             }
         }
