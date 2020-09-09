@@ -53,55 +53,12 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    public static class EulaDialogFragment extends DialogFragment {
-        SwitchPreference switch_main;
-
-        public EulaDialogFragment(SwitchPreference pref_switch) {
-            switch_main = pref_switch;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.dialog_eula)
-                    .setPositiveButton(R.string.dialog_accept, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            FragmentActivity activity = getActivity();
-                            assert activity != null;
-                            SharedPreferences prefs = activity.getSharedPreferences("com.shatyuka.zhiliao_preferences", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putBoolean("accept_eula", true);
-                            editor.apply();
-                            switch_main.setChecked(true);
-                        }
-                    })
-                    .setNegativeButton(R.string.dialog_reject, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            FragmentActivity activity = getActivity();
-                            assert activity != null;
-                            activity.finishAndRemoveTask();
-                        }
-                    });
-            return builder.create();
-        }
-    }
-
     static int version_click = 0;
     static int author_click = 0;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
-
-        FragmentActivity activity = getActivity();
-        assert activity != null;
-        SharedPreferences prefs = activity.getSharedPreferences("com.shatyuka.zhiliao_preferences", Context.MODE_PRIVATE);
-        if (!prefs.getBoolean("accept_eula", false)) {
-            EulaDialogFragment dlg = new EulaDialogFragment((SwitchPreference) findPreference("switch_mainswitch"));
-            dlg.setCancelable(false);
-            dlg.show(activity.getSupportFragmentManager(), null);
-        }
 
         Preference switch_hideicon = findPreference("switch_hideicon");
         assert switch_hideicon != null;

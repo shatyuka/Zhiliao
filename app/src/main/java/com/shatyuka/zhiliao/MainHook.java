@@ -287,6 +287,20 @@ public class MainHook implements IXposedHookLoadPackage {
             XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
+                    Class<?> thisClass = thisObject.getClass();
+                    Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
+                    Class<?> OnPreferenceChangeListener = XposedHelpers.findClass("androidx.preference.Preference.c", lpparam.classLoader);
+
+                    Method findPreference = thisClass.getMethod("a", CharSequence.class);
+                    Method setOnPreferenceChangeListener = preferenceClass.getMethod("a", OnPreferenceChangeListener);
+
+                    setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
+
+                    if (prefs.getBoolean("accept_eula", false)) {
+                        Object category_eula = findPreference.invoke(thisObject, "category_eula");
+                        category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                    }
                     return null;
                 }
             });
@@ -299,7 +313,17 @@ public class MainHook implements IXposedHookLoadPackage {
             XposedHelpers.findAndHookMethod(DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return false;
+                   if ((boolean) param.args[1]) {
+                       Method findPreference = param.thisObject.getClass().getMethod("a", CharSequence.class);
+                       Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                       switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
+                       SharedPreferences.Editor editor = prefs.edit();
+                       editor.putBoolean("accept_eula", true);
+                       editor.apply();
+                       Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
+                       category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                   }
+                    return true;
                 }
             });
 

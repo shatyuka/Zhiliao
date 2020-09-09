@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory android:title="@string/pref_general">
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/toggle_on"
-            android:key="switch_mainswitch"
-            android:summary="@string/pref_mainswitch_desc"
-            android:title="@string/pref_mainswitch" />
+        <Preference
+            android:icon="@drawable/close"
+            android:key="preference_status"
+            android:summary="@string/pref_status_off"
+            android:title="@string/pref_status" />
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/block"
@@ -17,67 +14,7 @@
             android:summary="@string/pref_hideicon_desc"
             android:title="@string/pref_hideicon" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_function">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/ad_units"
-            android:key="switch_launchad"
-            android:summary="@string/pref_launchad_desc"
-            android:title="@string/pref_launchad" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/table_rows"
-            android:key="switch_feedad"
-            android:summary="@string/pref_feedad_desc"
-            android:title="@string/pref_feedad" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/vip"
-            android:key="switch_marketcard"
-            android:summary="@string/pref_marketcard_desc"
-            android:title="@string/pref_marketcard" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/format_list"
-            android:key="switch_answerlistad"
-            android:summary="@string/pref_answerlistad_desc"
-            android:title="@string/pref_answerlistad" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/share"
-            android:key="switch_sharead"
-            android:summary="@string/pref_sharead_desc"
-            android:title="@string/pref_sharead" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/notes"
-            android:key="switch_answerad"
-            android:summary="@string/pref_answerad_desc"
-            android:title="@string/pref_answerad" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/group"
-            android:key="switch_club"
-            android:summary="@string/pref_club_desc"
-            android:title="@string/pref_club" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:dependency="switch_mainswitch"
-            android:icon="@drawable/local_mall"
-            android:key="switch_goods"
-            android:summary="@string/pref_goods_desc"
-            android:title="@string/pref_goods" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about">
-
         <Preference
             android:key="preference_version"
             android:title="@string/pref_version"
