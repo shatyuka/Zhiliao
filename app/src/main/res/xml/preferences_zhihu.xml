@@ -9,6 +9,10 @@
             android:title="同意" />
     </PreferenceCategory>
     <PreferenceCategory android:title="通用">
+        <Preference
+            android:key="preference_status"
+            android:title="加载版本与安装版本不同"
+            android:summary="点我重启知乎"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="accept_eula"
@@ -68,8 +72,15 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
+            android:key="preference_version"
+            android:title="版本"/>
+        <Preference
             android:key="preference_author"
             android:title="作者"
             android:summary="Shatyuka"/>
+        <Preference
+            android:key="preference_telegram"
+            android:title="TG群"
+            android:summary="找作者对线" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -18,7 +18,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 
 import java.util.Random;
 
@@ -56,9 +55,21 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
     static int version_click = 0;
     static int author_click = 0;
 
+    private boolean isModuleActive() {
+        return false;
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        if (isModuleActive()) {
+            Preference preference_status = findPreference("preference_status");
+            assert preference_status != null;
+            preference_status.setSummary(R.string.pref_status_on);
+
+            preference_status.setIcon(R.drawable.check);
+        }
 
         Preference switch_hideicon = findPreference("switch_hideicon");
         assert switch_hideicon != null;

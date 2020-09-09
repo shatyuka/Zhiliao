@@ -1,18 +1,21 @@
 package com.shatyuka.zhiliao;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.ByteArrayInputStream;
@@ -21,6 +24,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Random;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -31,11 +35,15 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook implements IXposedHookLoadPackage {
     final String hookPackage = "com.zhihu.android";
+    final String modulePackage = "com.shatyuka.zhiliao";
     private Context context;
     private SharedPreferences prefs;
 
     private Resources modRes;
     private Object preference_zhiliao;
+
+    private static int version_click = 0;
+    private static int author_click = 0;
 
     final boolean DEBUG_LOG_CARD_CLASS = false;
     final boolean DEBUG_WEBVIEW = false;
@@ -53,7 +61,9 @@ public class MainHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (hookPackage.equals(lpparam.packageName)) {
+        if (modulePackage.equals(lpparam.packageName)) {
+            XposedHelpers.findAndHookMethod("com.shatyuka.zhiliao.MySettingsFragment", lpparam.classLoader, "isModuleActive", XC_MethodReplacement.returnConstant(true));
+        } else if (hookPackage.equals(lpparam.packageName)) {
             XposedBridge.log("[Zhiliao] Inject into Zhihu.");
 
             XposedHelpers.findAndHookMethod(java.io.File.class, "exists", new XC_MethodHook() {
@@ -71,7 +81,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (param.args[0] instanceof Application) {
                         context = ((Application) param.args[0]).getApplicationContext();
-                        modRes = context.getPackageManager().getResourcesForApplication("com.shatyuka.zhiliao");
+                        modRes = context.getPackageManager().getResourcesForApplication(modulePackage);
                         prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
 
                         PackageManager pm = context.getPackageManager();
@@ -291,11 +301,28 @@ public class MainHook implements IXposedHookLoadPackage {
                     Class<?> thisClass = thisObject.getClass();
                     Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
                     Class<?> OnPreferenceChangeListener = XposedHelpers.findClass("androidx.preference.Preference.c", lpparam.classLoader);
+                    Class<?> OnPreferenceClickListenerClass = XposedHelpers.findClass("androidx.preference.Preference.d", lpparam.classLoader);
 
                     Method findPreference = thisClass.getMethod("a", CharSequence.class);
                     Method setOnPreferenceChangeListener = preferenceClass.getMethod("a", OnPreferenceChangeListener);
+                    Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
+                    Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
+
+                    Object preference_version = findPreference.invoke(thisObject, "preference_version");
+
+                    String real_version = context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
+                    String loaded_version = modRes.getString(R.string.app_version);
+                    setSummary.invoke(preference_version, loaded_version);
+                    Object preference_status = findPreference.invoke(thisObject, "preference_status");
+                    if (loaded_version.equals(real_version))
+                        preference_status.getClass().getMethod("c", boolean.class).invoke(preference_status, false);
+                    else
+                        setOnPreferenceClickListener.invoke(preference_status, thisObject);
 
                     setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
+                    setOnPreferenceClickListener.invoke(preference_version, thisObject);
+                    setOnPreferenceClickListener.invoke(findPreference.invoke(thisObject, "preference_author"), thisObject);
+                    setOnPreferenceClickListener.invoke(findPreference.invoke(thisObject, "preference_telegram"), thisObject);
 
                     if (prefs.getBoolean("accept_eula", false)) {
                         Object category_eula = findPreference.invoke(thisObject, "category_eula");
@@ -307,22 +334,48 @@ public class MainHook implements IXposedHookLoadPackage {
             XposedHelpers.findAndHookMethod(DebugFragment, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    Object preference = param.args[0];
+                    String key = (String) preference.getClass().getMethod("C").invoke(preference);
+                    switch (key) {
+                        case "preference_status":
+                            System.exit(0);
+                            break;
+                        case "preference_version":
+                            version_click++;
+                            if (version_click == 5) {
+                                Toast.makeText(context, "点我次数再多，更新也不会变快哦", Toast.LENGTH_SHORT).show();
+                                version_click = 0;
+                            }
+                            break;
+                        case "preference_author":
+                            author_click++;
+                            if (author_click == 5) {
+                                Toast.makeText(context, modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_LONG).show();
+                                author_click = 0;
+                            }
+                            break;
+                        case "preference_telegram":
+                            Uri uri = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            ((Context) param.thisObject.getClass().getMethod("getContext").invoke(param.thisObject)).startActivity(intent);
+                            break;
+                    }
                     return false;
                 }
             });
             XposedHelpers.findAndHookMethod(DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                   if ((boolean) param.args[1]) {
-                       Method findPreference = param.thisObject.getClass().getMethod("a", CharSequence.class);
-                       Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
-                       switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
-                       SharedPreferences.Editor editor = prefs.edit();
-                       editor.putBoolean("accept_eula", true);
-                       editor.apply();
-                       Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
-                       category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
-                   }
+                    if ((boolean) param.args[1]) {
+                        Method findPreference = param.thisObject.getClass().getMethod("a", CharSequence.class);
+                        Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                        switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putBoolean("accept_eula", true);
+                        editor.apply();
+                        Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
+                        category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                    }
                     return true;
                 }
             });
