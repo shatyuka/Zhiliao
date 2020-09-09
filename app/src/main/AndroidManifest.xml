@@ -36,11 +36,6 @@
         <meta-data
             android:name="xposedminversion"
             android:value="72" />
-
-        <provider
-            android:name=".MyPreferenceProvider"
-            android:authorities="com.shatyuka.zhiliao.preferences"
-            android:exported="true"/>
     </application>
 
 </manifest>

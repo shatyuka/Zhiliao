@@ -14,8 +14,6 @@ import android.webkit.WebView;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
-import com.crossbowffs.remotepreferences.RemotePreferences;
-
 import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -74,7 +72,7 @@ public class MainHook implements IXposedHookLoadPackage {
                     if (param.args[0] instanceof Application) {
                         context = ((Application) param.args[0]).getApplicationContext();
                         modRes = context.getPackageManager().getResourcesForApplication("com.shatyuka.zhiliao");
-                        prefs = new RemotePreferences(context, "com.shatyuka.zhiliao.preferences", "com.shatyuka.zhiliao_preferences");
+                        prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
 
                         PackageManager pm = context.getPackageManager();
                         PackageInfo pi = pm.getPackageInfo("com.zhihu.android", 0);
@@ -268,26 +266,40 @@ public class MainHook implements IXposedHookLoadPackage {
                     }
                 }
             });
+            XposedBridge.hookMethod(DebugFragment.getMethod("a", Bundle.class, String.class), new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (param.thisObject.getClass() == DebugFragment) {
+                        Class<?> PreferenceFragmentCompatClass = XposedHelpers.findClass("androidx.preference.g", lpparam.classLoader);
+                        Class<?> PreferenceManagerClass = XposedHelpers.findClass("androidx.preference.j", lpparam.classLoader);
+                        Method setSharedPreferencesName = PreferenceManagerClass.getMethod("a", String.class);
+                        Field[] fields = PreferenceFragmentCompatClass.getDeclaredFields();
+                        for (Field field : fields) {
+                            if (field.getType() == PreferenceManagerClass) {
+                                field.setAccessible(true);
+                                setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
+                                return;
+                            }
+                        }
+                    }
+                }
+            });
             XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     return null;
                 }
             });
-            XposedHelpers.findAndHookMethod(DebugFragment, "onCreate", Bundle.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(DebugFragment, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodReplacement() {
                 @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    Class<?> PreferenceFragmentCompatClass = XposedHelpers.findClass("androidx.preference.g", lpparam.classLoader);
-                    Class<?> PreferenceManagerClass = XposedHelpers.findClass("androidx.preference.j", lpparam.classLoader);
-                    Method setSharedPreferencesName = PreferenceManagerClass.getMethod("a", String.class);
-                    Field[] fields = PreferenceFragmentCompatClass.getDeclaredFields();
-                    for (Field field : fields) {
-                        if (field.getType() == PreferenceManagerClass) {
-                            field.setAccessible(true);
-                            setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
-                            return;
-                        }
-                    }
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return false;
+                }
+            });
+            XposedHelpers.findAndHookMethod(DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return false;
                 }
             });
 
