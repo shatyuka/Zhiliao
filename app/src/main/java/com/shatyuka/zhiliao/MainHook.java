@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.XModuleResources;
+import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,25 +24,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
+public class MainHook implements IXposedHookLoadPackage {
     final String hookPackage = "com.zhihu.android";
-    private static String MODULE_PATH;
     private Context context;
     private SharedPreferences prefs;
 
-    private int id_setting;
-    private int id_debug;
-    private XModuleResources modRes;
+    private Resources modRes;
     private Object preference_zhiliao;
 
     final boolean DEBUG_LOG_CARD_CLASS = false;
@@ -79,6 +73,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (param.args[0] instanceof Application) {
                         context = ((Application) param.args[0]).getApplicationContext();
+                        modRes = context.getPackageManager().getResourcesForApplication("com.shatyuka.zhiliao");
                         prefs = new RemotePreferences(context, "com.shatyuka.zhiliao.preferences", "com.shatyuka.zhiliao_preferences");
 
                         PackageManager pm = context.getPackageManager();
@@ -221,9 +216,11 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     XmlResourceParser parser;
-                    if ((int) param.args[0] == id_setting)
+                    int id = (int) param.args[0];
+                    InputStream inputStream = context.getResources().openRawResource(id);
+                    if (inputStream.available() > 4000 && inputStream.available() < 5000)
                         parser = modRes.getXml(R.xml.settings);
-                    else if ((int) param.args[0] == id_debug)
+                    else if (inputStream.available() > 5000)
                         parser = modRes.getXml(R.xml.preferences_zhihu);
                     else
                         return;
@@ -285,7 +282,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     Method setSharedPreferencesName = PreferenceManagerClass.getMethod("a", String.class);
                     Field[] fields = PreferenceFragmentCompatClass.getDeclaredFields();
                     for (Field field : fields) {
-                        Log.d("Zhiliao", field.getType().getName());
                         if (field.getType() == PreferenceManagerClass) {
                             field.setAccessible(true);
                             setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
@@ -302,27 +298,6 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                         XposedHelpers.callStaticMethod(WebView.class, "setWebContentsDebuggingEnabled", true);
                     }
                 });
-            }
-        }
-    }
-
-    @Override
-    public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
-        MODULE_PATH = startupParam.modulePath;
-    }
-
-    @Override
-    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (hookPackage.equals(resparam.packageName)) {
-            modRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-            for (char i = 'a'; i <= 'z'; i++) {
-                int id = resparam.res.getIdentifier(String.valueOf(i), "xml", hookPackage);
-                InputStream inputStream = resparam.res.openRawResource(id);
-                if (inputStream.available() > 4000 && inputStream.available() < 5000)
-                    id_setting = id;
-                else if (inputStream.available() > 5000)
-                    id_debug = id;
-                inputStream.close();
             }
         }
     }
