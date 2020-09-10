@@ -1,5 +1,8 @@
 package com.shatyuka.zhiliao;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import java.lang.reflect.Method;
@@ -29,7 +32,11 @@ public class Helper {
     static Method setSharedPreferencesName;
     static Method getContext;
 
-    static boolean initClassHelper(ClassLoader classLoader) {
+    static Context context;
+    static SharedPreferences prefs;
+    static Resources modRes;
+
+    static boolean init(ClassLoader classLoader) {
         try {
             SettingsFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.preference.SettingsFragment");
             DebugFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.DebugFragment");
