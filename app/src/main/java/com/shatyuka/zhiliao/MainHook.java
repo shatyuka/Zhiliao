@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,7 +65,8 @@ public class MainHook implements IXposedHookLoadPackage {
         if (modulePackage.equals(lpparam.packageName)) {
             XposedHelpers.findAndHookMethod("com.shatyuka.zhiliao.MySettingsFragment", lpparam.classLoader, "isModuleActive", XC_MethodReplacement.returnConstant(true));
         } else if (hookPackage.equals(lpparam.packageName)) {
-            XposedBridge.log("[Zhiliao] Inject into Zhihu.");
+            if (!Helper.initClassHelper(lpparam.classLoader))
+                return;
 
             XposedHelpers.findAndHookMethod(java.io.File.class, "exists", new XC_MethodHook() {
                 @Override
@@ -222,7 +222,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 }
             });
 
-            XposedHelpers.findAndHookMethod("androidx.preference.i", lpparam.classLoader, "a", int.class, "androidx.preference.PreferenceGroup", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod("androidx.preference.i", lpparam.classLoader, "a", int.class, Helper.PreferenceGroup, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     XmlResourceParser parser;
@@ -236,8 +236,7 @@ public class MainHook implements IXposedHookLoadPackage {
                         return;
                     try {
                         Class<?> XmlPullParser = XposedHelpers.findClass("org.xmlpull.v1.XmlPullParser", lpparam.classLoader);
-                        Class<?> PreferenceGroup = XposedHelpers.findClass("androidx.preference.PreferenceGroup", lpparam.classLoader);
-                        Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, PreferenceGroup);
+                        Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, Helper.PreferenceGroup);
                         param.setResult(inflate.invoke(param.thisObject, parser, param.args[1]));
                     } finally {
                         parser.close();
@@ -245,63 +244,48 @@ public class MainHook implements IXposedHookLoadPackage {
                 }
             });
 
-            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.preference.SettingsFragment", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.SettingsFragment, "onCreate", Bundle.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
-                    Class<?> thisClass = thisObject.getClass();
-                    Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
-                    Class<?> OnPreferenceClickListenerClass = XposedHelpers.findClass("androidx.preference.Preference.d", lpparam.classLoader);
-
-                    Method findPreference = thisClass.getMethod("a", CharSequence.class);
-                    Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
-                    Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
-
-                    preference_zhiliao = findPreference.invoke(thisObject, "preference_id_zhiliao");
-                    setSummary.invoke(preference_zhiliao, "当前版本 " + modRes.getString(R.string.app_version));
-                    setOnPreferenceClickListener.invoke(preference_zhiliao, thisObject);
+                    preference_zhiliao = Helper.findPreference.invoke(thisObject, "preference_id_zhiliao");
+                    Helper.setSummary.invoke(preference_zhiliao, "当前版本 " + modRes.getString(R.string.app_version));
+                    Helper.setOnPreferenceClickListener.invoke(preference_zhiliao, thisObject);
                 }
             });
 
-            final Class<?> DebugFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.DebugFragment", lpparam.classLoader);
-            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.preference.SettingsFragment", lpparam.classLoader, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.SettingsFragment, "onPreferenceClick", Helper.Preference, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     if (param.args[0] == preference_zhiliao) {
                         Object thisObject = param.thisObject;
-                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
-                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
-                        Method a = thisObject.getClass().getMethod("a", intentClass);
-                        Object intent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
+                        Method a = thisObject.getClass().getMethod("a", Helper.ZHIntent);
+                        Object intent = Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0));
                         a.invoke(thisObject, intent);
                         param.setResult(false);
                     }
                 }
             });
-            XposedBridge.hookMethod(DebugFragment.getMethod("a", Bundle.class, String.class), new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.DebugFragment.getMethod("a", Bundle.class, String.class), new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (param.thisObject.getClass() == DebugFragment) {
-                        Class<?> PreferenceFragmentCompatClass = XposedHelpers.findClass("androidx.preference.g", lpparam.classLoader);
-                        Class<?> PreferenceManagerClass = XposedHelpers.findClass("androidx.preference.j", lpparam.classLoader);
-                        Method setSharedPreferencesName = PreferenceManagerClass.getMethod("a", String.class);
-                        Field[] fields = PreferenceFragmentCompatClass.getDeclaredFields();
+                    if (param.thisObject.getClass() == Helper.DebugFragment) {
+                        Field[] fields = Helper.PreferenceFragmentCompat.getDeclaredFields();
                         for (Field field : fields) {
-                            if (field.getType() == PreferenceManagerClass) {
+                            if (field.getType() == Helper.PreferenceManager) {
                                 field.setAccessible(true);
-                                setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
+                                Helper.setSharedPreferencesName.invoke(field.get(param.thisObject), "zhiliao_preferences");
                                 return;
                             }
                         }
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.BasePreferenceFragment", lpparam.classLoader, "onViewCreated", View.class, Bundle.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.BasePreferenceFragment, "onViewCreated", View.class, Bundle.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (param.thisObject.getClass() == DebugFragment) {
-                        Class<?> BasePreferenceFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.BasePreferenceFragment", lpparam.classLoader);
-                        Field[] fields = BasePreferenceFragment.getDeclaredFields();
+                    if (param.thisObject.getClass() == Helper.DebugFragment) {
+                        Field[] fields = Helper.BasePreferenceFragment.getDeclaredFields();
                         for (Field field : fields) {
                             if (field.getType().getName().equals("com.zhihu.android.app.ui.widget.SystemBar")) {
                                 field.setAccessible(true);
@@ -314,67 +298,56 @@ public class MainHook implements IXposedHookLoadPackage {
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
+            XposedHelpers.findAndHookMethod(Helper.DebugFragment, "h", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
-                    Class<?> thisClass = thisObject.getClass();
-                    Class<?> preferenceClass = XposedHelpers.findClass("androidx.preference.Preference", lpparam.classLoader);
-                    Class<?> OnPreferenceChangeListener = XposedHelpers.findClass("androidx.preference.Preference.c", lpparam.classLoader);
-                    Class<?> OnPreferenceClickListenerClass = XposedHelpers.findClass("androidx.preference.Preference.d", lpparam.classLoader);
-
-                    Method findPreference = thisClass.getMethod("a", CharSequence.class);
-                    Method setOnPreferenceChangeListener = preferenceClass.getMethod("a", OnPreferenceChangeListener);
-                    Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
-                    Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
-                    Method setIcon = preferenceClass.getMethod("a", Drawable.class);
-
-                    Object preference_version = findPreference.invoke(thisObject, "preference_version");
-                    Object preference_author = findPreference.invoke(thisObject, "preference_author");
-                    Object preference_telegram = findPreference.invoke(thisObject, "preference_telegram");
-                    Object preference_donate = findPreference.invoke(thisObject, "preference_donate");
+                    Object preference_version = Helper.findPreference.invoke(thisObject, "preference_version");
+                    Object preference_author = Helper.findPreference.invoke(thisObject, "preference_author");
+                    Object preference_telegram = Helper.findPreference.invoke(thisObject, "preference_telegram");
+                    Object preference_donate = Helper.findPreference.invoke(thisObject, "preference_donate");
+                    Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
 
                     String real_version = context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
                     String loaded_version = modRes.getString(R.string.app_version);
-                    setSummary.invoke(preference_version, loaded_version);
-                    Object preference_status = findPreference.invoke(thisObject, "preference_status");
+                    Helper.setSummary.invoke(preference_version, loaded_version);
                     if (loaded_version.equals(real_version))
                         preference_status.getClass().getMethod("c", boolean.class).invoke(preference_status, false);
                     else
-                        setOnPreferenceClickListener.invoke(preference_status, thisObject);
+                        Helper.setOnPreferenceClickListener.invoke(preference_status, thisObject);
 
-                    setIcon.invoke(preference_status, modRes.getDrawable(R.drawable.ic_refresh));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_mainswitch"), modRes.getDrawable(R.drawable.ic_toggle_on));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_launchad"), modRes.getDrawable(R.drawable.ic_ad_units));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_feedad"), modRes.getDrawable(R.drawable.ic_table_rows));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_marketcard"), modRes.getDrawable(R.drawable.ic_vip));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_answerlistad"), modRes.getDrawable(R.drawable.ic_format_list));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_sharead"), modRes.getDrawable(R.drawable.ic_share));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_answerad"), modRes.getDrawable(R.drawable.ic_notes));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_club"), modRes.getDrawable(R.drawable.ic_group));
-                    setIcon.invoke(findPreference.invoke(thisObject, "switch_goods"), modRes.getDrawable(R.drawable.ic_local_mall));
-                    setIcon.invoke(preference_version, modRes.getDrawable(R.drawable.ic_info));
-                    setIcon.invoke(preference_author, modRes.getDrawable(R.drawable.ic_person));
-                    setIcon.invoke(preference_telegram, modRes.getDrawable(R.drawable.ic_telegram));
-                    setIcon.invoke(preference_donate, modRes.getDrawable(R.drawable.ic_monetization));
+                    Helper.setIcon.invoke(preference_status, modRes.getDrawable(R.drawable.ic_refresh));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_mainswitch"), modRes.getDrawable(R.drawable.ic_toggle_on));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_launchad"), modRes.getDrawable(R.drawable.ic_ad_units));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_feedad"), modRes.getDrawable(R.drawable.ic_table_rows));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_marketcard"), modRes.getDrawable(R.drawable.ic_vip));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_answerlistad"), modRes.getDrawable(R.drawable.ic_format_list));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_sharead"), modRes.getDrawable(R.drawable.ic_share));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_answerad"), modRes.getDrawable(R.drawable.ic_notes));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_club"), modRes.getDrawable(R.drawable.ic_group));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_goods"), modRes.getDrawable(R.drawable.ic_local_mall));
+                    Helper.setIcon.invoke(preference_version, modRes.getDrawable(R.drawable.ic_info));
+                    Helper.setIcon.invoke(preference_author, modRes.getDrawable(R.drawable.ic_person));
+                    Helper.setIcon.invoke(preference_telegram, modRes.getDrawable(R.drawable.ic_telegram));
+                    Helper.setIcon.invoke(preference_donate, modRes.getDrawable(R.drawable.ic_monetization));
 
-                    setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
-                    setOnPreferenceClickListener.invoke(preference_version, thisObject);
-                    setOnPreferenceClickListener.invoke(preference_author, thisObject);
-                    setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
-                    setOnPreferenceClickListener.invoke(preference_donate, thisObject);
+                    Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_author, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_donate, thisObject);
 
                     if (prefs.getBoolean("accept_eula", false)) {
-                        Object category_eula = findPreference.invoke(thisObject, "category_eula");
+                        Object category_eula = Helper.findPreference.invoke(thisObject, "category_eula");
                         category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
                     } else {
-                        Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                        Object switch_main = Helper.findPreference.invoke(param.thisObject, "switch_mainswitch");
                         switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, false);
                     }
                     return null;
                 }
             });
-            XposedHelpers.findAndHookMethod(DebugFragment, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodReplacement() {
+            XposedHelpers.findAndHookMethod(Helper.DebugFragment, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     Object preference = param.args[0];
@@ -400,7 +373,7 @@ public class MainHook implements IXposedHookLoadPackage {
                         case "preference_telegram":
                             Uri uri = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");
                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            ((Context) param.thisObject.getClass().getMethod("getContext").invoke(param.thisObject)).startActivity(intent);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent);
                             break;
                         case "preference_donate":
                             Intent donate_intent = new Intent();
@@ -408,49 +381,42 @@ public class MainHook implements IXposedHookLoadPackage {
                             donate_intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             donate_intent.putExtra("zhiliao_donate", true);
                             donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.MainActivity");
-                            ((Context) param.thisObject.getClass().getMethod("getContext").invoke(param.thisObject)).startActivity(donate_intent);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(donate_intent);
                             break;
                     }
                     return false;
                 }
             });
-            XposedHelpers.findAndHookMethod(DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
+            XposedHelpers.findAndHookMethod(Helper.DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     if ((boolean) param.args[1]) {
-                        Method findPreference = param.thisObject.getClass().getMethod("a", CharSequence.class);
-                        Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                        Object switch_main = Helper.findPreference.invoke(param.thisObject, "switch_mainswitch");
                         switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
-                        Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
+                        Object category_eula = Helper.findPreference.invoke(param.thisObject, "category_eula");
                         category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
                     }
                     return true;
                 }
             });
 
-            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.activity.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.MainActivity, "onCreate", Bundle.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
                     Intent intent = ((Activity) thisObject).getIntent();
                     if (intent.hasExtra("zhiliao_settings")) {
-                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
-                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
-                        Object ZHIntent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
-                        thisObject.getClass().getMethod("addFragmentToOverlay", intentClass).invoke(thisObject, ZHIntent);
+                        Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.activity.MainActivity", lpparam.classLoader, "onNewIntent", Intent.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.MainActivity, "onNewIntent", Intent.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
                     Intent intent = (Intent) param.args[0];
                     if (intent.hasExtra("zhiliao_settings")) {
-                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
-                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
-                        Object ZHIntent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
-                        thisObject.getClass().getMethod("addFragmentToOverlay", intentClass).invoke(thisObject, ZHIntent);
+                        Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
                     }
                 }
             });
