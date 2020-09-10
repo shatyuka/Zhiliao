@@ -3,14 +3,13 @@ package com.shatyuka.zhiliao;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +55,7 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
     static int author_click = 0;
 
     private boolean isModuleActive() {
+        Log.i("Zhiliao", "Not activated");
         return false;
     }
 
@@ -67,8 +67,7 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             Preference preference_status = findPreference("preference_status");
             assert preference_status != null;
             preference_status.setSummary(R.string.pref_status_on);
-
-            preference_status.setIcon(R.drawable.check);
+            preference_status.setIcon(R.drawable.ic_check);
         }
 
         Preference switch_hideicon = findPreference("switch_hideicon");

@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pref_general">
         <Preference
-            android:icon="@drawable/close"
+            android:icon="@drawable/ic_close"
             android:key="preference_status"
             android:summary="@string/pref_status_off"
             android:title="@string/pref_status" />
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/block"
+            android:icon="@drawable/ic_block"
             android:key="switch_hideicon"
             android:summary="@string/pref_hideicon_desc"
             android:title="@string/pref_hideicon" />
@@ -18,22 +18,22 @@
         <Preference
             android:key="preference_version"
             android:title="@string/pref_version"
-            app:icon="@drawable/info"
+            app:icon="@drawable/ic_info"
             app:summary="@string/app_version" />
         <Preference
             android:key="preference_author"
             android:title="@string/pref_author"
-            app:icon="@drawable/person"
+            app:icon="@drawable/ic_person"
             app:summary="Shatyuka" />
         <Preference
             android:key="preference_telegram"
             android:title="@string/pref_telegram"
-            app:icon="@drawable/telegram"
+            app:icon="@drawable/ic_telegram"
             app:summary="@string/pref_telegram_desc" />
         <Preference
             android:key="preference_donate"
             android:title="@string/pref_donate"
-            app:icon="@drawable/monetization"
+            app:icon="@drawable/ic_monetization"
             app:summary="@string/pref_donate_desc"
             app:fragment="com.shatyuka.zhiliao.DonateFragment"/>
         <Preference

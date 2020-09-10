@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -294,6 +295,24 @@ public class MainHook implements IXposedHookLoadPackage {
                     }
                 }
             });
+            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.fragment.BasePreferenceFragment", lpparam.classLoader, "onViewCreated", View.class, Bundle.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (param.thisObject.getClass() == DebugFragment) {
+                        Class<?> BasePreferenceFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.BasePreferenceFragment", lpparam.classLoader);
+                        Field[] fields = BasePreferenceFragment.getDeclaredFields();
+                        for (Field field : fields) {
+                            if (field.getType().getName().equals("com.zhihu.android.app.ui.widget.SystemBar")) {
+                                field.setAccessible(true);
+                                Object systemBar = field.get(param.thisObject);
+                                Object toolbar = systemBar.getClass().getMethod("getToolbar").invoke(systemBar);
+                                toolbar.getClass().getMethod("setTitle", CharSequence.class).invoke(toolbar, "知了");
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
             XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
@@ -307,8 +326,11 @@ public class MainHook implements IXposedHookLoadPackage {
                     Method setOnPreferenceChangeListener = preferenceClass.getMethod("a", OnPreferenceChangeListener);
                     Method setOnPreferenceClickListener = preferenceClass.getMethod("a", OnPreferenceClickListenerClass);
                     Method setSummary = preferenceClass.getMethod("a", CharSequence.class);
+                    Method setIcon = preferenceClass.getMethod("a", Drawable.class);
 
                     Object preference_version = findPreference.invoke(thisObject, "preference_version");
+                    Object preference_author = findPreference.invoke(thisObject, "preference_author");
+                    Object preference_telegram = findPreference.invoke(thisObject, "preference_telegram");
 
                     String real_version = context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
                     String loaded_version = modRes.getString(R.string.app_version);
@@ -319,10 +341,24 @@ public class MainHook implements IXposedHookLoadPackage {
                     else
                         setOnPreferenceClickListener.invoke(preference_status, thisObject);
 
+                    setIcon.invoke(preference_status, modRes.getDrawable(R.drawable.ic_refresh));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_mainswitch"), modRes.getDrawable(R.drawable.ic_toggle_on));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_launchad"), modRes.getDrawable(R.drawable.ic_ad_units));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_feedad"), modRes.getDrawable(R.drawable.ic_table_rows));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_marketcard"), modRes.getDrawable(R.drawable.ic_vip));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_answerlistad"), modRes.getDrawable(R.drawable.ic_format_list));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_sharead"), modRes.getDrawable(R.drawable.ic_share));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_answerad"), modRes.getDrawable(R.drawable.ic_notes));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_club"), modRes.getDrawable(R.drawable.ic_group));
+                    setIcon.invoke(findPreference.invoke(thisObject, "switch_goods"), modRes.getDrawable(R.drawable.ic_local_mall));
+                    setIcon.invoke(preference_version, modRes.getDrawable(R.drawable.ic_info));
+                    setIcon.invoke(preference_author, modRes.getDrawable(R.drawable.ic_person));
+                    setIcon.invoke(preference_telegram, modRes.getDrawable(R.drawable.ic_telegram));
+
                     setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                     setOnPreferenceClickListener.invoke(preference_version, thisObject);
-                    setOnPreferenceClickListener.invoke(findPreference.invoke(thisObject, "preference_author"), thisObject);
-                    setOnPreferenceClickListener.invoke(findPreference.invoke(thisObject, "preference_telegram"), thisObject);
+                    setOnPreferenceClickListener.invoke(preference_author, thisObject);
+                    setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
 
                     if (prefs.getBoolean("accept_eula", false)) {
                         Object category_eula = findPreference.invoke(thisObject, "category_eula");
