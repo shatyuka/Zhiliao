@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.Objects;
@@ -17,11 +18,27 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        Fragment fragment;
+        if (intent.hasExtra("zhiliao_donate"))
+            fragment = new DonateFragment();
+        else
+            fragment = new MySettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.preferences_container, new MySettingsFragment())
+                .replace(R.id.preferences_container, fragment)
                 .commit();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra("zhiliao_donate"))
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.preferences_container, new DonateFragment())
+                    .commit();
     }
 
     @Override

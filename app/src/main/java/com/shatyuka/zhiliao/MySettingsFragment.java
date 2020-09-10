@@ -93,6 +93,19 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
+        Preference preference_settings = findPreference("preference_settings");
+        assert preference_settings != null;
+        preference_settings.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent();
+                intent.setClassName("com.zhihu.android", "com.zhihu.android.app.ui.activity.MainActivity");
+                intent.putExtra("zhiliao_settings", true);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         Preference preference_version = findPreference("preference_version");
         assert preference_version != null;
         preference_version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

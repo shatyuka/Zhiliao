@@ -1,5 +1,6 @@
 package com.shatyuka.zhiliao;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -331,6 +332,7 @@ public class MainHook implements IXposedHookLoadPackage {
                     Object preference_version = findPreference.invoke(thisObject, "preference_version");
                     Object preference_author = findPreference.invoke(thisObject, "preference_author");
                     Object preference_telegram = findPreference.invoke(thisObject, "preference_telegram");
+                    Object preference_donate = findPreference.invoke(thisObject, "preference_donate");
 
                     String real_version = context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
                     String loaded_version = modRes.getString(R.string.app_version);
@@ -354,15 +356,20 @@ public class MainHook implements IXposedHookLoadPackage {
                     setIcon.invoke(preference_version, modRes.getDrawable(R.drawable.ic_info));
                     setIcon.invoke(preference_author, modRes.getDrawable(R.drawable.ic_person));
                     setIcon.invoke(preference_telegram, modRes.getDrawable(R.drawable.ic_telegram));
+                    setIcon.invoke(preference_donate, modRes.getDrawable(R.drawable.ic_monetization));
 
                     setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                     setOnPreferenceClickListener.invoke(preference_version, thisObject);
                     setOnPreferenceClickListener.invoke(preference_author, thisObject);
                     setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
+                    setOnPreferenceClickListener.invoke(preference_donate, thisObject);
 
                     if (prefs.getBoolean("accept_eula", false)) {
                         Object category_eula = findPreference.invoke(thisObject, "category_eula");
                         category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                    } else {
+                        Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                        switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, false);
                     }
                     return null;
                 }
@@ -395,6 +402,14 @@ public class MainHook implements IXposedHookLoadPackage {
                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                             ((Context) param.thisObject.getClass().getMethod("getContext").invoke(param.thisObject)).startActivity(intent);
                             break;
+                        case "preference_donate":
+                            Intent donate_intent = new Intent();
+                            donate_intent.setAction(Intent.ACTION_MAIN);
+                            donate_intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            donate_intent.putExtra("zhiliao_donate", true);
+                            donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.MainActivity");
+                            ((Context) param.thisObject.getClass().getMethod("getContext").invoke(param.thisObject)).startActivity(donate_intent);
+                            break;
                     }
                     return false;
                 }
@@ -406,13 +421,37 @@ public class MainHook implements IXposedHookLoadPackage {
                         Method findPreference = param.thisObject.getClass().getMethod("a", CharSequence.class);
                         Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
                         switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putBoolean("accept_eula", true);
-                        editor.apply();
                         Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
                         category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
                     }
                     return true;
+                }
+            });
+
+            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.activity.MainActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
+                    Intent intent = ((Activity) thisObject).getIntent();
+                    if (intent.hasExtra("zhiliao_settings")) {
+                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
+                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
+                        Object ZHIntent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
+                        thisObject.getClass().getMethod("addFragmentToOverlay", intentClass).invoke(thisObject, ZHIntent);
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod("com.zhihu.android.app.ui.activity.MainActivity", lpparam.classLoader, "onNewIntent", Intent.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
+                    Intent intent = (Intent) param.args[0];
+                    if (intent.hasExtra("zhiliao_settings")) {
+                        Class<?> intentClass = XposedHelpers.findClass("com.zhihu.android.app.util.gl", lpparam.classLoader);
+                        Class<?> PageInfoTypeClass = XposedHelpers.findClass("com.zhihu.android.data.analytics.PageInfoType", lpparam.classLoader);
+                        Object ZHIntent = intentClass.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoTypeClass, 0));
+                        thisObject.getClass().getMethod("addFragmentToOverlay", intentClass).invoke(thisObject, ZHIntent);
+                    }
                 }
             });
 

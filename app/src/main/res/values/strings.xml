@@ -12,6 +12,9 @@
     <string name="pref_hideicon">隐藏图标</string>
     <string name="pref_hideicon_desc">隐藏启动器内的图标</string>
 
+    <string name="pref_settings">打开设置</string>
+    <string name="pref_settings_desc">跳转到知乎设置</string>
+
     <string name="pref_version">版本</string>
     <string name="pref_author">作者</string>
     <string name="pref_telegram">TG群</string>

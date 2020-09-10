@@ -13,6 +13,11 @@
             android:key="switch_hideicon"
             android:summary="@string/pref_hideicon_desc"
             android:title="@string/pref_hideicon" />
+        <Preference
+            android:icon="@drawable/ic_settings"
+            android:key="preference_settings"
+            android:summary="@string/pref_settings_desc"
+            android:title="@string/pref_settings" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about">
         <Preference

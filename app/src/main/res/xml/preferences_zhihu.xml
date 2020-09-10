@@ -18,7 +18,7 @@
             android:dependency="accept_eula"
             android:key="switch_mainswitch"
             android:title="启用知了"
-            android:summary="知了功能总开关" />
+            android:summary="知了功能总开关"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="功能">
         <com.zhihu.android.app.ui.widget.SwitchPreference
@@ -81,6 +81,10 @@
         <Preference
             android:key="preference_telegram"
             android:title="TG群"
-            android:summary="找作者对线" />
+            android:summary="找作者对线"/>
+        <Preference
+            android:key="preference_donate"
+            android:title="捐赠"
+            android:summary="快揭不开锅了 ( ≧Д≦)"/>
     </PreferenceCategory>
 </PreferenceScreen>
