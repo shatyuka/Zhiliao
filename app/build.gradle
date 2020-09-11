@@ -6,14 +6,16 @@ android {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 202009030
-        versionName "6.55.0"
+        versionCode 202009110
+        versionName "6.56.0"
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "app_version", variant.versionName
     }
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {

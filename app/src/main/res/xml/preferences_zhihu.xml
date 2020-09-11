@@ -64,11 +64,11 @@
             android:title="去回答圈子"
             android:summary="去除回答底部相关圈子"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:dependency="switch_mainswitch"
             android:key="switch_goods"
             android:title="去商品推荐"
-            android:summary="去除回答底部商品推荐（实验性）"/>
+            android:summary="去除回答底部商品推荐"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference

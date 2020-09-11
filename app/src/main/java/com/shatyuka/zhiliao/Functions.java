@@ -1,9 +1,6 @@
 package com.shatyuka.zhiliao;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -33,30 +30,9 @@ public class Functions {
 
     static boolean init(final ClassLoader classLoader) {
         try {
-            PackageManager pm = Helper.context.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo("com.zhihu.android", 0);
-            String LaunchAdInterfaceName;
-
-            switch (pi.versionCode) {
-                case 2168: //6.51.0
-                    LaunchAdInterfaceName = "com.zhihu.android.app.util.cx";
-                    break;
-                case 2186: //6.52.0
-                case 2226: //6.52.1
-                    LaunchAdInterfaceName = "com.zhihu.android.app.util.cw";
-                    break;
-                case 2244: //6.55.0
-                    LaunchAdInterfaceName = "com.zhihu.android.app.util.ct";
-                    break;
-                default:
-                    XposedBridge.log("[Zhiliao] Version not support: " + pi.versionName);
-                    return false;
-            }
-
-            Class<?> LaunchAdInterface = XposedHelpers.findClass(LaunchAdInterfaceName, classLoader);
-            XposedHelpers.findAndHookMethod(LaunchAdInterface, "isShowLaunchAd", new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.isShowLaunchAd, new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                protected void beforeHookedMethod(MethodHookParam param) {
                     if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_launchad", true))
                         param.setResult(false);
                 }
@@ -65,7 +41,7 @@ public class Functions {
             Class<?> BasePagingFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment", classLoader);
             XposedBridge.hookAllMethods(BasePagingFragment, "postRefreshSucceed", new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
                         return;
                     if (param.args[0] == null)
@@ -141,18 +117,17 @@ public class Functions {
             });
 
             Class<?> BaseAppView = XposedHelpers.findClass("com.zhihu.android.appview.a.k", classLoader);
-            XposedHelpers.findAndHookMethod(BaseAppView, "a", XposedHelpers.findClass("com.zhihu.android.app.mercury.a.i", classLoader), WebResourceRequest.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(BaseAppView, "a", Helper.IZhihuWebView, WebResourceRequest.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
                         return;
                     WebResourceRequest request = (WebResourceRequest) param.args[1];
                     List<String> segments = request.getUrl().getPathSegments();
-                    if (((Helper.prefs.getBoolean("switch_answerad", true) && segments.get(segments.size() - 1).equals("recommendations"))
+                    if (segments.size() > 2 && request.getMethod().equals("GET")
+                            && ((Helper.prefs.getBoolean("switch_answerad", true) && segments.get(segments.size() - 1).equals("recommendations"))
                             || (Helper.prefs.getBoolean("switch_club", true) && segments.get(segments.size() - 1).equals("bind_club"))
-                            || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("linkcard"))
-                            || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods")))
-                            && request.getMethod().equals("GET")) {
+                            || (Helper.prefs.getBoolean("switch_goods", true) && segments.get(segments.size() - 2).equals("goods")))) {
                         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("null\n".getBytes()));
                         response.setStatusCodeAndReasonPhrase(200, "OK");
                         param.setResult(response);
@@ -160,7 +135,7 @@ public class Functions {
                 }
             });
 
-            XposedHelpers.findAndHookMethod("com.zhihu.android.library.sharecore.fragment.ShareFragment", classLoader, "a", View.class, new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.showShareAd, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_sharead", true))
@@ -188,8 +163,8 @@ public class Functions {
             }
 
             return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodError e) {
+            XposedBridge.log("[Zhilaio] " + e.toString());
             return false;
         }
     }
