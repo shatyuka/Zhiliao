@@ -62,6 +62,12 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
+            android:key="switch_livebutton"
+            android:title="移除直播按钮"
+            android:summary="移除首页左上角直播按钮"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
             android:key="switch_video"
             android:title="过滤视频"
             android:summary="去除推荐列表内的视频"/>

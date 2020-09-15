@@ -4,6 +4,7 @@ import android.content.Context;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -98,6 +99,15 @@ public class Functions {
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_sharead", true))
                         param.setResult(null);
+                }
+            });
+
+            XposedBridge.hookAllConstructors(Helper.FeedsTabsTopEntranceManager, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_livebutton", false)) {
+                        param.args[0] = new FrameLayout(((FrameLayout) param.args[0]).getContext());
+                    }
                 }
             });
 

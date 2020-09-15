@@ -115,6 +115,7 @@ public class ZhihuPreference {
                     Object preference_telegram = Helper.findPreference.invoke(thisObject, "preference_telegram");
                     Object preference_donate = Helper.findPreference.invoke(thisObject, "preference_donate");
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
+                    Object switch_livebutton = Helper.findPreference.invoke(thisObject, "switch_livebutton");
 
                     String real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
                     String loaded_version = Helper.modRes.getString(R.string.app_version);
@@ -132,6 +133,7 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_commentad"), Helper.modRes.getDrawable(R.drawable.ic_comment));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_sharead"), Helper.modRes.getDrawable(R.drawable.ic_share));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_answerad"), Helper.modRes.getDrawable(R.drawable.ic_notes));
+                    Helper.setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_video"), Helper.modRes.getDrawable(R.drawable.ic_play_circle));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_marketcard"), Helper.modRes.getDrawable(R.drawable.ic_vip));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_club"), Helper.modRes.getDrawable(R.drawable.ic_group));
@@ -142,6 +144,7 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
 
                     Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_author, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
@@ -176,7 +179,7 @@ public class ZhihuPreference {
                         case "preference_author":
                             author_click++;
                             if (author_click == 5) {
-                                Toast.makeText(Helper.context, Helper.modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_LONG).show();
+                                Toast.makeText(Helper.context, Helper.modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_SHORT).show();
                                 author_click = 0;
                             }
                             break;
@@ -192,6 +195,9 @@ public class ZhihuPreference {
                             donate_intent.putExtra("zhiliao_donate", true);
                             donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.MainActivity");
                             ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(donate_intent);
+                            break;
+                        case "switch_livebutton":
+                            Toast.makeText(Helper.context, "重启知乎生效", Toast.LENGTH_SHORT).show();
                             break;
                     }
                     return false;

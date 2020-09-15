@@ -32,6 +32,7 @@ public class Helper {
     static Class<?> ApiTemplateRoot;
     static Class<?> DataUnique;
     static Class<?> MarketCard;
+    static Class<?> FeedsTabsTopEntranceManager;
 
     static Method findPreference;
     static Method setSummary;
@@ -70,6 +71,7 @@ public class Helper {
             ApiTemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiTemplateRoot");
             DataUnique = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique");
             MarketCard = classLoader.loadClass("com.zhihu.android.api.model.MarketCard");
+            FeedsTabsTopEntranceManager = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment").getDeclaredField("mEntranceManger").getType();
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -113,7 +115,7 @@ public class Helper {
                 throw new NoSuchMethodException("Method showShareAd not found");
 
             return true;
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
             XposedBridge.log("[Zhilaio] " + e.toString());
             return false;
         }
