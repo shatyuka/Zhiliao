@@ -48,6 +48,12 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="true"
             android:dependency="switch_mainswitch"
+            android:key="switch_commentad"
+            android:title="去评论广告"
+            android:summary="去除评论页面顶部的广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
             android:key="switch_sharead"
             android:title="去分享广告"
             android:summary="去除分享页面顶部的广告"/>

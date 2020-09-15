@@ -1,5 +1,6 @@
 package com.shatyuka.zhiliao;
 
+import android.content.Context;
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -18,11 +19,7 @@ public class Functions {
     final static boolean DEBUG_WEBVIEW = false;
 
     private static boolean shouldBlock(String classname) {
-        if (Helper.prefs.getBoolean("switch_feedad", true) && classname.equals("com.zhihu.android.api.model.FeedAdvert")) {
-            return true;
-        } else if (Helper.prefs.getBoolean("switch_marketcard", true) && classname.equals("com.zhihu.android.app.feed.ui.holder.marketcard.model.MarketCardModel")) {
-            return true;
-        } else if (Helper.prefs.getBoolean("switch_answerlistad", true) && classname.equals("com.zhihu.android.api.model.AnswerListAd")) {
+        if (Helper.prefs.getBoolean("switch_marketcard", true) && classname.equals("com.zhihu.android.app.feed.ui.holder.marketcard.model.MarketCardModel")) {
             return true;
         }
         return false;
@@ -38,8 +35,7 @@ public class Functions {
                 }
             });
 
-            Class<?> BasePagingFragment = XposedHelpers.findClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment", classLoader);
-            XposedBridge.hookAllMethods(BasePagingFragment, "postRefreshSucceed", new XC_MethodHook() {
+            XposedBridge.hookAllMethods(Helper.BasePagingFragment, "postRefreshSucceed", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
@@ -61,7 +57,7 @@ public class Functions {
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod(BasePagingFragment, "addItemAfterClearAll", Object.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "addItemAfterClearAll", Object.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
@@ -78,7 +74,7 @@ public class Functions {
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod(BasePagingFragment, "insertDataItemToList", int.class, Object.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "insertDataItemToList", int.class, Object.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
@@ -95,7 +91,7 @@ public class Functions {
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod(BasePagingFragment, "insertDataRangeToList", int.class, List.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "insertDataRangeToList", int.class, List.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
@@ -116,8 +112,34 @@ public class Functions {
                 }
             });
 
-            Class<?> BaseAppView = XposedHelpers.findClass("com.zhihu.android.appview.a.k", classLoader);
-            XposedHelpers.findAndHookMethod(BaseAppView, "a", Helper.IZhihuWebView, WebResourceRequest.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, "com.zhihu.android.api.model.FeedAdvert", boolean.class, Boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        param.setResult(false);
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveAnswerAdParam", Context.class, "com.zhihu.android.api.model.AnswerListAd", Boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
+                        param.setResult(false);
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveCommentAdParam", Context.class, "com.zhihu.android.api.model.CommentListAd", Boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_commentad", true)) {
+                        param.setResult(false);
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(Helper.BaseAppView, "a", Helper.IZhihuWebView, WebResourceRequest.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", true))
@@ -145,7 +167,7 @@ public class Functions {
 
             XposedHelpers.findAndHookMethod(java.io.File.class, "exists", new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                protected void beforeHookedMethod(MethodHookParam param) {
                     File file = (File) param.thisObject;
                     if (file.getName().equals(".allowXposed")) {
                         param.setResult(true);

@@ -25,6 +25,9 @@ public class Helper {
     static Class<?> BasePreferenceFragment;
     static Class<?> PreferenceGroup;
     static Class<?> IZhihuWebView;
+    static Class<?> BasePagingFragment;
+    static Class<?> BaseAppView;
+    static Class<?> MorphAdHelper;
 
     static Method findPreference;
     static Method setSummary;
@@ -56,6 +59,9 @@ public class Helper {
             BasePreferenceFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.BasePreferenceFragment");
             PreferenceGroup = classLoader.loadClass("androidx.preference.PreferenceGroup");
             IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.market.newhome.ui.view.VillaLayout").getDeclaredMethod("getWebView").getReturnType();
+            BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
+            BaseAppView = classLoader.loadClass("com.zhihu.android.appview.a$k");
+            MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -66,7 +72,7 @@ public class Helper {
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             getContext = BasePreferenceFragment.getMethod("getContext");
 
-            boolean foundLaunchAdInterface = false;
+            boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
                 Class<?> LaunchAdInterface = XposedHelpers.findClassIfExists("com.zhihu.android.app.util.c" + i, classLoader);
                 if (LaunchAdInterface != null) {
@@ -75,28 +81,28 @@ public class Helper {
                     } catch (NoSuchMethodException e) {
                         continue;
                     }
-                    foundLaunchAdInterface = true;
+                    foundisShowLaunchAd = true;
                     break;
                 }
             }
-            if (!foundLaunchAdInterface)
-                return false;
+            if (!foundisShowLaunchAd)
+                throw new NoSuchMethodException("Method isShowLaunchAd not found");
 
             boolean foundshowShareAd = false;
             Class<?> ShareFragment = XposedHelpers.findClassIfExists("com.zhihu.android.library.sharecore.fragment.ShareFragment", classLoader);
-            if (ShareFragment == null)
-                return false;
-            Method[] methods = ShareFragment.getDeclaredMethods();
-            for (Method method : methods) {
-                Class<?>[] types = method.getParameterTypes();
-                if (types.length == 1 && types[0] == View.class) {
-                    foundshowShareAd = true;
-                    showShareAd = method;
-                    break;
+            if (ShareFragment != null) {
+                Method[] methods = ShareFragment.getDeclaredMethods();
+                for (Method method : methods) {
+                    Class<?>[] types = method.getParameterTypes();
+                    if (types.length == 1 && types[0] == View.class) {
+                        foundshowShareAd = true;
+                        showShareAd = method;
+                        break;
+                    }
                 }
             }
-            if (!foundshowShareAd)
-                return false;
+            if (ShareFragment == null || !foundshowShareAd)
+                throw new NoSuchMethodException("Method showShareAd not found");
 
             return true;
         } catch (ClassNotFoundException | NoSuchMethodException e) {
