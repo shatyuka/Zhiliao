@@ -20,7 +20,7 @@
             android:title="启用知了"
             android:summary="知了功能总开关"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="功能">
+    <PreferenceCategory android:title="广告">
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="true"
             android:dependency="switch_mainswitch"
@@ -33,12 +33,6 @@
             android:key="switch_feedad"
             android:title="去信息流广告"
             android:summary="去除信息流内夹杂的广告"/>
-        <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="true"
-            android:dependency="switch_mainswitch"
-            android:key="switch_marketcard"
-            android:title="去信息流会员推荐"
-            android:summary="去除信息流里的会员推荐"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="true"
             android:dependency="switch_mainswitch"
@@ -63,14 +57,28 @@
             android:key="switch_answerad"
             android:title="去回答底部广告"
             android:summary="去除回答底部广告"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="其他">
         <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_video"
+            android:title="过滤视频"
+            android:summary="去除推荐列表内的视频"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_marketcard"
+            android:title="去信息流会员推荐"
+            android:summary="去除信息流里的会员推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
             android:dependency="switch_mainswitch"
             android:key="switch_club"
             android:title="去回答圈子"
             android:summary="去除回答底部相关圈子"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:dependency="switch_mainswitch"
             android:key="switch_goods"
             android:title="去商品推荐"

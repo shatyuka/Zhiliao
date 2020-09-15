@@ -28,6 +28,10 @@ public class Helper {
     static Class<?> BasePagingFragment;
     static Class<?> BaseAppView;
     static Class<?> MorphAdHelper;
+    static Class<?> InnerDeserializer;
+    static Class<?> ApiTemplateRoot;
+    static Class<?> DataUnique;
+    static Class<?> MarketCard;
 
     static Method findPreference;
     static Method setSummary;
@@ -62,6 +66,10 @@ public class Helper {
             BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
             BaseAppView = classLoader.loadClass("com.zhihu.android.appview.a$k");
             MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
+            InnerDeserializer = classLoader.loadClass("com.zhihu.android.api.util.ZHObjectRegistryCenter$InnerDeserializer");
+            ApiTemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiTemplateRoot");
+            DataUnique = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique");
+            MarketCard = classLoader.loadClass("com.zhihu.android.api.model.MarketCard");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);

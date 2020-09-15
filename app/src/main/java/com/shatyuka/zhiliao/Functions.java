@@ -1,7 +1,6 @@
 package com.shatyuka.zhiliao;
 
 import android.content.Context;
-import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -15,15 +14,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Functions {
-    final static boolean DEBUG_LOG_CARD_CLASS = false;
     final static boolean DEBUG_WEBVIEW = false;
-
-    private static boolean shouldBlock(String classname) {
-        if (Helper.prefs.getBoolean("switch_marketcard", true) && classname.equals("com.zhihu.android.app.feed.ui.holder.marketcard.model.MarketCardModel")) {
-            return true;
-        }
-        return false;
-    }
 
     static boolean init(final ClassLoader classLoader) {
         try {
@@ -35,78 +26,23 @@ public class Functions {
                 }
             });
 
-            XposedBridge.hookAllMethods(Helper.BasePagingFragment, "postRefreshSucceed", new XC_MethodHook() {
+            XposedBridge.hookAllMethods(Helper.InnerDeserializer, "deserialize", new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (!Helper.prefs.getBoolean("switch_mainswitch", true))
-                        return;
-                    if (param.args[0] == null)
-                        return;
-                    List<?> list = (List<?>) XposedHelpers.getObjectField(param.args[0], "data");
-                    if (list == null || list.isEmpty())
-                        return;
-                    if (DEBUG_LOG_CARD_CLASS)
-                        Log.d("Zhiliao", "postRefreshSucceed");
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        String classname = list.get(i).getClass().getName();
-                        if (DEBUG_LOG_CARD_CLASS)
-                            Log.d("Zhiliao", classname);
-                        if (shouldBlock(classname)) {
-                            list.remove(i);
-                        }
-                    }
-                }
-            });
-            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "addItemAfterClearAll", Object.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (!Helper.prefs.getBoolean("switch_mainswitch", true))
-                        return;
-                    if (param.args[0] == null)
-                        return;
-                    String classname = param.args[0].getClass().getName();
-                    if (DEBUG_LOG_CARD_CLASS) {
-                        Log.d("Zhiliao", "addItemAfterClearAll");
-                        Log.d("Zhiliao", classname);
-                    }
-                    if (shouldBlock(classname)) {
-                        param.setResult(null);
-                    }
-                }
-            });
-            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "insertDataItemToList", int.class, Object.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (!Helper.prefs.getBoolean("switch_mainswitch", true))
-                        return;
-                    if (param.args[1] == null)
-                        return;
-                    String classname = param.args[1].getClass().getName();
-                    if (DEBUG_LOG_CARD_CLASS) {
-                        Log.d("Zhiliao", "insertDataItemToList");
-                        Log.d("Zhiliao", classname);
-                    }
-                    if (shouldBlock(classname)) {
-                        param.setResult(null);
-                    }
-                }
-            });
-            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "insertDataRangeToList", int.class, List.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (!Helper.prefs.getBoolean("switch_mainswitch", true))
-                        return;
-                    if (param.args[1] == null)
-                        return;
-                    List<?> list = (List<?>) param.args[1];
-                    if (DEBUG_LOG_CARD_CLASS)
-                        Log.d("Zhiliao", "insertDataRangeToList");
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        String classname = list.get(i).getClass().getName();
-                        if (DEBUG_LOG_CARD_CLASS)
-                            Log.d("Zhiliao", classname);
-                        if (shouldBlock(classname)) {
-                            list.remove(i);
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true)) {
+                        Object result = param.getResult();
+                        if (result != null) {
+                            if (result.getClass() == Helper.ApiTemplateRoot) {
+                                Object extra = Helper.ApiTemplateRoot.getField("extra").get(result);
+                                String type = (String) Helper.DataUnique.getField("type").get(extra);
+                                if (Helper.prefs.getBoolean("switch_video", false) && (type.equals("zvideo") || type.equals("drama"))) {
+                                    param.setResult(null);
+                                }
+                            } else if (result.getClass() == Helper.MarketCard) {
+                                if (Helper.prefs.getBoolean("switch_marketcard", false)) {
+                                    param.setResult(null);
+                                }
+                            }
                         }
                     }
                 }
@@ -148,8 +84,8 @@ public class Functions {
                     List<String> segments = request.getUrl().getPathSegments();
                     if (segments.size() > 2 && request.getMethod().equals("GET")
                             && ((Helper.prefs.getBoolean("switch_answerad", true) && segments.get(segments.size() - 1).equals("recommendations"))
-                            || (Helper.prefs.getBoolean("switch_club", true) && segments.get(segments.size() - 1).equals("bind_club"))
-                            || (Helper.prefs.getBoolean("switch_goods", true) && segments.get(segments.size() - 2).equals("goods")))) {
+                            || (Helper.prefs.getBoolean("switch_club", false) && segments.get(segments.size() - 1).equals("bind_club"))
+                            || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods")))) {
                         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("null\n".getBytes()));
                         response.setStatusCodeAndReasonPhrase(200, "OK");
                         param.setResult(response);
