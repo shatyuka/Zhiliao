@@ -3,14 +3,23 @@ package com.shatyuka.zhiliao;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceViewHolder;
 
 public class PreferenceDonate extends Preference {
+    public static class DonateFragment extends PreferenceFragmentCompat {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_donate, rootKey);
+        }
+    }
+
     public PreferenceDonate(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
@@ -26,7 +35,7 @@ public class PreferenceDonate extends Preference {
 
         View wechat = holder.findViewById(R.id.imageView_wechat);
         wechat.setClickable(true);
-        wechat.setOnClickListener(new View.OnClickListener(){
+        wechat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "微信太傻了，只能截图扫码", Toast.LENGTH_SHORT).show();
@@ -35,7 +44,7 @@ public class PreferenceDonate extends Preference {
 
         View alipay = holder.findViewById(R.id.imageView_alipay);
         alipay.setClickable(true);
-        alipay.setOnClickListener(new View.OnClickListener(){
+        alipay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri uri = Uri.parse("https://qr.alipay.com/tsx01093z70808xrukdy2f6");

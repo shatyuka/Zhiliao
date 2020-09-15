@@ -39,8 +39,7 @@
             android:key="preference_donate"
             android:title="@string/pref_donate"
             app:icon="@drawable/ic_monetization"
-            app:summary="@string/pref_donate_desc"
-            app:fragment="com.shatyuka.zhiliao.DonateFragment"/>
+            app:summary="@string/pref_donate_desc" />
         <Preference
             android:key="preference_footer"
             android:layout="@layout/layout_footer"

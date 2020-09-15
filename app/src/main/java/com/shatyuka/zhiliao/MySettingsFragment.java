@@ -145,5 +145,18 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
+        Preference preference_donate = findPreference("preference_donate");
+        assert preference_donate != null;
+        preference_donate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.preferences_container, new PreferenceDonate.DonateFragment())
+                        .commit();
+                return true;
+            }
+        });
     }
 }

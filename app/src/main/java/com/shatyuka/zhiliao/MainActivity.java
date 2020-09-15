@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         Fragment fragment;
         if (intent.hasExtra("zhiliao_donate"))
-            fragment = new DonateFragment();
+            fragment = new PreferenceDonate.DonateFragment();
         else
             fragment = new MySettingsFragment();
         getSupportFragmentManager()
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements
         if (intent.hasExtra("zhiliao_donate"))
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.preferences_container, new DonateFragment())
+                    .replace(R.id.preferences_container, new PreferenceDonate.DonateFragment())
                     .commit();
     }
 

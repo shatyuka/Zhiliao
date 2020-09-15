@@ -20,7 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep public class com.shatyuka.zhiliao.*
+-keep public class com.shatyuka.zhiliao.MainHook
+-keep public class com.shatyuka.zhiliao.MySettingsFragment
 -keepclassmembers class com.shatyuka.zhiliao.MySettingsFragment {
   private boolean isModuleActive();
 }
