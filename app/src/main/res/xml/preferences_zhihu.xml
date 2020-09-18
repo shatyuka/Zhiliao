@@ -90,6 +90,20 @@
             android:title="去商品推荐"
             android:summary="去除回答底部商品推荐"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="自定义过滤">
+        <EditTextPreference
+            android:key="edit_title"
+            android:title="标题"
+            android:summary="支持正则表达式，留空为忽略"/>
+        <EditTextPreference
+            android:key="edit_author"
+            android:title="作者"
+            android:summary="支持正则表达式，留空为忽略"/>
+        <EditTextPreference
+            android:key="edit_content"
+            android:title="内容"
+            android:summary="支持正则表达式，留空为忽略"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
             android:key="preference_version"

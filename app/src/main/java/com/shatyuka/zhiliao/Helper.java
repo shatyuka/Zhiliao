@@ -6,7 +6,10 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -33,17 +36,28 @@ public class Helper {
     static Class<?> DataUnique;
     static Class<?> MarketCard;
     static Class<?> FeedsTabsTopEntranceManager;
+    static Class<?> ApiFeedContent;
+    static Class<?> ApiText;
+    static Class<?> EditTextPreference;
 
     static Method findPreference;
     static Method setSummary;
     static Method setIcon;
+    static Method getKey;
     static Method setOnPreferenceChangeListener;
     static Method setOnPreferenceClickListener;
     static Method addFragmentToOverlay;
     static Method setSharedPreferencesName;
     static Method getContext;
+    static Method getText;
     static Method isShowLaunchAd;
     static Method showShareAd;
+
+    static Field panel_text;
+
+    static Pattern regex_title;
+    static Pattern regex_author;
+    static Pattern regex_content;
 
     static Context context;
     static SharedPreferences prefs;
@@ -72,15 +86,20 @@ public class Helper {
             DataUnique = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique");
             MarketCard = classLoader.loadClass("com.zhihu.android.api.model.MarketCard");
             FeedsTabsTopEntranceManager = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment").getDeclaredField("mEntranceManger").getType();
+            ApiFeedContent = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiFeedContent");
+            ApiText = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiText");
+            EditTextPreference = classLoader.loadClass("androidx.preference.EditTextPreference");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
             setIcon = Preference.getMethod("a", Drawable.class);
+            getKey = Preference.getMethod("C");
             setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
             setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
             addFragmentToOverlay = MainActivity.getMethod("addFragmentToOverlay", ZHIntent);
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             getContext = BasePreferenceFragment.getMethod("getContext");
+            getText = EditTextPreference.getMethod("i");
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
@@ -114,10 +133,26 @@ public class Helper {
             if (ShareFragment == null || !foundshowShareAd)
                 throw new NoSuchMethodException("Method showShareAd not found");
 
+            panel_text = ApiText.getField("panel_text");
+
+            regex_title = compileRegex(prefs.getString("edit_title", ""));
+            regex_author = compileRegex(prefs.getString("edit_author", ""));
+            regex_content = compileRegex(prefs.getString("edit_content", ""));
+
             return true;
         } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
             XposedBridge.log("[Zhilaio] " + e.toString());
             return false;
+        }
+    }
+
+    static Pattern compileRegex(String regex) {
+        if (regex == null || regex.isEmpty()) {
+            return null;
+        } else try {
+            return Pattern.compile(regex);
+        } catch (PatternSyntaxException ignore) {
+            return null;
         }
     }
 }

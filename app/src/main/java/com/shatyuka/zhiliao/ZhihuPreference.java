@@ -138,6 +138,9 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_marketcard"), Helper.modRes.getDrawable(R.drawable.ic_vip));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_club"), Helper.modRes.getDrawable(R.drawable.ic_group));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_goods"), Helper.modRes.getDrawable(R.drawable.ic_local_mall));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_title"), Helper.regex_title != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_author"), Helper.regex_author != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_content"), Helper.regex_content != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
                     Helper.setIcon.invoke(preference_version, Helper.modRes.getDrawable(R.drawable.ic_info));
                     Helper.setIcon.invoke(preference_author, Helper.modRes.getDrawable(R.drawable.ic_person));
                     Helper.setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
@@ -164,8 +167,7 @@ public class ZhihuPreference {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     Object preference = param.args[0];
-                    String key = (String) preference.getClass().getMethod("C").invoke(preference);
-                    switch (key) {
+                    switch ((String) Helper.getKey.invoke(preference)) {
                         case "preference_status":
                             System.exit(0);
                             break;
@@ -213,6 +215,26 @@ public class ZhihuPreference {
                         category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
                     }
                     return true;
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.EditTextPreference, "a", String.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
+                    switch ((String) Helper.getKey.invoke(thisObject)) {
+                        case "edit_title":
+                            Helper.regex_title = Helper.compileRegex((String) Helper.getText.invoke(thisObject));
+                            Helper.setIcon.invoke(thisObject, Helper.regex_title != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
+                            break;
+                        case "edit_author":
+                            Helper.regex_author = Helper.compileRegex((String) Helper.getText.invoke(thisObject));
+                            Helper.setIcon.invoke(thisObject, Helper.regex_author != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
+                            break;
+                        case "edit_content":
+                            Helper.regex_content = Helper.compileRegex((String) Helper.getText.invoke(thisObject));
+                            Helper.setIcon.invoke(thisObject, Helper.regex_content != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
+                            break;
+                    }
                 }
             });
 

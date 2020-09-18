@@ -32,14 +32,37 @@ public class Functions {
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (Helper.prefs.getBoolean("switch_mainswitch", true)) {
                         Object result = param.getResult();
+                        if (result == null)
+                            return;
+                        Class<?> resultClass = result.getClass();
                         if (result != null) {
-                            if (result.getClass() == Helper.ApiTemplateRoot) {
+                            if (resultClass == Helper.ApiTemplateRoot) {
                                 Object extra = Helper.ApiTemplateRoot.getField("extra").get(result);
                                 String type = (String) Helper.DataUnique.getField("type").get(extra);
                                 if (Helper.prefs.getBoolean("switch_video", false) && (type.equals("zvideo") || type.equals("drama"))) {
                                     param.setResult(null);
+                                } else {
+                                    if (Helper.regex_title == null && Helper.regex_author == null && Helper.regex_content == null)
+                                        return;
+                                    Object common_card = resultClass.getField("common_card").get(result);
+                                    Object feed_content = common_card.getClass().getField("feed_content").get(common_card);
+                                    if (feed_content == null)
+                                        return;
+                                    Object title = Helper.ApiFeedContent.getField("title").get(feed_content);
+                                    Object content = Helper.ApiFeedContent.getField("content").get(feed_content);
+                                    Object sourceLine = Helper.ApiFeedContent.getField("sourceLine").get(feed_content);
+                                    List elements = (List) sourceLine.getClass().getField("elements").get(sourceLine);
+                                    Object author = elements.get(1).getClass().getField("text").get(elements.get(1));
+                                    String title_str = (String) Helper.panel_text.get(title);
+                                    String author_str = (String) Helper.panel_text.get(author);
+                                    String content_str = (String) Helper.panel_text.get(content);
+                                    if ((Helper.regex_title != null && Helper.regex_title.matcher(title_str).find()) ||
+                                            (Helper.regex_author != null && Helper.regex_author.matcher(author_str).find()) ||
+                                            (Helper.regex_content != null && Helper.regex_content.matcher(content_str).find())) {
+                                        param.setResult(null);
+                                    }
                                 }
-                            } else if (result.getClass() == Helper.MarketCard) {
+                            } else if (resultClass == Helper.MarketCard) {
                                 if (Helper.prefs.getBoolean("switch_marketcard", false)) {
                                     param.setResult(null);
                                 }
