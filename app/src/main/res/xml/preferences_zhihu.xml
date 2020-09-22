@@ -90,6 +90,20 @@
             android:title="去商品推荐"
             android:summary="去除回答底部商品推荐"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="左右划">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_horizontal"
+            android:title="左右划切换回答"
+            android:summary="先凑合用吧 ＞﹏＜"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_nextanswer"
+            android:title="移除下一个回答按钮"
+            android:summary="多余的按钮"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="自定义过滤">
         <EditTextPreference
             android:key="edit_title"

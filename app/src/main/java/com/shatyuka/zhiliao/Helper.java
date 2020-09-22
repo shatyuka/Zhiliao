@@ -39,6 +39,13 @@ public class Helper {
     static Class<?> ApiFeedContent;
     static Class<?> ApiText;
     static Class<?> EditTextPreference;
+    static Class<?> ActionSheetLayout;
+    static Class<?> NestChildScrollChange;
+    static Class<?> NextBtnClickListener;
+    static Class<?> DirectionBoundView;
+    static Class<?> VerticalPageTransformer;
+    static Class<?> AnswerContentView;
+    static Class<?> AnswerPagerFragment;
 
     static Method findPreference;
     static Method setSummary;
@@ -52,6 +59,7 @@ public class Helper {
     static Method getText;
     static Method isShowLaunchAd;
     static Method showShareAd;
+    static Method onNestChildScrollRelease;
 
     static Field panel_text;
 
@@ -89,6 +97,13 @@ public class Helper {
             ApiFeedContent = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiFeedContent");
             ApiText = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiText");
             EditTextPreference = classLoader.loadClass("androidx.preference.EditTextPreference");
+            ActionSheetLayout = classLoader.loadClass("com.zhihu.android.content.widget.ActionSheetLayout");
+            NestChildScrollChange = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNestChildScrollChange$1");
+            NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
+            DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
+            VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
+            AnswerContentView = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView");
+            AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -100,6 +115,7 @@ public class Helper {
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             getContext = BasePreferenceFragment.getMethod("getContext");
             getText = EditTextPreference.getMethod("i");
+            onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
@@ -140,8 +156,8 @@ public class Helper {
             regex_content = compileRegex(prefs.getString("edit_content", ""));
 
             return true;
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
-            XposedBridge.log("[Zhilaio] " + e.toString());
+        } catch (Exception e) {
+            XposedBridge.log("[Zhiliao] " + e.toString());
             return false;
         }
     }

@@ -1,6 +1,8 @@
 package com.shatyuka.zhiliao;
 
 import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -8,14 +10,18 @@ import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Functions {
     final static boolean DEBUG_WEBVIEW = false;
+
+    static boolean horizontal = false;
 
     static boolean init(final ClassLoader classLoader) {
         try {
@@ -144,6 +150,104 @@ public class Functions {
                 }
             });
 
+            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_horizontal", false)) {
+                XposedHelpers.findAndHookMethod(Helper.ActionSheetLayout, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
+                    float old_x = 0;
+                    float old_y = 0;
+
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        MotionEvent e = (MotionEvent) param.args[0];
+                        switch (e.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                old_x = e.getX();
+                                old_y = e.getY();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                float dx = e.getX() - old_x;
+                                float dy = e.getY() - old_y;
+                                if (Math.abs(dx) > 300 && Math.abs(dy) < 100) {
+                                    Field List = param.thisObject.getClass().getDeclaredField("z");
+                                    List.setAccessible(true);
+                                    for (Object callback : (List) List.get(param.thisObject)) {
+                                        if (callback.getClass() == Helper.NestChildScrollChange) {
+                                            Helper.onNestChildScrollRelease.invoke(callback, dx, 5201314);
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                });
+                XposedHelpers.findAndHookMethod(Helper.VerticalPageTransformer, "transformPage", View.class, float.class, new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam param) {
+                        View view = (View) param.args[0];
+                        float position = (float) param.args[1];
+                        if (horizontal) {
+                            if (position < -1) {
+                                view.setAlpha(0);
+                            } else if (position <= 1) {
+                                view.setAlpha(1);
+                                view.setTranslationX(0);
+                                view.setTranslationY(0);
+                            } else {
+                                view.setAlpha(0);
+                            }
+                        } else {
+                            int width = view.getWidth();
+                            int height = view.getHeight();
+                            if (position < -1) {
+                                view.setAlpha(0);
+                            } else if (position <= 1) {
+                                view.setAlpha(1);
+                                view.setTranslationX(width * -position);
+                                view.setTranslationY(height * position);
+                            } else {
+                                view.setAlpha(0);
+                            }
+                        }
+                        return null;
+                    }
+                });
+                XposedHelpers.findAndHookMethod(Helper.NestChildScrollChange, "onNestChildScrollRelease", float.class, int.class, new XC_MethodHook() {
+                    XC_MethodHook.Unhook hook_isReadyPageTurning;
+
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        if ((int) param.args[1] == 5201314) {
+                            hook_isReadyPageTurning = XposedHelpers.findAndHookMethod(Helper.DirectionBoundView, "isReadyPageTurning", XC_MethodReplacement.returnConstant(true));
+                            horizontal = true;
+                        } else {
+                            horizontal = false;
+                        }
+                    }
+
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        if (hook_isReadyPageTurning != null) {
+                            hook_isReadyPageTurning.unhook();
+                        }
+                    }
+                });
+                XposedHelpers.findAndHookMethod(Helper.NextBtnClickListener, "onClick", View.class, new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        horizontal = false;
+                    }
+                });
+                XposedHelpers.findAndHookMethod(Helper.AnswerContentView, "showNextAnswer", new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        horizontal = false;
+                    }
+                });
+            }
+
+            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
+                XposedHelpers.findAndHookMethod(Helper.AnswerPagerFragment, "setupNextAnswerBtn", XC_MethodReplacement.returnConstant(null));
+            }
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
@@ -154,8 +258,8 @@ public class Functions {
             }
 
             return true;
-        } catch (NoSuchMethodError e) {
-            XposedBridge.log("[Zhilaio] " + e.toString());
+        } catch (Exception e) {
+            XposedBridge.log("[Zhiliao] " + e.toString());
             return false;
         }
     }
