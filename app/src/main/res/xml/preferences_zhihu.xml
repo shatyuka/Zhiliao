@@ -62,12 +62,6 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
-            android:key="switch_livebutton"
-            android:title="移除直播按钮"
-            android:summary="移除首页左上角直播按钮"/>
-        <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="false"
-            android:dependency="switch_mainswitch"
             android:key="switch_video"
             android:title="过滤视频"
             android:summary="去除推荐列表内的视频"/>
@@ -89,6 +83,20 @@
             android:key="switch_goods"
             android:title="去商品推荐"
             android:summary="去除回答底部商品推荐"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="界面净化">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_livebutton"
+            android:title="移除直播按钮"
+            android:summary="移除首页左上角直播按钮"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_reddot"
+            android:title="不显示小红点"
+            android:summary="强迫症福音"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划">
         <com.zhihu.android.app.ui.widget.SwitchPreference

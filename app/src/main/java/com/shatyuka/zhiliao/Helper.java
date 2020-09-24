@@ -46,6 +46,13 @@ public class Helper {
     static Class<?> VerticalPageTransformer;
     static Class<?> AnswerContentView;
     static Class<?> AnswerPagerFragment;
+    static Class<?> FeedsTabsFragment;
+    static Class<?> FeedFollowAvatarCommonViewHolder;
+    static Class<?> ZHMainTabLayout;
+    static Class<?> BottomNavMenuItemView;
+    static Class<?> BottomNavMenuItemViewForIconOnly;
+    static Class<?> NotiUnreadCountKt;
+    static Class<?> NotiMsgModel;
 
     static Method findPreference;
     static Method setSummary;
@@ -104,6 +111,13 @@ public class Helper {
             VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
             AnswerContentView = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView");
             AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
+            FeedsTabsFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment");
+            FeedFollowAvatarCommonViewHolder = classLoader.loadClass("com.zhihu.android.moments.viewholders.FeedFollowAvatarCommonViewHolder");
+            ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
+            BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
+            BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
+            NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
+            NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
