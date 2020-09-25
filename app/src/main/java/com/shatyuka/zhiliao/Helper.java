@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.View;
 
 import java.lang.reflect.Field;
@@ -53,6 +54,7 @@ public class Helper {
     static Class<?> BottomNavMenuItemViewForIconOnly;
     static Class<?> NotiUnreadCountKt;
     static Class<?> NotiMsgModel;
+    static Class<?> LinkZhihuHelper;
 
     static Method findPreference;
     static Method setSummary;
@@ -67,6 +69,7 @@ public class Helper {
     static Method isShowLaunchAd;
     static Method showShareAd;
     static Method onNestChildScrollRelease;
+    static Method isLinkZhihu;
 
     static Field panel_text;
 
@@ -118,6 +121,7 @@ public class Helper {
             BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
             NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
             NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
+            LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -130,6 +134,7 @@ public class Helper {
             getContext = BasePreferenceFragment.getMethod("getContext");
             getText = EditTextPreference.getMethod("i");
             onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
+            isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {

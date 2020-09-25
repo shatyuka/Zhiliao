@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -257,6 +258,27 @@ public class Functions {
                 XposedHelpers.findAndHookMethod(Helper.NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
                 XposedHelpers.findAndHookMethod(Helper.NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
             }
+
+            XposedHelpers.findAndHookMethod(Helper.LinkZhihuHelper, "a", "com.zhihu.android.app.mercury.api.c", "com.zhihu.android.app.mercury.api.IZhihuWebView", String.class, new XC_MethodHook() {
+                XC_MethodHook.Unhook hook_isLinkZhihu;
+
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_externlink", false)) {
+                        String url = (String) param.args[2];
+                        if (url.startsWith("https://link.zhihu.com/?target=")) {
+                            param.args[2] = URLDecoder.decode(url.substring(31), "utf-8");
+                            hook_isLinkZhihu = XposedBridge.hookMethod(Helper.isLinkZhihu, XC_MethodReplacement.returnConstant(true));
+                        }
+                    }
+                }
+
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    if (hook_isLinkZhihu != null)
+                        hook_isLinkZhihu.unhook();
+                }
+            });
 
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {

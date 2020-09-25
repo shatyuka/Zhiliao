@@ -83,6 +83,12 @@
             android:key="switch_goods"
             android:title="去商品推荐"
             android:summary="去除回答底部商品推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_externlink"
+            android:title="直接打开外部链接"
+            android:summary="无需再次确认"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化">
         <com.zhihu.android.app.ui.widget.SwitchPreference
