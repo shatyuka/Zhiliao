@@ -109,6 +109,12 @@
             android:key="switch_vipbanner"
             android:title="隐藏会员卡片"
             android:summary="隐藏「我的」页面会员卡片"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_vipnav"
+            android:title="隐藏会员按钮"
+            android:summary="隐藏导航栏会员按钮"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划">
         <com.zhihu.android.app.ui.widget.SwitchPreference

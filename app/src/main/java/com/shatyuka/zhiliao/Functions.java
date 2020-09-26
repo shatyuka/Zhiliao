@@ -297,6 +297,15 @@ public class Functions {
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
             }
 
+            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_vipnav", false)) {
+                XposedHelpers.findAndHookMethod(Helper.BottomNavDelegation, "r", new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        ((List) Helper.navList.get(param.thisObject)).remove(1);
+                    }
+                });
+            }
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override

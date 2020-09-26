@@ -56,6 +56,7 @@ public class Helper {
     static Class<?> NotiMsgModel;
     static Class<?> LinkZhihuHelper;
     static Class<?> VipEntranceView;
+    static Class<?> BottomNavDelegation;
 
     static Method findPreference;
     static Method setSummary;
@@ -73,6 +74,7 @@ public class Helper {
     static Method isLinkZhihu;
 
     static Field panel_text;
+    static Field navList;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -124,6 +126,7 @@ public class Helper {
             NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
             LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
             VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
+            BottomNavDelegation = classLoader.loadClass("com.zhihu.android.app.i.a");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -171,6 +174,8 @@ public class Helper {
                 throw new NoSuchMethodException("Method showShareAd not found");
 
             panel_text = ApiText.getField("panel_text");
+            navList = Helper.BottomNavDelegation.getDeclaredField("e");
+            navList.setAccessible(true);
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
