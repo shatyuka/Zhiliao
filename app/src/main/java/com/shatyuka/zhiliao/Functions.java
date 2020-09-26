@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -170,10 +169,8 @@ public class Functions {
                             case MotionEvent.ACTION_UP:
                                 float dx = e.getX() - old_x;
                                 float dy = e.getY() - old_y;
-                                if (Math.abs(dx) > 300 && Math.abs(dy) < 100) {
-                                    Field List = param.thisObject.getClass().getDeclaredField("z");
-                                    List.setAccessible(true);
-                                    for (Object callback : (List) List.get(param.thisObject)) {
+                                if (Math.abs(dx) > Helper.width && Math.abs(dy) < Helper.height) {
+                                    for (Object callback : (List) Helper.callbackList.get(param.thisObject)) {
                                         if (callback.getClass() == Helper.NestChildScrollChange) {
                                             Helper.onNestChildScrollRelease.invoke(callback, dx, 5201314);
                                         }
@@ -188,28 +185,14 @@ public class Functions {
                     protected Object replaceHookedMethod(MethodHookParam param) {
                         View view = (View) param.args[0];
                         float position = (float) param.args[1];
-                        if (horizontal) {
-                            if (position < -1) {
-                                view.setAlpha(0);
-                            } else if (position <= 1) {
-                                view.setAlpha(1);
-                                view.setTranslationX(0);
-                                view.setTranslationY(0);
-                            } else {
-                                view.setAlpha(0);
-                            }
+                        if (position < -1) {
+                            view.setAlpha(0);
+                        } else if (position <= 1) {
+                            view.setAlpha(1);
+                            view.setTranslationX(horizontal ? 0 : view.getWidth() * -position);
+                            view.setTranslationY(horizontal ? 0 : view.getHeight() * position);
                         } else {
-                            int width = view.getWidth();
-                            int height = view.getHeight();
-                            if (position < -1) {
-                                view.setAlpha(0);
-                            } else if (position <= 1) {
-                                view.setAlpha(1);
-                                view.setTranslationX(width * -position);
-                                view.setTranslationY(height * position);
-                            } else {
-                                view.setAlpha(0);
-                            }
+                            view.setAlpha(0);
                         }
                         return null;
                     }
@@ -220,7 +203,7 @@ public class Functions {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
                         if ((int) param.args[1] == 5201314) {
-                            hook_isReadyPageTurning = XposedHelpers.findAndHookMethod(Helper.DirectionBoundView, "isReadyPageTurning", XC_MethodReplacement.returnConstant(true));
+                            hook_isReadyPageTurning = XposedBridge.hookMethod(Helper.isReadyPageTurning, XC_MethodReplacement.returnConstant(true));
                             horizontal = true;
                         } else {
                             horizontal = false;

@@ -72,13 +72,18 @@ public class Helper {
     static Method showShareAd;
     static Method onNestChildScrollRelease;
     static Method isLinkZhihu;
+    static Method isReadyPageTurning;
 
     static Field panel_text;
     static Field navList;
+    static Field callbackList;
 
     static Pattern regex_title;
     static Pattern regex_author;
     static Pattern regex_content;
+
+    static int width;
+    static int height;
 
     static Context context;
     static SharedPreferences prefs;
@@ -140,6 +145,7 @@ public class Helper {
             getText = EditTextPreference.getMethod("i");
             onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
             isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
@@ -176,10 +182,15 @@ public class Helper {
             panel_text = ApiText.getField("panel_text");
             navList = Helper.BottomNavDelegation.getDeclaredField("e");
             navList.setAccessible(true);
+            callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
+            callbackList.setAccessible(true);
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
             regex_content = compileRegex(prefs.getString("edit_content", ""));
+
+            height = (int) (context.getResources().getDisplayMetrics().density * 160);
+            width = height / 2;
 
             return true;
         } catch (Exception e) {
