@@ -117,6 +117,7 @@ public class ZhihuPreference {
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
                     Object switch_livebutton = Helper.findPreference.invoke(thisObject, "switch_livebutton");
                     Object switch_reddot = Helper.findPreference.invoke(thisObject, "switch_reddot");
+                    Object switch_vipbanner = Helper.findPreference.invoke(thisObject, "switch_vipbanner");
                     Object switch_horizontal = Helper.findPreference.invoke(thisObject, "switch_horizontal");
                     Object switch_nextanswer = Helper.findPreference.invoke(thisObject, "switch_nextanswer");
 
@@ -143,6 +144,7 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_externlink"), Helper.modRes.getDrawable(R.drawable.ic_link));
                     Helper.setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                     Helper.setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
+                    Helper.setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
                     Helper.setIcon.invoke(switch_horizontal, Helper.modRes.getDrawable(R.drawable.ic_swap_horiz));
                     Helper.setIcon.invoke(switch_nextanswer, Helper.modRes.getDrawable(R.drawable.ic_circle_down));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_title"), Helper.regex_title != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
@@ -156,6 +158,7 @@ public class ZhihuPreference {
                     Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
@@ -210,6 +213,7 @@ public class ZhihuPreference {
                             break;
                         case "switch_livebutton":
                         case "switch_reddot":
+                        case "switch_vipbanner":
                         case "switch_horizontal":
                         case "switch_nextanswer":
                             Toast.makeText(Helper.context, "重启知乎生效", Toast.LENGTH_SHORT).show();

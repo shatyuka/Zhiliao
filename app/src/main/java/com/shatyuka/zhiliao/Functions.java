@@ -1,8 +1,11 @@
 package com.shatyuka.zhiliao;
 
 import android.content.Context;
+import android.content.res.XmlResourceParser;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -279,6 +282,20 @@ public class Functions {
                         hook_isLinkZhihu.unhook();
                 }
             });
+
+            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_vipbanner", false)) {
+                XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "a", Context.class, new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam param) {
+                        XmlResourceParser layout_vipentranceview = Helper.modRes.getLayout(R.layout.layout_vipentranceview);
+                        LayoutInflater.from((Context) param.args[0]).inflate(layout_vipentranceview, (ViewGroup) param.thisObject);
+                        return null;
+                    }
+                });
+                XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "setData", "com.zhihu.android.api.model.VipInfo", XC_MethodReplacement.returnConstant(null));
+                XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "onClick", View.class, XC_MethodReplacement.returnConstant(null));
+                XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
+            }
 
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {

@@ -103,6 +103,12 @@
             android:key="switch_reddot"
             android:title="不显示小红点"
             android:summary="强迫症福音"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_vipbanner"
+            android:title="隐藏会员卡片"
+            android:summary="隐藏「我的」页面会员卡片"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划">
         <com.zhihu.android.app.ui.widget.SwitchPreference

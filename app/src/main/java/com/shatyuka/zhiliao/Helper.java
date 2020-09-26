@@ -55,6 +55,7 @@ public class Helper {
     static Class<?> NotiUnreadCountKt;
     static Class<?> NotiMsgModel;
     static Class<?> LinkZhihuHelper;
+    static Class<?> VipEntranceView;
 
     static Method findPreference;
     static Method setSummary;
@@ -122,6 +123,7 @@ public class Helper {
             NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
             NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
             LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
+            VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
