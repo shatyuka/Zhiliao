@@ -31,6 +31,11 @@
             app:icon="@drawable/ic_person"
             app:summary="Shatyuka" />
         <Preference
+            android:key="preference_channel"
+            android:title="@string/pref_channel"
+            app:icon="@drawable/ic_rss_feed"
+            app:summary="@string/pref_channel_desc" />
+        <Preference
             android:key="preference_telegram"
             android:title="@string/pref_telegram"
             app:icon="@drawable/ic_telegram"

@@ -20,7 +20,7 @@
             android:title="启用知了"
             android:summary="知了功能总开关"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="广告">
+    <PreferenceCategory android:title="广告" android:key="category_ads">
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="true"
             android:dependency="switch_mainswitch"
@@ -58,7 +58,7 @@
             android:title="去回答底部广告"
             android:summary="去除回答底部广告"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="其他">
+    <PreferenceCategory android:title="其他" android:key="category_misc">
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
@@ -90,7 +90,7 @@
             android:title="直接打开外部链接"
             android:summary="无需再次确认"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="界面净化">
+    <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
@@ -116,7 +116,7 @@
             android:title="隐藏会员按钮"
             android:summary="隐藏导航栏会员按钮"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="左右划">
+    <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
@@ -130,16 +130,19 @@
             android:title="移除下一个回答按钮"
             android:summary="多余的按钮"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="自定义过滤">
+    <PreferenceCategory android:title="自定义过滤" android:key="category_filter">
         <EditTextPreference
+            android:dependency="switch_mainswitch"
             android:key="edit_title"
             android:title="标题"
             android:summary="支持正则表达式，留空为忽略"/>
         <EditTextPreference
+            android:dependency="switch_mainswitch"
             android:key="edit_author"
             android:title="作者"
             android:summary="支持正则表达式，留空为忽略"/>
         <EditTextPreference
+            android:dependency="switch_mainswitch"
             android:key="edit_content"
             android:title="内容"
             android:summary="支持正则表达式，留空为忽略"/>
@@ -152,6 +155,10 @@
             android:key="preference_author"
             android:title="作者"
             android:summary="Shatyuka"/>
+        <Preference
+            android:key="preference_channel"
+            android:title="TG频道"
+            android:summary="订阅频道，及时获取更新"/>
         <Preference
             android:key="preference_telegram"
             android:title="TG群"

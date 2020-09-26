@@ -61,6 +61,7 @@ public class Helper {
     static Method findPreference;
     static Method setSummary;
     static Method setIcon;
+    static Method setVisible;
     static Method getKey;
     static Method setOnPreferenceChangeListener;
     static Method setOnPreferenceClickListener;
@@ -136,6 +137,7 @@ public class Helper {
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
             setIcon = Preference.getMethod("a", Drawable.class);
+            setVisible = Preference.getMethod("c", boolean.class);
             getKey = Preference.getMethod("C");
             setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
             setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);

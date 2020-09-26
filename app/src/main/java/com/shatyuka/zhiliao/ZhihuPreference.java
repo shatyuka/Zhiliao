@@ -112,6 +112,7 @@ public class ZhihuPreference {
                     Object thisObject = param.thisObject;
                     Object preference_version = Helper.findPreference.invoke(thisObject, "preference_version");
                     Object preference_author = Helper.findPreference.invoke(thisObject, "preference_author");
+                    Object preference_channel = Helper.findPreference.invoke(thisObject, "preference_channel");
                     Object preference_telegram = Helper.findPreference.invoke(thisObject, "preference_telegram");
                     Object preference_donate = Helper.findPreference.invoke(thisObject, "preference_donate");
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
@@ -122,13 +123,40 @@ public class ZhihuPreference {
                     Object switch_horizontal = Helper.findPreference.invoke(thisObject, "switch_horizontal");
                     Object switch_nextanswer = Helper.findPreference.invoke(thisObject, "switch_nextanswer");
 
+                    Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_vipnav, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_author, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_channel, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_donate, thisObject);
+
                     String real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
                     String loaded_version = Helper.modRes.getString(R.string.app_version);
                     Helper.setSummary.invoke(preference_version, loaded_version);
-                    if (loaded_version.equals(real_version))
-                        preference_status.getClass().getMethod("c", boolean.class).invoke(preference_status, false);
-                    else
+                    if (loaded_version.equals(real_version)) {
+                        Helper.setVisible.invoke(preference_status, false);
+                    } else {
                         Helper.setOnPreferenceClickListener.invoke(preference_status, thisObject);
+                        Object category_eula = Helper.findPreference.invoke(thisObject, "category_eula");
+                        Object category_ads = Helper.findPreference.invoke(thisObject, "category_ads");
+                        Object category_misc = Helper.findPreference.invoke(thisObject, "category_misc");
+                        Object category_ui = Helper.findPreference.invoke(thisObject, "category_ui");
+                        Object category_swap_answers = Helper.findPreference.invoke(thisObject, "category_swap_answers");
+                        Object category_filter = Helper.findPreference.invoke(thisObject, "category_filter");
+                        Helper.setVisible.invoke(category_eula, false);
+                        Helper.setVisible.invoke(category_ads, false);
+                        Helper.setVisible.invoke(category_misc, false);
+                        Helper.setVisible.invoke(category_ui, false);
+                        Helper.setVisible.invoke(category_swap_answers, false);
+                        Helper.setVisible.invoke(category_filter, false);
+                        return null;
+                    }
 
                     Helper.setIcon.invoke(preference_status, Helper.modRes.getDrawable(R.drawable.ic_refresh));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_mainswitch"), Helper.modRes.getDrawable(R.drawable.ic_toggle_on));
@@ -154,24 +182,13 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_content"), Helper.regex_content != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
                     Helper.setIcon.invoke(preference_version, Helper.modRes.getDrawable(R.drawable.ic_info));
                     Helper.setIcon.invoke(preference_author, Helper.modRes.getDrawable(R.drawable.ic_person));
+                    Helper.setIcon.invoke(preference_channel, Helper.modRes.getDrawable(R.drawable.ic_rss_feed));
                     Helper.setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
                     Helper.setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
 
-                    Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_vipnav, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(preference_author, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
-                    Helper.setOnPreferenceClickListener.invoke(preference_donate, thisObject);
-
                     if (Helper.prefs.getBoolean("accept_eula", false)) {
                         Object category_eula = Helper.findPreference.invoke(thisObject, "category_eula");
-                        category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                        Helper.setVisible.invoke(category_eula, false);
                     } else {
                         Object switch_main = Helper.findPreference.invoke(param.thisObject, "switch_mainswitch");
                         switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, false);
@@ -200,6 +217,11 @@ public class ZhihuPreference {
                                 Toast.makeText(Helper.context, Helper.modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_SHORT).show();
                                 author_click = 0;
                             }
+                            break;
+                        case "preference_channel":
+                            Uri uri_channel = Uri.parse("https://t.me/zhiliao");
+                            Intent intent_channel = new Intent(Intent.ACTION_VIEW, uri_channel);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_channel);
                             break;
                         case "preference_telegram":
                             Uri uri = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");

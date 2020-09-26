@@ -134,6 +134,18 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
+        Preference preference_channel = findPreference("preference_channel");
+        assert preference_channel != null;
+        preference_channel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Uri uri = Uri.parse("https://t.me/zhiliao");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         Preference preference_telegram = findPreference("preference_telegram");
         assert preference_telegram != null;
         preference_telegram.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

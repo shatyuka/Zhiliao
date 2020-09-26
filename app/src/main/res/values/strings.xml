@@ -17,6 +17,8 @@
 
     <string name="pref_version">版本</string>
     <string name="pref_author">作者</string>
+    <string name="pref_channel">TG频道</string>
+    <string name="pref_channel_desc">订阅频道，及时获取更新</string>
     <string name="pref_telegram">TG群</string>
     <string name="pref_telegram_desc">找作者对线</string>
     <string name="pref_donate">捐赠</string>

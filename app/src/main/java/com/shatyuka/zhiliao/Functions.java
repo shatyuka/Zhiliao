@@ -31,7 +31,7 @@ public class Functions {
             XposedBridge.hookMethod(Helper.isShowLaunchAd, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_launchad", true))
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_launchad", true))
                         param.setResult(false);
                 }
             });
@@ -39,7 +39,7 @@ public class Functions {
             XposedBridge.hookAllMethods(Helper.InnerDeserializer, "deserialize", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false)) {
                         Object result = param.getResult();
                         if (result == null)
                             return;
@@ -84,7 +84,7 @@ public class Functions {
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, "com.zhihu.android.api.model.FeedAdvert", boolean.class, Boolean.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
                         param.setResult(false);
                     }
                 }
@@ -93,7 +93,7 @@ public class Functions {
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveAnswerAdParam", Context.class, "com.zhihu.android.api.model.AnswerListAd", Boolean.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
                         param.setResult(false);
                     }
                 }
@@ -102,7 +102,7 @@ public class Functions {
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveCommentAdParam", Context.class, "com.zhihu.android.api.model.CommentListAd", Boolean.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_commentad", true)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_commentad", true)) {
                         param.setResult(false);
                     }
                 }
@@ -111,7 +111,7 @@ public class Functions {
             XposedHelpers.findAndHookMethod(Helper.BaseAppView, "a", Helper.IZhihuWebView, WebResourceRequest.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (!Helper.prefs.getBoolean("switch_mainswitch", true))
+                    if (!Helper.prefs.getBoolean("switch_mainswitch", false))
                         return;
                     WebResourceRequest request = (WebResourceRequest) param.args[1];
                     List<String> segments = request.getUrl().getPathSegments();
@@ -129,7 +129,7 @@ public class Functions {
             XposedBridge.hookMethod(Helper.showShareAd, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_sharead", true))
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_sharead", true))
                         param.setResult(null);
                 }
             });
@@ -137,7 +137,7 @@ public class Functions {
             XposedBridge.hookAllConstructors(Helper.FeedsTabsTopEntranceManager, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_livebutton", false)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_livebutton", false)) {
                         param.args[0] = new FrameLayout(((FrameLayout) param.args[0]).getContext());
                     }
                 }
@@ -153,7 +153,7 @@ public class Functions {
                 }
             });
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_horizontal", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_horizontal", false)) {
                 XposedHelpers.findAndHookMethod(Helper.ActionSheetLayout, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
                     float old_x = 0;
                     float old_y = 0;
@@ -231,11 +231,11 @@ public class Functions {
                 });
             }
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
                 XposedHelpers.findAndHookMethod(Helper.AnswerPagerFragment, "setupNextAnswerBtn", XC_MethodReplacement.returnConstant(null));
             }
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_reddot", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_reddot", false)) {
                 XposedBridge.hookAllMethods(Helper.FeedsTabsFragment, "onUnReadCountLoaded", XC_MethodReplacement.returnConstant(null));
                 XposedBridge.hookAllMethods(Helper.FeedFollowAvatarCommonViewHolder, "b", XC_MethodReplacement.returnConstant(null));
                 XposedHelpers.findAndHookMethod(Helper.ZHMainTabLayout, "d", XC_MethodReplacement.returnConstant(null));
@@ -250,7 +250,7 @@ public class Functions {
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_externlink", false)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_externlink", false)) {
                         String url = (String) param.args[2];
                         if (url.startsWith("https://link.zhihu.com/?target=")) {
                             param.args[2] = URLDecoder.decode(url.substring(31), "utf-8");
@@ -266,7 +266,7 @@ public class Functions {
                 }
             });
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_vipbanner", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_vipbanner", false)) {
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "a", Context.class, new XC_MethodReplacement() {
                     @Override
                     protected Object replaceHookedMethod(MethodHookParam param) {
@@ -280,7 +280,7 @@ public class Functions {
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
             }
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", true) && Helper.prefs.getBoolean("switch_vipnav", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_vipnav", false)) {
                 XposedHelpers.findAndHookMethod(Helper.BottomNavDelegation, "r", new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
