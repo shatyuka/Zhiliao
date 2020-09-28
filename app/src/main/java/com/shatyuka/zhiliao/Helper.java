@@ -56,7 +56,8 @@ public class Helper {
     static Class<?> NotiMsgModel;
     static Class<?> LinkZhihuHelper;
     static Class<?> VipEntranceView;
-    static Class<?> BottomNavDelegation;
+    static Class<?> BottomNavMenuView;
+    static Class<?> IMenuItem;
     static Class<?> AdNetworkManager;
 
     static Method findPreference;
@@ -75,9 +76,10 @@ public class Helper {
     static Method onNestChildScrollRelease;
     static Method isLinkZhihu;
     static Method isReadyPageTurning;
+    static Method getMenuName;
 
     static Field panel_text;
-    static Field navList;
+    static Field tabView;
     static Field callbackList;
 
     static Pattern regex_title;
@@ -133,7 +135,8 @@ public class Helper {
             NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
             LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
             VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
-            BottomNavDelegation = classLoader.loadClass("com.zhihu.android.app.i.a");
+            BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
+            IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
             AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
@@ -150,6 +153,7 @@ public class Helper {
             onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
             isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
             isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
+            getMenuName = IMenuItem.getMethod("a");
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
@@ -184,8 +188,7 @@ public class Helper {
                 throw new NoSuchMethodException("Method showShareAd not found");
 
             panel_text = ApiText.getField("panel_text");
-            navList = Helper.BottomNavDelegation.getDeclaredField("e");
-            navList.setAccessible(true);
+            tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
             callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
             callbackList.setAccessible(true);
 

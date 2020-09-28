@@ -289,10 +289,12 @@ public class Functions {
             }
 
             if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_vipnav", false)) {
-                XposedHelpers.findAndHookMethod(Helper.BottomNavDelegation, "r", new XC_MethodHook() {
+                XposedHelpers.findAndHookMethod(Helper.BottomNavMenuView, "a", Helper.IMenuItem, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        ((List) Helper.navList.get(param.thisObject)).remove(1);
+                        if ("market".equals(Helper.getMenuName.invoke(param.args[0]))) {
+                            ((View) Helper.tabView.get(param.getResult())).setVisibility(View.GONE);
+                        }
                     }
                 });
             }
