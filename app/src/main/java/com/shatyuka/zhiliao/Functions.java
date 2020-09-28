@@ -35,6 +35,14 @@ public class Functions {
                         param.setResult(false);
                 }
             });
+            XposedHelpers.findAndHookMethod(Helper.AdNetworkManager, "a", int.class, long.class, long.class, String.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_launchad", true)) {
+                        param.setResult("");
+                    }
+                }
+            });
 
             XposedBridge.hookAllMethods(Helper.InnerDeserializer, "deserialize", new XC_MethodHook() {
                 @Override

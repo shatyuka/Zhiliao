@@ -57,6 +57,7 @@ public class Helper {
     static Class<?> LinkZhihuHelper;
     static Class<?> VipEntranceView;
     static Class<?> BottomNavDelegation;
+    static Class<?> AdNetworkManager;
 
     static Method findPreference;
     static Method setSummary;
@@ -133,6 +134,7 @@ public class Helper {
             LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
             VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
             BottomNavDelegation = classLoader.loadClass("com.zhihu.android.app.i.a");
+            AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
