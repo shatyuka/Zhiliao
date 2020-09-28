@@ -35,10 +35,13 @@ public class Helper {
     static Class<?> InnerDeserializer;
     static Class<?> ApiTemplateRoot;
     static Class<?> DataUnique;
+    static Class<?> ApiFeedCard;
     static Class<?> MarketCard;
     static Class<?> FeedsTabsTopEntranceManager;
     static Class<?> ApiFeedContent;
     static Class<?> ApiText;
+    static Class<?> ApiLine;
+    static Class<?> ApiElement;
     static Class<?> EditTextPreference;
     static Class<?> ActionSheetLayout;
     static Class<?> NestChildScrollChange;
@@ -78,7 +81,16 @@ public class Helper {
     static Method isReadyPageTurning;
     static Method getMenuName;
 
-    static Field panel_text;
+    static Field ApiTemplateRoot_extra;
+    static Field ApiTemplateRoot_common_card;
+    static Field DataUnique_type;
+    static Field ApiFeedCard_feed_content;
+    static Field ApiFeedContent_title;
+    static Field ApiFeedContent_content;
+    static Field ApiFeedContent_sourceLine;
+    static Field ApiText_panel_text;
+    static Field ApiLine_elements;
+    static Field ApiElement_text;
     static Field tabView;
     static Field callbackList;
 
@@ -114,10 +126,13 @@ public class Helper {
             InnerDeserializer = classLoader.loadClass("com.zhihu.android.api.util.ZHObjectRegistryCenter$InnerDeserializer");
             ApiTemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiTemplateRoot");
             DataUnique = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique");
+            ApiFeedCard = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiFeedCard");
             MarketCard = classLoader.loadClass("com.zhihu.android.api.model.MarketCard");
             FeedsTabsTopEntranceManager = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment").getDeclaredField("mEntranceManger").getType();
             ApiFeedContent = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiFeedContent");
             ApiText = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiText");
+            ApiLine = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiLine");
+            ApiElement = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiElement");
             EditTextPreference = classLoader.loadClass("androidx.preference.EditTextPreference");
             ActionSheetLayout = classLoader.loadClass("com.zhihu.android.content.widget.ActionSheetLayout");
             NestChildScrollChange = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNestChildScrollChange$1");
@@ -187,7 +202,16 @@ public class Helper {
             if (ShareFragment == null || !foundshowShareAd)
                 throw new NoSuchMethodException("Method showShareAd not found");
 
-            panel_text = ApiText.getField("panel_text");
+            ApiTemplateRoot_extra = ApiTemplateRoot.getField("extra");
+            ApiTemplateRoot_common_card = ApiTemplateRoot.getField("common_card");
+            DataUnique_type = DataUnique.getField("type");
+            ApiFeedCard_feed_content = ApiFeedCard.getField("feed_content");
+            ApiFeedContent_title = ApiFeedContent.getField("title");
+            ApiFeedContent_content = ApiFeedContent.getField("content");
+            ApiFeedContent_sourceLine = ApiFeedContent.getField("sourceLine");
+            ApiText_panel_text = ApiText.getField("panel_text");
+            ApiLine_elements = ApiLine.getField("elements");
+            ApiElement_text = ApiElement.getField("text");
             tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
             callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
             callbackList.setAccessible(true);
