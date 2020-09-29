@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -111,6 +112,14 @@ public class Functions {
                     }
                 }
             });
+            XposedHelpers.findAndHookMethod(Helper.AnswerListWrapper, "insertAdBrandToList", ArrayList.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
+                        param.setResult(null);
+                    }
+                }
+            });
 
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveCommentAdParam", Context.class, "com.zhihu.android.api.model.CommentListAd", Boolean.class, new XC_MethodHook() {
                 @Override
@@ -129,7 +138,7 @@ public class Functions {
                     WebResourceRequest request = (WebResourceRequest) param.args[1];
                     List<String> segments = request.getUrl().getPathSegments();
                     if (segments.size() > 2 && request.getMethod().equals("GET")
-                            && ((Helper.prefs.getBoolean("switch_answerad", true) && segments.get(segments.size() - 1).equals("recommendations"))
+                            && ((Helper.prefs.getBoolean("switch_answerad", true) && (segments.get(segments.size() - 1).equals("recommendations") || (segments.get(2).equals("brand") && segments.get(segments.size() - 1).equals("card"))))
                             || (Helper.prefs.getBoolean("switch_club", false) && segments.get(segments.size() - 1).equals("bind_club"))
                             || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods")))) {
                         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("null\n".getBytes()));

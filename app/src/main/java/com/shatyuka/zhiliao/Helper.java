@@ -62,6 +62,7 @@ public class Helper {
     static Class<?> BottomNavMenuView;
     static Class<?> IMenuItem;
     static Class<?> AdNetworkManager;
+    static Class<?> AnswerListWrapper;
 
     static Method findPreference;
     static Method setSummary;
@@ -153,6 +154,7 @@ public class Helper {
             BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
             IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
             AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
+            AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
