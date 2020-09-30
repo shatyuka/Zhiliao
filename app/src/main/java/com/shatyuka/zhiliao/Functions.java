@@ -313,6 +313,15 @@ public class Functions {
                 });
             }
 
+            XposedBridge.hookAllMethods(Helper.InternalNotificationManager, "fetchFloatNotification", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_hotbanner", false)) {
+                        param.setResult(null);
+                    }
+                }
+            });
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
