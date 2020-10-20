@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.View;
+import android.webkit.WebResourceRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,7 +31,6 @@ public class Helper {
     static Class<?> PreferenceGroup;
     static Class<?> IZhihuWebView;
     static Class<?> BasePagingFragment;
-    static Class<?> BaseAppView;
     static Class<?> MorphAdHelper;
     static Class<?> InnerDeserializer;
     static Class<?> ApiTemplateRoot;
@@ -82,6 +82,7 @@ public class Helper {
     static Method isLinkZhihu;
     static Method isReadyPageTurning;
     static Method getMenuName;
+    static Method shouldInterceptRequest;
 
     static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
@@ -123,7 +124,6 @@ public class Helper {
             PreferenceGroup = classLoader.loadClass("androidx.preference.PreferenceGroup");
             IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.market.newhome.ui.view.VillaLayout").getDeclaredMethod("getWebView").getReturnType();
             BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
-            BaseAppView = classLoader.loadClass("com.zhihu.android.appview.a$k");
             MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
             InnerDeserializer = classLoader.loadClass("com.zhihu.android.api.util.ZHObjectRegistryCenter$InnerDeserializer");
             ApiTemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiTemplateRoot");
@@ -173,6 +173,22 @@ public class Helper {
             isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
             isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
             getMenuName = IMenuItem.getMethod("a");
+
+            boolean foundshouldInterceptRequest = false;
+            for (char i = 'a'; i <= 'z'; i++) {
+                Class<?> ZhihuWebViewClient = XposedHelpers.findClassIfExists("com.zhihu.android.appview.a$" + i, classLoader);
+                if (ZhihuWebViewClient != null) {
+                    try {
+                        shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", IZhihuWebView, WebResourceRequest.class);
+                    } catch (NoSuchMethodException e) {
+                        continue;
+                    }
+                    foundshouldInterceptRequest = true;
+                    break;
+                }
+            }
+            if (!foundshouldInterceptRequest)
+                throw new NoSuchMethodException("Method shouldInterceptRequest not found");
 
             boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {

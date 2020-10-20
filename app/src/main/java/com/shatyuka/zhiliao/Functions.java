@@ -130,7 +130,7 @@ public class Functions {
                 }
             });
 
-            XposedHelpers.findAndHookMethod(Helper.BaseAppView, "a", Helper.IZhihuWebView, WebResourceRequest.class, new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.shouldInterceptRequest, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (!Helper.prefs.getBoolean("switch_mainswitch", false))
