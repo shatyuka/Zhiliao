@@ -136,10 +136,14 @@ public class ZhihuPreference {
                     Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_donate, thisObject);
 
-                    String real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
+                    String real_version = null;
+                    try {
+                        real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
+                    } catch (Exception ignore) {
+                    }
                     String loaded_version = Helper.modRes.getString(R.string.app_version);
                     Helper.setSummary.invoke(preference_version, loaded_version);
-                    if (loaded_version.equals(real_version)) {
+                    if (real_version == null || loaded_version.equals(real_version)) {
                         Helper.setVisible.invoke(preference_status, false);
                     } else {
                         Helper.setOnPreferenceClickListener.invoke(preference_status, thisObject);

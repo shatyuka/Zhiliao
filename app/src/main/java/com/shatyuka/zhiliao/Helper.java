@@ -2,6 +2,7 @@ package com.shatyuka.zhiliao;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -258,5 +259,11 @@ public class Helper {
         } catch (PatternSyntaxException ignore) {
             return null;
         }
+    }
+
+    static Resources getModuleRes(String path) throws Throwable {
+        AssetManager assetManager = AssetManager.class.newInstance();
+        AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, path);
+        return new Resources(assetManager, null, null);
     }
 }
