@@ -21,6 +21,7 @@ public class Helper {
     static Class<?> SettingsFragment;
     static Class<?> DebugFragment;
     static Class<?> Preference;
+    static Class<?> SwitchPreference;
     static Class<?> OnPreferenceChangeListener;
     static Class<?> OnPreferenceClickListener;
     static Class<?> PreferenceFragmentCompat;
@@ -71,6 +72,7 @@ public class Helper {
     static Method setIcon;
     static Method setVisible;
     static Method getKey;
+    static Method setChecked;
     static Method setOnPreferenceChangeListener;
     static Method setOnPreferenceClickListener;
     static Method addFragmentToOverlay;
@@ -114,6 +116,7 @@ public class Helper {
             SettingsFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.preference.SettingsFragment");
             DebugFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.DebugFragment");
             Preference = classLoader.loadClass("androidx.preference.Preference");
+            SwitchPreference = classLoader.loadClass("com.zhihu.android.app.ui.widget.SwitchPreference");
             OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$c");
             OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
             PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.g");
@@ -164,6 +167,7 @@ public class Helper {
             setIcon = Preference.getMethod("a", Drawable.class);
             setVisible = Preference.getMethod("c", boolean.class);
             getKey = Preference.getMethod("C");
+            setChecked = SwitchPreference.getMethod("g", boolean.class);
             setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
             setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
             addFragmentToOverlay = MainActivity.getMethod("addFragmentToOverlay", ZHIntent);

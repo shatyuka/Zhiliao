@@ -116,6 +116,8 @@ public class ZhihuPreference {
                     Object preference_telegram = Helper.findPreference.invoke(thisObject, "preference_telegram");
                     Object preference_donate = Helper.findPreference.invoke(thisObject, "preference_donate");
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
+                    Object switch_externlink = Helper.findPreference.invoke(thisObject, "switch_externlink");
+                    Object switch_externlinkex = Helper.findPreference.invoke(thisObject, "switch_externlinkex");
                     Object switch_livebutton = Helper.findPreference.invoke(thisObject, "switch_livebutton");
                     Object switch_reddot = Helper.findPreference.invoke(thisObject, "switch_reddot");
                     Object switch_vipbanner = Helper.findPreference.invoke(thisObject, "switch_vipbanner");
@@ -124,6 +126,8 @@ public class ZhihuPreference {
                     Object switch_nextanswer = Helper.findPreference.invoke(thisObject, "switch_nextanswer");
 
                     Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_externlinkex, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
@@ -174,7 +178,8 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_marketcard"), Helper.modRes.getDrawable(R.drawable.ic_vip));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_club"), Helper.modRes.getDrawable(R.drawable.ic_group));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_goods"), Helper.modRes.getDrawable(R.drawable.ic_local_mall));
-                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_externlink"), Helper.modRes.getDrawable(R.drawable.ic_link));
+                    Helper.setIcon.invoke(switch_externlink, Helper.modRes.getDrawable(R.drawable.ic_link));
+                    Helper.setIcon.invoke(switch_externlinkex, Helper.modRes.getDrawable(R.drawable.ic_link));
                     Helper.setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                     Helper.setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                     Helper.setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
@@ -238,8 +243,16 @@ public class ZhihuPreference {
                             donate_intent.setAction(Intent.ACTION_MAIN);
                             donate_intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             donate_intent.putExtra("zhiliao_donate", true);
-                            donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.MainActivity");
+                            donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.SettingsActivity");
                             ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(donate_intent);
+                            break;
+                        case "switch_externlink":
+                            Object switch_externlinkex = Helper.findPreference.invoke(param.thisObject, "switch_externlinkex");
+                            Helper.setChecked.invoke(switch_externlinkex, false);
+                            break;
+                        case "switch_externlinkex":
+                            Object switch_externlink = Helper.findPreference.invoke(param.thisObject, "switch_externlink");
+                            Helper.setChecked.invoke(switch_externlink, false);
                             break;
                         case "switch_livebutton":
                         case "switch_reddot":
@@ -258,9 +271,9 @@ public class ZhihuPreference {
                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                     if ((boolean) param.args[1]) {
                         Object switch_main = Helper.findPreference.invoke(param.thisObject, "switch_mainswitch");
-                        switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, true);
+                        Helper.setChecked.invoke(switch_main, true);
                         Object category_eula = Helper.findPreference.invoke(param.thisObject, "category_eula");
-                        category_eula.getClass().getMethod("c", boolean.class).invoke(category_eula, false);
+                        Helper.setVisible.invoke(category_eula, false);
                     }
                     return true;
                 }

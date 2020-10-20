@@ -89,6 +89,12 @@
             android:key="switch_externlink"
             android:title="直接打开外部链接"
             android:summary="无需再次确认"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_externlinkex"
+            android:title="直接打开外部链接Ex"
+            android:summary="使用浏览器打开外部链接"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference

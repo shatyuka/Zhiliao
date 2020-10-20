@@ -14,8 +14,8 @@ android {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 202010010
-        versionName "20.10.1"
+        versionCode 202010200
+        versionName "20.10.20"
         resConfigs "zh", "xxhdpi"
     }
     applicationVariants.all { variant ->

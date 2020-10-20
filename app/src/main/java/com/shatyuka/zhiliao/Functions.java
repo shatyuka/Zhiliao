@@ -1,7 +1,9 @@
 package com.shatyuka.zhiliao;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.XmlResourceParser;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -272,11 +274,19 @@ public class Functions {
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_externlink", false)) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
                         String url = (String) param.args[2];
                         if (url.startsWith("https://link.zhihu.com/?target=")) {
                             param.args[2] = URLDecoder.decode(url.substring(31), "utf-8");
-                            hook_isLinkZhihu = XposedBridge.hookMethod(Helper.isLinkZhihu, XC_MethodReplacement.returnConstant(true));
+                            if (Helper.prefs.getBoolean("switch_externlinkex", false)) {
+                                android.util.Log.d("Zhiliao", (String) param.args[2]);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) param.args[2]));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                Helper.context.startActivity(intent);
+                                param.setResult(true);
+                            } else {
+                                hook_isLinkZhihu = XposedBridge.hookMethod(Helper.isLinkZhihu, XC_MethodReplacement.returnConstant(true));
+                            }
                         }
                     }
                 }
