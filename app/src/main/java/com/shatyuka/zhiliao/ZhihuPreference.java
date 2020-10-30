@@ -180,6 +180,7 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_goods"), Helper.modRes.getDrawable(R.drawable.ic_local_mall));
                     Helper.setIcon.invoke(switch_externlink, Helper.modRes.getDrawable(R.drawable.ic_link));
                     Helper.setIcon.invoke(switch_externlinkex, Helper.modRes.getDrawable(R.drawable.ic_link));
+                    Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_colormode"), Helper.modRes.getDrawable(R.drawable.ic_color));
                     Helper.setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                     Helper.setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                     Helper.setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));

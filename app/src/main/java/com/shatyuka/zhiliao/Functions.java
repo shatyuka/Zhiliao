@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -331,6 +333,17 @@ public class Functions {
                     }
                 }
             });
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                XposedHelpers.findAndHookMethod(Window.class, "setColorMode", int.class, new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_colormode", false)) {
+                            param.setResult(null);
+                        }
+                    }
+                });
+            }
 
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {

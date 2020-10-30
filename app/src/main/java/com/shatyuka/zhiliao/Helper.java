@@ -66,6 +66,7 @@ public class Helper {
     static Class<?> AdNetworkManager;
     static Class<?> AnswerListWrapper;
     static Class<?> InternalNotificationManager;
+    static Class<?> ImageBaseActivity;
 
     static Method findPreference;
     static Method setSummary;
@@ -161,6 +162,7 @@ public class Helper {
             AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
             AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
             InternalNotificationManager = classLoader.loadClass("com.zhihu.android.app.feed.notification.InternalNotificationManager");
+            ImageBaseActivity = classLoader.loadClass("com.zhihu.android.picture.activity.a");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);

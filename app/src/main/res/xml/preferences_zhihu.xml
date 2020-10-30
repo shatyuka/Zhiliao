@@ -95,6 +95,12 @@
             android:key="switch_externlinkex"
             android:title="直接打开外部链接Ex"
             android:summary="使用浏览器打开外部链接"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_colormode"
+            android:title="禁止切换色彩模式"
+            android:summary="使用系统当前色彩模式显示大图"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference
