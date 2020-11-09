@@ -67,6 +67,7 @@ public class Helper {
     static Class<?> AnswerListWrapper;
     static Class<?> InternalNotificationManager;
     static Class<?> ImageBaseActivity;
+    static Class<?> FeedAdvert;
 
     static Method findPreference;
     static Method setSummary;
@@ -98,8 +99,9 @@ public class Helper {
     static Field ApiText_panel_text;
     static Field ApiLine_elements;
     static Field ApiElement_text;
-    static Field tabView;
-    static Field callbackList;
+    static Field Tab_tabView;
+    static Field ActionSheetLayout_callbackList;
+    static Field FeedAdvert_ad;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -163,6 +165,7 @@ public class Helper {
             AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
             InternalNotificationManager = classLoader.loadClass("com.zhihu.android.app.feed.notification.InternalNotificationManager");
             ImageBaseActivity = classLoader.loadClass("com.zhihu.android.picture.activity.a");
+            FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -239,9 +242,10 @@ public class Helper {
             ApiText_panel_text = ApiText.getField("panel_text");
             ApiLine_elements = ApiLine.getField("elements");
             ApiElement_text = ApiElement.getField("text");
-            tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
-            callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
-            callbackList.setAccessible(true);
+            Tab_tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
+            ActionSheetLayout_callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
+            ActionSheetLayout_callbackList.setAccessible(true);
+            FeedAdvert_ad = FeedAdvert.getField("ad");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));

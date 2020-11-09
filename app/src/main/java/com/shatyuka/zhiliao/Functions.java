@@ -99,10 +99,11 @@ public class Functions {
                 }
             });
 
-            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, "com.zhihu.android.api.model.FeedAdvert", boolean.class, Boolean.class, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, Helper.FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        Helper.FeedAdvert_ad.set(param.args[1], null);
                         param.setResult(false);
                     }
                 }
@@ -196,7 +197,7 @@ public class Functions {
                                 float dx = e.getX() - old_x;
                                 float dy = e.getY() - old_y;
                                 if (Math.abs(dx) > Helper.width && Math.abs(dy) < Helper.height) {
-                                    for (Object callback : (List) Helper.callbackList.get(param.thisObject)) {
+                                    for (Object callback : (List) Helper.ActionSheetLayout_callbackList.get(param.thisObject)) {
                                         if (callback.getClass() == Helper.NestChildScrollChange) {
                                             Helper.onNestChildScrollRelease.invoke(callback, dx, 5201314);
                                         }
@@ -319,7 +320,7 @@ public class Functions {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         if ("market".equals(Helper.getMenuName.invoke(param.args[0]))) {
-                            ((View) Helper.tabView.get(param.getResult())).setVisibility(View.GONE);
+                            ((View) Helper.Tab_tabView.get(param.getResult())).setVisibility(View.GONE);
                         }
                     }
                 });
