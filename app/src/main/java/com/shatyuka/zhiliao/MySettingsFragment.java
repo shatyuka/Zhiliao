@@ -134,6 +134,18 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
+        Preference preference_help = findPreference("preference_help");
+        assert preference_help != null;
+        preference_help.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Uri uri = Uri.parse("https://github.com/shatyuka/Zhiliao/wiki");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         Preference preference_channel = findPreference("preference_channel");
         assert preference_channel != null;
         preference_channel.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -152,6 +164,18 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Uri uri = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        Preference preference_sourcecode = findPreference("preference_sourcecode");
+        assert preference_sourcecode != null;
+        preference_sourcecode.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Uri uri = Uri.parse("https://github.com/shatyuka/Zhiliao");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;

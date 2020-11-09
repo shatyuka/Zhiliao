@@ -112,8 +112,10 @@ public class ZhihuPreference {
                     Object thisObject = param.thisObject;
                     Object preference_version = Helper.findPreference.invoke(thisObject, "preference_version");
                     Object preference_author = Helper.findPreference.invoke(thisObject, "preference_author");
+                    Object preference_help = Helper.findPreference.invoke(thisObject, "preference_help");
                     Object preference_channel = Helper.findPreference.invoke(thisObject, "preference_channel");
                     Object preference_telegram = Helper.findPreference.invoke(thisObject, "preference_telegram");
+                    Object preference_sourcecode = Helper.findPreference.invoke(thisObject, "preference_sourcecode");
                     Object preference_donate = Helper.findPreference.invoke(thisObject, "preference_donate");
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
                     Object switch_externlink = Helper.findPreference.invoke(thisObject, "switch_externlink");
@@ -136,8 +138,10 @@ public class ZhihuPreference {
                     Helper.setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_version, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_author, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_help, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_channel, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(preference_sourcecode, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(preference_donate, thisObject);
 
                     String real_version = null;
@@ -193,8 +197,10 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "edit_content"), Helper.regex_content != null ? Helper.modRes.getDrawable(R.drawable.ic_check) : Helper.modRes.getDrawable(R.drawable.ic_close));
                     Helper.setIcon.invoke(preference_version, Helper.modRes.getDrawable(R.drawable.ic_info));
                     Helper.setIcon.invoke(preference_author, Helper.modRes.getDrawable(R.drawable.ic_person));
+                    Helper.setIcon.invoke(preference_help, Helper.modRes.getDrawable(R.drawable.ic_help));
                     Helper.setIcon.invoke(preference_channel, Helper.modRes.getDrawable(R.drawable.ic_rss_feed));
                     Helper.setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
+                    Helper.setIcon.invoke(preference_sourcecode, Helper.modRes.getDrawable(R.drawable.ic_github));
                     Helper.setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
 
                     if (Helper.prefs.getBoolean("accept_eula", false)) {
@@ -229,15 +235,25 @@ public class ZhihuPreference {
                                 author_click = 0;
                             }
                             break;
+                        case "preference_help":
+                            Uri uri_help = Uri.parse("https://github.com/shatyuka/Zhiliao/wiki");
+                            Intent intent_help = new Intent(Intent.ACTION_VIEW, uri_help);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_help);
+                            break;
                         case "preference_channel":
                             Uri uri_channel = Uri.parse("https://t.me/zhiliao");
                             Intent intent_channel = new Intent(Intent.ACTION_VIEW, uri_channel);
                             ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_channel);
                             break;
                         case "preference_telegram":
-                            Uri uri = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent);
+                            Uri uri_telegram = Uri.parse("https://t.me/joinchat/OibCWxbdCMkJ2fG8J1DpQQ");
+                            Intent intent_telegram = new Intent(Intent.ACTION_VIEW, uri_telegram);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_telegram);
+                            break;
+                        case "preference_sourcecode":
+                            Uri uri_sourcecode = Uri.parse("https://github.com/shatyuka/Zhiliao");
+                            Intent intent_sourcecode = new Intent(Intent.ACTION_VIEW, uri_sourcecode);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_sourcecode);
                             break;
                         case "preference_donate":
                             Intent donate_intent = new Intent();

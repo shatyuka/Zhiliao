@@ -17,10 +17,13 @@
 
     <string name="pref_version">版本</string>
     <string name="pref_author">作者</string>
+    <string name="pref_help">帮助</string>
+    <string name="pref_help_desc">点我获取常见问题帮助</string>
     <string name="pref_channel">TG频道</string>
     <string name="pref_channel_desc">订阅频道，及时获取更新</string>
     <string name="pref_telegram">TG群</string>
     <string name="pref_telegram_desc">找作者对线</string>
+    <string name="pref_sourcecode">源代码</string>
     <string name="pref_donate">捐赠</string>
     <string name="pref_donate_desc">快揭不开锅了 ( ≧Д≦)</string>
 

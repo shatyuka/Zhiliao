@@ -15,7 +15,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 202010300
-        versionName "20.10.30"
+        versionName "20.11.09"
         resConfigs "zh", "xxhdpi"
     }
     applicationVariants.all { variant ->

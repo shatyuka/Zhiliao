@@ -31,6 +31,11 @@
             app:icon="@drawable/ic_person"
             app:summary="Shatyuka" />
         <Preference
+            android:key="preference_help"
+            android:title="@string/pref_help"
+            app:icon="@drawable/ic_help"
+            android:summary="@string/pref_help_desc"/>
+        <Preference
             android:key="preference_channel"
             android:title="@string/pref_channel"
             app:icon="@drawable/ic_rss_feed"
@@ -40,6 +45,11 @@
             android:title="@string/pref_telegram"
             app:icon="@drawable/ic_telegram"
             app:summary="@string/pref_telegram_desc" />
+        <Preference
+            android:key="preference_sourcecode"
+            android:title="@string/pref_sourcecode"
+            app:icon="@drawable/ic_github"
+            android:summary="Github"/>
         <Preference
             android:key="preference_donate"
             android:title="@string/pref_donate"
