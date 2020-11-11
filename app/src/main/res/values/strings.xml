@@ -24,6 +24,7 @@
     <string name="pref_telegram">TG群</string>
     <string name="pref_telegram_desc">找作者对线</string>
     <string name="pref_sourcecode">源代码</string>
+    <string name="pref_sourcecode_desc">点个Star吧</string>
     <string name="pref_donate">捐赠</string>
     <string name="pref_donate_desc">快揭不开锅了 ( ≧Д≦)</string>
 

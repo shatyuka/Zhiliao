@@ -68,6 +68,8 @@ public class Helper {
     static Class<?> InternalNotificationManager;
     static Class<?> ImageBaseActivity;
     static Class<?> FeedAdvert;
+    static Class<?> Advert;
+    static Class<?> Ad;
 
     static Method findPreference;
     static Method setSummary;
@@ -101,7 +103,6 @@ public class Helper {
     static Field ApiElement_text;
     static Field Tab_tabView;
     static Field ActionSheetLayout_callbackList;
-    static Field FeedAdvert_ad;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -166,6 +167,8 @@ public class Helper {
             InternalNotificationManager = classLoader.loadClass("com.zhihu.android.app.feed.notification.InternalNotificationManager");
             ImageBaseActivity = classLoader.loadClass("com.zhihu.android.picture.activity.a");
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
+            Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
+            Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -245,7 +248,6 @@ public class Helper {
             Tab_tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
             ActionSheetLayout_callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
             ActionSheetLayout_callbackList.setAccessible(true);
-            FeedAdvert_ad = FeedAdvert.getField("ad");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));

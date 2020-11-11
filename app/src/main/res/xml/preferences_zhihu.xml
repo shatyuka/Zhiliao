@@ -188,7 +188,7 @@
         <Preference
             android:key="preference_sourcecode"
             android:title="源代码"
-            android:summary="Github"/>
+            android:summary="点个Star吧"/>
         <Preference
             android:key="preference_donate"
             android:title="捐赠"

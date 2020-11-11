@@ -103,7 +103,22 @@ public class Functions {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                        Helper.FeedAdvert_ad.set(param.args[1], null);
+                        param.setResult(false);
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.Advert, "isSlidingWindow", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        param.setResult(false);
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.Ad, "isFloatAdCard", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
                         param.setResult(false);
                     }
                 }

@@ -49,7 +49,7 @@
             android:key="preference_sourcecode"
             android:title="@string/pref_sourcecode"
             app:icon="@drawable/ic_github"
-            android:summary="Github"/>
+            android:summary="@string/pref_sourcecode_desc"/>
         <Preference
             android:key="preference_donate"
             android:title="@string/pref_donate"
