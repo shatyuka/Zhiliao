@@ -1,12 +1,14 @@
 package com.shatyuka.zhiliao;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import java.io.InputStream;
@@ -333,6 +335,20 @@ public class ZhihuPreference {
                     Intent intent = (Intent) param.args[0];
                     if (intent.hasExtra("zhiliao_settings")) {
                         Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(Dialog.class, "dismiss", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    Dialog dialog = (Dialog) param.thisObject;
+                    if (dialog.isShowing()) {
+                        View view = dialog.getWindow().getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) Helper.context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getRootView().getWindowToken(), 0);
+                        }
                     }
                 }
             });
