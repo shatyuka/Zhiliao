@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -325,7 +326,12 @@ public class Functions {
                         return null;
                     }
                 });
-                XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "setData", "com.zhihu.android.api.model.VipInfo", XC_MethodReplacement.returnConstant(null));
+                for (Method method : Helper.VipEntranceView.getMethods()) {
+                    if (method.getName().equals("setData")) {
+                        XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(null));
+                        break;
+                    }
+                }
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "onClick", View.class, XC_MethodReplacement.returnConstant(null));
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
             }
