@@ -1,32 +1,28 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        release {
-            storeFile file(RELEASE_STORE_FILE)
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
-        }
-    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 202011110
-        versionName "20.11.11"
+        versionCode appVerCode.toInteger()
+        versionName appVerName
         resConfigs "zh", "xxhdpi"
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "app_version", variant.versionName
+        variant.outputs.all { output ->
+            if (variant.buildType.name == 'release') {
+                outputFileName = "Zhiliao_${defaultConfig.versionName}.apk"
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
         debug {
         }
