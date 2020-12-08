@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.view.View;
 import android.webkit.WebResourceRequest;
 
+import org.xmlpull.v1.XmlPullParser;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
@@ -26,6 +28,7 @@ public class Helper {
     static Class<?> OnPreferenceClickListener;
     static Class<?> PreferenceFragmentCompat;
     static Class<?> PreferenceManager;
+    static Class<?> PreferenceInflater;
     static Class<?> PageInfoType;
     static Class<?> ZHIntent;
     static Class<?> MainActivity;
@@ -90,6 +93,8 @@ public class Helper {
     static Method isReadyPageTurning;
     static Method getMenuName;
     static Method shouldInterceptRequest;
+    static Method addPreferencesFromResource;
+    static Method inflate;
 
     static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
@@ -125,6 +130,7 @@ public class Helper {
             OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
             PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.g");
             PreferenceManager = classLoader.loadClass("androidx.preference.j");
+            PreferenceInflater = classLoader.loadClass("androidx.preference.i");
             PageInfoType = classLoader.loadClass("com.zhihu.android.data.analytics.PageInfoType");
             ZHIntent = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerPagerEntance").getMethod("buildIntent", long.class).getReturnType();
             MainActivity = classLoader.loadClass("com.zhihu.android.app.ui.activity.MainActivity");
@@ -186,6 +192,8 @@ public class Helper {
             isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
             isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
             getMenuName = IMenuItem.getMethod("a");
+            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, Helper.PreferenceGroup);
 
             boolean foundshouldInterceptRequest = false;
             for (char i = 'a'; i <= 'z'; i++) {

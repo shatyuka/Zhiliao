@@ -30,26 +30,48 @@ public class ZhihuPreference {
     private static int version_click = 0;
     private static int author_click = 0;
 
+    private static int settings_res_id = 0;
+    private static int debug_res_id = 0;
+
     static boolean init(final ClassLoader classLoader) {
         try {
-            XposedHelpers.findAndHookMethod("androidx.preference.i", classLoader, "a", int.class, Helper.PreferenceGroup, new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Helper.PreferenceInflater, "a", int.class, Helper.PreferenceGroup, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     XmlResourceParser parser;
                     int id = (int) param.args[0];
-                    InputStream inputStream = Helper.context.getResources().openRawResource(id);
-                    if (inputStream.available() > 4000 && inputStream.available() < 5000)
+                    if (id == 7355608)
                         parser = Helper.modRes.getXml(R.xml.settings);
-                    else if (inputStream.available() > 5000)
+                    else if (id == debug_res_id)
                         parser = Helper.modRes.getXml(R.xml.preferences_zhihu);
                     else
                         return;
                     try {
-                        Class<?> XmlPullParser = XposedHelpers.findClass("org.xmlpull.v1.XmlPullParser", classLoader);
-                        Method inflate = param.thisObject.getClass().getMethod("a", XmlPullParser, Helper.PreferenceGroup);
-                        param.setResult(inflate.invoke(param.thisObject, parser, param.args[1]));
+                        param.setResult(Helper.inflate.invoke(param.thisObject, parser, param.args[1]));
                     } finally {
                         parser.close();
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(Helper.SettingsFragment, "i", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    settings_res_id = (int) param.getResult();
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.DebugFragment, "i", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    debug_res_id = (int) param.getResult();
+                }
+            });
+
+            XposedBridge.hookMethod(Helper.addPreferencesFromResource, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (((int) param.args[0]) == settings_res_id) {
+                        Helper.addPreferencesFromResource.invoke(param.thisObject, 7355608);
                     }
                 }
             });
