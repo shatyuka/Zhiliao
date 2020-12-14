@@ -161,7 +161,8 @@ public class Functions {
                     if (segments.size() > 2 && request.getMethod().equals("GET")
                             && ((Helper.prefs.getBoolean("switch_answerad", true) && (segments.get(segments.size() - 1).equals("recommendations") || (segments.get(2).equals("brand") && segments.get(segments.size() - 1).equals("card"))))
                             || (Helper.prefs.getBoolean("switch_club", false) && segments.get(segments.size() - 1).equals("bind_club"))
-                            || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods")))) {
+                            || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods"))
+                            || (Helper.prefs.getBoolean("switch_article", false) && segments.get(segments.size() - 1).equals("recommendation")))) {
                         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("null\n".getBytes()));
                         response.setStatusCodeAndReasonPhrase(200, "OK");
                         param.setResult(response);
@@ -365,6 +366,25 @@ public class Functions {
                         }
                     }
                 });
+            }
+
+            if (Helper.packageInfo.versionCode > 2614) { // after 6.61.0
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_article", false)) {
+                    XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            if (param.args[0].getClass() == Helper.NextContentAnimationView)
+                                ((View) param.args[0]).setVisibility(View.GONE);
+                        }
+                    });
+                    XposedBridge.hookMethod(Helper.getItemCount, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) {
+                            if (param.thisObject.getClass() == Helper.ContentMixAdapter)
+                                param.setResult(1);
+                        }
+                    });
+                }
             }
 
             if (DEBUG_WEBVIEW) {

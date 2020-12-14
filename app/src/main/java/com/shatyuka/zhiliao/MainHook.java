@@ -2,8 +2,6 @@ package com.shatyuka.zhiliao;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -38,9 +36,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         Helper.prefs = Helper.context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
 
                         if (!Helper.init(lpparam.classLoader) || !ZhihuPreference.init(lpparam.classLoader) || !Functions.init(lpparam.classLoader)) {
-                            PackageManager pm = Helper.context.getPackageManager();
-                            PackageInfo pi = pm.getPackageInfo("com.zhihu.android", 0);
-                            Toast.makeText(Helper.context, "知了初始化失败，可能不支持当前版本知乎: " + pi.versionName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Helper.context, "知了初始化失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

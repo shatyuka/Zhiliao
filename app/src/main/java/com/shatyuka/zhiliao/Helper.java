@@ -2,6 +2,7 @@ package com.shatyuka.zhiliao;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -73,6 +74,8 @@ public class Helper {
     static Class<?> FeedAdvert;
     static Class<?> Advert;
     static Class<?> Ad;
+    static Class<?> NextContentAnimationView;
+    static Class<?> ContentMixAdapter;
 
     static Method findPreference;
     static Method setSummary;
@@ -95,6 +98,7 @@ public class Helper {
     static Method shouldInterceptRequest;
     static Method addPreferencesFromResource;
     static Method inflate;
+    static Method getItemCount;
 
     static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
@@ -119,9 +123,12 @@ public class Helper {
     static Context context;
     static SharedPreferences prefs;
     static Resources modRes;
+    static PackageInfo packageInfo;
 
     static boolean init(ClassLoader classLoader) {
         try {
+            packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
+
             SettingsFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.preference.SettingsFragment");
             DebugFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.DebugFragment");
             Preference = classLoader.loadClass("androidx.preference.Preference");
@@ -175,6 +182,11 @@ public class Helper {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
             Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
             Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
+            if (Helper.packageInfo.versionCode > 2614) {
+                NextContentAnimationView = classLoader.loadClass("com.zhihu.android.mix.widget.NextContentAnimationView");
+                ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
+                getItemCount = ContentMixAdapter.getMethod("getItemCount");
+            }
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);

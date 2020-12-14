@@ -133,6 +133,12 @@
             android:key="switch_hotbanner"
             android:title="隐藏热点通知"
             android:summary="隐藏顶部弹窗通知"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_article"
+            android:title="精简文章页面"
+            android:summary="隐藏下一个按钮与相关推荐"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference
