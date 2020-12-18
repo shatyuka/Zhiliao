@@ -118,7 +118,7 @@ public class Helper {
     static Field Tab_tabView;
     static Field ActionSheetLayout_callbackList;
     static Field ViewHolder_itemView;
-    static Field SugarHolder_templateFeed;
+    static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
 
     static Pattern regex_title;
@@ -192,9 +192,9 @@ public class Helper {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
             Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
             Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
-            if (Helper.packageInfo.versionCode > 2614) {
+            if (packageInfo.versionCode > 2614) {
                 NextContentAnimationView = classLoader.loadClass("com.zhihu.android.mix.widget.NextContentAnimationView");
-                ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
+                ContentMixAdapter = classLoader.loadClass(packageInfo.versionCode > 3316 ? "com.zhihu.android.mix.b.a" : "com.zhihu.android.mix.a.a");
                 getItemCount = ContentMixAdapter.getMethod("getItemCount");
             }
             BaseTemplateNewFeedHolder = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.BaseTemplateNewFeedHolder");
@@ -284,8 +284,12 @@ public class Helper {
             ActionSheetLayout_callbackList = ActionSheetLayout.getDeclaredField("z");
             ActionSheetLayout_callbackList.setAccessible(true);
             ViewHolder_itemView = ViewHolder.getField("itemView");
-            SugarHolder_templateFeed = SugarHolder.getDeclaredField("c");
-            SugarHolder_templateFeed.setAccessible(true);
+            try {
+                SugarHolder_mData = SugarHolder.getDeclaredField("c");
+            } catch (NoSuchFieldException e) {
+                SugarHolder_mData = SugarHolder.getDeclaredField("mData");
+            }
+            SugarHolder_mData.setAccessible(true);
             TemplateRoot_unique = TemplateRoot.getField("unique");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));

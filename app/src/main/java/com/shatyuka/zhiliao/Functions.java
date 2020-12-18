@@ -400,7 +400,7 @@ public class Functions {
                         ViewGroup view = (ViewGroup) Helper.ViewHolder_itemView.get(thisObject);
                         TextView title = view.findViewById(Helper.id_title);
                         if (title != null) {
-                            Object templateFeed = Helper.SugarHolder_templateFeed.get(thisObject);
+                            Object templateFeed = Helper.SugarHolder_mData.get(thisObject);
                             Object unique = Helper.TemplateRoot_unique.get(templateFeed);
                             String type = (String) Helper.DataUnique_type.get(unique);
 
@@ -427,7 +427,7 @@ public class Functions {
                             spannableString.setSpan(what, 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_INCLUSIVE);
                             title.setText(spannableString);
                             */
-                            title.setText("       " + title.getText());
+                            title.setText("　　 " + title.getText());
                         }
                     }
                 });
