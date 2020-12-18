@@ -76,6 +76,11 @@ public class Helper {
     static Class<?> Ad;
     static Class<?> NextContentAnimationView;
     static Class<?> ContentMixAdapter;
+    static Class<?> BaseTemplateNewFeedHolder;
+    static Class<?> TemplateFeed;
+    static Class<?> ViewHolder;
+    static Class<?> SugarHolder;
+    static Class<?> TemplateRoot;
 
     static Method findPreference;
     static Method setSummary;
@@ -112,6 +117,9 @@ public class Helper {
     static Field ApiElement_text;
     static Field Tab_tabView;
     static Field ActionSheetLayout_callbackList;
+    static Field ViewHolder_itemView;
+    static Field SugarHolder_templateFeed;
+    static Field TemplateRoot_unique;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -119,6 +127,8 @@ public class Helper {
 
     static int width;
     static int height;
+
+    static int id_title;
 
     static Context context;
     static SharedPreferences prefs;
@@ -187,6 +197,11 @@ public class Helper {
                 ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
                 getItemCount = ContentMixAdapter.getMethod("getItemCount");
             }
+            BaseTemplateNewFeedHolder = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.BaseTemplateNewFeedHolder");
+            TemplateFeed = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateFeed");
+            ViewHolder = classLoader.loadClass("androidx.recyclerview.widget.RecyclerView$ViewHolder");
+            SugarHolder = classLoader.loadClass("com.zhihu.android.sugaradapter.SugarHolder");
+            TemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateRoot");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -266,8 +281,12 @@ public class Helper {
             ApiLine_elements = ApiLine.getField("elements");
             ApiElement_text = ApiElement.getField("text");
             Tab_tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
-            ActionSheetLayout_callbackList = Helper.ActionSheetLayout.getDeclaredField("z");
+            ActionSheetLayout_callbackList = ActionSheetLayout.getDeclaredField("z");
             ActionSheetLayout_callbackList.setAccessible(true);
+            ViewHolder_itemView = ViewHolder.getField("itemView");
+            SugarHolder_templateFeed = SugarHolder.getDeclaredField("c");
+            SugarHolder_templateFeed.setAccessible(true);
+            TemplateRoot_unique = TemplateRoot.getField("unique");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
@@ -275,6 +294,8 @@ public class Helper {
 
             height = (int) (context.getResources().getDisplayMetrics().density * 160);
             width = height / 2;
+
+            id_title = context.getResources().getIdentifier("title", "id", MainHook.hookPackage);
 
             return true;
         } catch (Exception e) {

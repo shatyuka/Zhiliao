@@ -1,8 +1,10 @@
 package com.shatyuka.zhiliao;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -14,6 +16,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -387,10 +391,52 @@ public class Functions {
                 }
             }
 
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
+                XposedHelpers.findAndHookMethod(Helper.BaseTemplateNewFeedHolder, "a", Helper.TemplateFeed, new XC_MethodHook() {
+                    @SuppressLint("ResourceType")
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Object thisObject = param.thisObject;
+                        ViewGroup view = (ViewGroup) Helper.ViewHolder_itemView.get(thisObject);
+                        TextView title = view.findViewById(Helper.id_title);
+                        if (title != null) {
+                            Object templateFeed = Helper.SugarHolder_templateFeed.get(thisObject);
+                            Object unique = Helper.TemplateRoot_unique.get(templateFeed);
+                            String type = (String) Helper.DataUnique_type.get(unique);
+
+                            float density = Helper.context.getResources().getDisplayMetrics().density;
+
+                            TextView tag = view.findViewById(0xABCDEF);
+                            if (tag == null) {
+                                RelativeLayout relativeLayout = new RelativeLayout(view.getContext());
+                                tag = new TextView(view.getContext());
+                                tag.setId(0xABCDEF);
+                                tag.setTextColor(-1);
+                                relativeLayout.addView(tag);
+                                relativeLayout.setY((int) (density * 5));
+                                ((ViewGroup) title.getParent()).addView(relativeLayout);
+                            }
+                            if (tag.getText() != getType(type)) {
+                                tag.setText(getType(type));
+                                tag.setBackground(getBackground(type));
+                            }
+
+                            /* TODO: Fix this
+                            SpannableString spannableString = new SpannableString(title.getText());
+                            LeadingMarginSpan.Standard what = new LeadingMarginSpan.Standard(tag.getWidth() + (int) (density * 5 + 0.5), 0);
+                            spannableString.setSpan(what, 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_INCLUSIVE);
+                            title.setText(spannableString);
+                            */
+                            title.setText("       " + title.getText());
+                        }
+                    }
+                });
+            }
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    protected void afterHookedMethod(MethodHookParam param) {
                         XposedHelpers.callStaticMethod(WebView.class, "setWebContentsDebuggingEnabled", true);
                     }
                 });
@@ -400,6 +446,43 @@ public class Functions {
         } catch (Exception e) {
             XposedBridge.log("[Zhiliao] " + e.toString());
             return false;
+        }
+    }
+
+    static String getType(String type) {
+        switch (type) {
+            case "answer":
+                return "问题";
+            case "article":
+                return "文章";
+            case "zvideo":
+                return "视频";
+            case "drama":
+                return "直播";
+            default:
+                return "其他";
+        }
+    }
+
+    static Drawable[] backgrounds;
+
+    static Drawable getBackground(String type) {
+        if (backgrounds == null) {
+            backgrounds = new Drawable[3];
+            backgrounds[0] = Helper.modRes.getDrawable(R.drawable.bg_answer);
+            backgrounds[1] = Helper.modRes.getDrawable(R.drawable.bg_article);
+            backgrounds[2] = Helper.modRes.getDrawable(R.drawable.bg_video);
+        }
+        switch (type) {
+            case "answer":
+                return backgrounds[0];
+            case "article":
+                return backgrounds[1];
+            case "zvideo":
+            case "drama":
+                return backgrounds[2];
+            default:
+                return backgrounds[0];
         }
     }
 }

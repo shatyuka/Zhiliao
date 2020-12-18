@@ -144,6 +144,7 @@ public class ZhihuPreference {
                     Object preference_status = Helper.findPreference.invoke(thisObject, "preference_status");
                     Object switch_externlink = Helper.findPreference.invoke(thisObject, "switch_externlink");
                     Object switch_externlinkex = Helper.findPreference.invoke(thisObject, "switch_externlinkex");
+                    Object switch_tag = Helper.findPreference.invoke(thisObject, "switch_tag");
                     Object switch_livebutton = Helper.findPreference.invoke(thisObject, "switch_livebutton");
                     Object switch_reddot = Helper.findPreference.invoke(thisObject, "switch_reddot");
                     Object switch_vipbanner = Helper.findPreference.invoke(thisObject, "switch_vipbanner");
@@ -155,6 +156,7 @@ public class ZhihuPreference {
                     Helper.setOnPreferenceChangeListener.invoke(Helper.findPreference.invoke(thisObject, "accept_eula"), thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_externlinkex, thisObject);
+                    Helper.setOnPreferenceClickListener.invoke(switch_tag, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
                     Helper.setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
@@ -211,6 +213,7 @@ public class ZhihuPreference {
                     Helper.setIcon.invoke(switch_externlink, Helper.modRes.getDrawable(R.drawable.ic_link));
                     Helper.setIcon.invoke(switch_externlinkex, Helper.modRes.getDrawable(R.drawable.ic_link));
                     Helper.setIcon.invoke(Helper.findPreference.invoke(thisObject, "switch_colormode"), Helper.modRes.getDrawable(R.drawable.ic_color));
+                    Helper.setIcon.invoke(switch_tag, Helper.modRes.getDrawable(R.drawable.ic_label));
                     Helper.setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                     Helper.setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                     Helper.setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
@@ -298,6 +301,7 @@ public class ZhihuPreference {
                             Object switch_externlink = Helper.findPreference.invoke(param.thisObject, "switch_externlink");
                             Helper.setChecked.invoke(switch_externlink, false);
                             break;
+                        case "switch_tag":
                         case "switch_livebutton":
                         case "switch_reddot":
                         case "switch_vipbanner":
