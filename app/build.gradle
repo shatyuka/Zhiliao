@@ -9,6 +9,9 @@ android {
         versionCode appVerCode.toInteger()
         versionName appVerName
         resConfigs "zh", "xxhdpi"
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
     }
     applicationVariants.all { variant ->
         variant.resValue "string", "app_version", variant.versionName
@@ -25,6 +28,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
         }
     }
     buildToolsVersion '30.0.2'
