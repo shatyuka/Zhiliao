@@ -194,8 +194,13 @@ public class Helper {
             Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
             if (packageInfo.versionCode > 2614) {
                 NextContentAnimationView = classLoader.loadClass("com.zhihu.android.mix.widget.NextContentAnimationView");
-                ContentMixAdapter = classLoader.loadClass(packageInfo.versionCode > 3316 ? "com.zhihu.android.mix.b.a" : "com.zhihu.android.mix.a.a");
-                getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                try {
+                    ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
+                    getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                } catch (NoSuchMethodException e) {
+                    ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.b.a");
+                    getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                }
             }
             BaseTemplateNewFeedHolder = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.BaseTemplateNewFeedHolder");
             TemplateFeed = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateFeed");
