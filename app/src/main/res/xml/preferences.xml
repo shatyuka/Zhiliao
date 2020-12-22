@@ -18,11 +18,6 @@
             android:key="preference_settings"
             android:summary="@string/pref_settings_desc"
             android:title="@string/pref_settings" />
-        <Preference
-            android:icon="@drawable/ic_cloud_download"
-            android:key="preference_download"
-            android:summary="@string/pref_download_desc"
-            android:title="@string/pref_download" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_about">
         <Preference

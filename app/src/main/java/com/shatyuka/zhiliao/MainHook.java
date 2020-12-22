@@ -2,7 +2,6 @@ package com.shatyuka.zhiliao;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
 import android.widget.Toast;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -18,7 +17,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     final static String modulePackage = "com.shatyuka.zhiliao";
     static String modulePath;
 
-    private native void initNative(String modulePath);
+    private native void initNative();
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
@@ -26,7 +25,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             XposedHelpers.findAndHookMethod("com.shatyuka.zhiliao.MySettingsFragment", lpparam.classLoader, "isModuleActive", XC_MethodReplacement.returnConstant(true));
         } else if (hookPackage.equals(lpparam.packageName)) {
             System.load(modulePath.substring(0, modulePath.lastIndexOf('/')) + "/lib/arm/libzhiliao.so");
-            initNative(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + modulePackage + "/files/zhihu.apk");
+            initNative();
 
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
                 @Override

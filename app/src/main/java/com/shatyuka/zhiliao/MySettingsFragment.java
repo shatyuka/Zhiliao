@@ -111,35 +111,6 @@ public class MySettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
-        Preference preference_download = findPreference("preference_download");
-        assert preference_download != null;
-        preference_download.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                try {
-                    String url = "https://www.zhihu.com/api/v4/sem/package/redirect?app_from=zhihuwap&utm_source=zhihu_default";
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                    request.setDestinationInExternalFilesDir(getContext(), "", "zhihu.apk");
-                    request.setVisibleInDownloadsUi(false);
-                    BroadcastReceiver onComplete = new BroadcastReceiver() {
-                        public void onReceive(Context context, Intent intent) {
-                            Toast.makeText(context, "初始化成功！", Toast.LENGTH_SHORT).show();
-                        }
-                    };
-                    getContext().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-                    DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
-                    File file = new File(getContext().getExternalFilesDir("") + "/zhihu.apk");
-                    if (file.exists())
-                        file.delete();
-                    downloadManager.enqueue(request);
-                    Toast.makeText(getContext(), "下载中，请稍候！", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "下载失败！", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-        });
-
         Preference preference_version = findPreference("preference_version");
         assert preference_version != null;
         preference_version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
