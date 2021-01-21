@@ -81,6 +81,9 @@ public class Helper {
     static Class<?> ViewHolder;
     static Class<?> SugarHolder;
     static Class<?> TemplateRoot;
+    static Class<?> Response;
+    static Class<?> SearchTopTabsItemList;
+    static Class<?> PresetWords;
 
     static Method findPreference;
     static Method setSummary;
@@ -104,6 +107,7 @@ public class Helper {
     static Method addPreferencesFromResource;
     static Method inflate;
     static Method getItemCount;
+    static Method body;
 
     static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
@@ -120,6 +124,8 @@ public class Helper {
     static Field ViewHolder_itemView;
     static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
+    static Field SearchTopTabsItemList_commercialData;
+    static Field PresetWords_preset;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -207,6 +213,9 @@ public class Helper {
             ViewHolder = classLoader.loadClass("androidx.recyclerview.widget.RecyclerView$ViewHolder");
             SugarHolder = classLoader.loadClass("com.zhihu.android.sugaradapter.SugarHolder");
             TemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateRoot");
+            Response = classLoader.loadClass("retrofit2.Response");
+            SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
+            PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);
@@ -226,6 +235,9 @@ public class Helper {
             getMenuName = IMenuItem.getMethod("a");
             addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
             inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, Helper.PreferenceGroup);
+            body = Response.getMethod("f");
+            if (body.getReturnType() != Object.class)
+                body = Response.getMethod("e");
 
             boolean foundshouldInterceptRequest = false;
             for (char i = 'a'; i <= 'z'; i++) {
@@ -296,6 +308,8 @@ public class Helper {
             }
             SugarHolder_mData.setAccessible(true);
             TemplateRoot_unique = TemplateRoot.getField("unique");
+            SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
+            PresetWords_preset = PresetWords.getField("preset");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));

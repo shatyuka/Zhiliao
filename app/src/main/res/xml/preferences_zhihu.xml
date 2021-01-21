@@ -57,6 +57,12 @@
             android:key="switch_answerad"
             android:title="去回答底部广告"
             android:summary="去除回答底部广告"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="true"
+            android:dependency="switch_mainswitch"
+            android:key="switch_searchad"
+            android:title="去搜索广告"
+            android:summary="去除「大家都在搜」与推广"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="其他" android:key="category_misc">
         <com.zhihu.android.app.ui.widget.SwitchPreference

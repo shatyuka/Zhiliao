@@ -433,6 +433,26 @@ public class Functions {
                 });
             }
 
+            XposedBridge.hookMethod(Helper.body, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_searchad", true)) {
+                        Object result = param.getResult();
+                        switch (result.getClass().getName()) {
+                            case "com.zhihu.android.api.model.SearchTopTabsItemList": {
+                                Helper.SearchTopTabsItemList_commercialData.set(result, null);
+                                break;
+                            }
+                            case "com.zhihu.android.api.model.PresetWords": {
+                                Helper.PresetWords_preset.set(result, null);
+                                break;
+                            }
+                        }
+                        param.setResult(result);
+                    }
+                }
+            });
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
