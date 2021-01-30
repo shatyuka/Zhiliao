@@ -6,4 +6,7 @@
         <item>别点啦别点啦 ( ≧Д≦)</item>
         <item>去点下面的捐赠吧 ( ≧Д≦)</item>
     </string-array>
+    <string-array name="xposedscope">
+        <item>com.zhihu.android</item>
+    </string-array>
 </resources>
