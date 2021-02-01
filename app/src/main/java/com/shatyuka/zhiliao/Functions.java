@@ -341,11 +341,12 @@ public class Functions {
                 XposedHelpers.findAndHookMethod(Helper.VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
             }
 
-            if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_vipnav", false)) {
+            if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_vipnav", false) || Helper.prefs.getBoolean("switch_videonav", false))) {
                 XposedHelpers.findAndHookMethod(Helper.BottomNavMenuView, "a", Helper.IMenuItem, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        if ("market".equals(Helper.getMenuName.invoke(param.args[0]))) {
+                        if (("market".equals(Helper.getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||
+                                ("video".equals(Helper.getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_videonav", false))) {
                             ((View) Helper.Tab_tabView.get(param.getResult())).setVisibility(View.GONE);
                         }
                     }
