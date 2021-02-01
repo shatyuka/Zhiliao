@@ -238,6 +238,8 @@ public class Helper {
             body = Response.getMethod("f");
             if (body.getReturnType() != Object.class)
                 body = Response.getMethod("e");
+            if (body.getReturnType() != Object.class)
+                throw new NoSuchMethodException("Method body not found");
 
             boolean foundshouldInterceptRequest = false;
             for (char i = 'a'; i <= 'z'; i++) {
