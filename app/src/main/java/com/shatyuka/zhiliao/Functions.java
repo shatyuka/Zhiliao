@@ -374,7 +374,7 @@ public class Functions {
             }
 
             if (Helper.packageInfo.versionCode > 2614) { // after 6.61.0
-                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_article", false)) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
                     XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) {
@@ -382,10 +382,12 @@ public class Functions {
                                 ((View) param.args[0]).setVisibility(View.GONE);
                         }
                     });
+                }
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_article", false)) {
                     XposedBridge.hookMethod(Helper.getItemCount, new XC_MethodHook() {
                         @Override
-                        protected void beforeHookedMethod(MethodHookParam param) {
-                            if (param.thisObject.getClass() == Helper.ContentMixAdapter)
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                            if (param.thisObject.getClass() == Helper.ContentMixAdapter && Helper.ContentMixPagerFragment_type.get(Helper.ContentMixAdapter_fragment.get(param.thisObject)) == "article")
                                 param.setResult(1);
                         }
                     });

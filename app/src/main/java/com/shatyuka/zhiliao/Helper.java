@@ -76,6 +76,7 @@ public class Helper {
     static Class<?> Ad;
     static Class<?> NextContentAnimationView;
     static Class<?> ContentMixAdapter;
+    static Class<?> ContentMixPagerFragment;
     static Class<?> BaseTemplateNewFeedHolder;
     static Class<?> TemplateFeed;
     static Class<?> ViewHolder;
@@ -126,6 +127,8 @@ public class Helper {
     static Field TemplateRoot_unique;
     static Field SearchTopTabsItemList_commercialData;
     static Field PresetWords_preset;
+    static Field ContentMixAdapter_fragment;
+    static Field ContentMixPagerFragment_type;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -207,6 +210,10 @@ public class Helper {
                     ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.b.a");
                     getItemCount = ContentMixAdapter.getMethod("getItemCount");
                 }
+                ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
+                ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("f");
+                ContentMixAdapter_fragment.setAccessible(true);
+                ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
             }
             BaseTemplateNewFeedHolder = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.BaseTemplateNewFeedHolder");
             TemplateFeed = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateFeed");
