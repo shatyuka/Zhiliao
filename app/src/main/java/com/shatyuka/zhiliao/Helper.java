@@ -131,6 +131,7 @@ public class Helper {
     static Field PresetWords_preset;
     static Field ContentMixAdapter_fragment;
     static Field ContentMixPagerFragment_type;
+    static Field FeedList_data;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -363,6 +364,7 @@ public class Helper {
             TemplateRoot_unique = TemplateRoot.getField("unique");
             SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
             PresetWords_preset = PresetWords.getField("preset");
+            FeedList_data = classLoader.loadClass("com.zhihu.android.api.model.FeedList").getField("data");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));

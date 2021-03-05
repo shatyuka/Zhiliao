@@ -104,6 +104,40 @@ public class Functions {
                 }
             });
 
+            XposedBridge.hookAllMethods(Helper.BasePagingFragment, "postRefreshSucceed", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        if (param.args[0] == null)
+                            return;
+                        List<?> list = (List<?>) Helper.FeedList_data.get(param.args[0]);
+                        if (list == null || list.isEmpty())
+                            return;
+                        for (int i = list.size() - 1; i >= 0; i--) {
+                            if (list.get(i).getClass() == Helper.FeedAdvert) {
+                                list.remove(i);
+                            }
+                        }
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.BasePagingFragment, "insertDataRangeToList", int.class, List.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        if (param.args[1] == null)
+                            return;
+                        List<?> list = (List<?>) param.args[1];
+                        if (list.isEmpty())
+                            return;
+                        for (int i = list.size() - 1; i >= 0; i--) {
+                            if (list.get(i).getClass() == Helper.FeedAdvert) {
+                                list.remove(i);
+                            }
+                        }
+                    }
+                }
+            });
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, Helper.FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -433,7 +467,8 @@ public class Functions {
                             spannableString.setSpan(what, 0, spannableString.length(), SpannableString.SPAN_INCLUSIVE_INCLUSIVE);
                             title.setText(spannableString);
                             */
-                            title.setText("　　 " + title.getText());
+                            if (title.getText().length() < 3 || title.getText().subSequence(0, 3) != "　　 ")
+                                title.setText("　　 " + title.getText());
                         }
                     }
                 });
