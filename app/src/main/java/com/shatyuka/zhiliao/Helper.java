@@ -82,7 +82,7 @@ public class Helper {
     static Class<?> ViewHolder;
     static Class<?> SugarHolder;
     static Class<?> TemplateRoot;
-    static Class<?> Response;
+    static Class<?> JacksonResponseBodyConverter;
     static Class<?> SearchTopTabsItemList;
     static Class<?> PresetWords;
 
@@ -95,6 +95,7 @@ public class Helper {
     static Method setOnPreferenceChangeListener;
     static Method setOnPreferenceClickListener;
     static Method addFragmentToOverlay;
+    static Method addFragmentToOverlay_old;
     static Method setSharedPreferencesName;
     static Method getContext;
     static Method getText;
@@ -102,13 +103,14 @@ public class Helper {
     static Method showShareAd;
     static Method onNestChildScrollRelease;
     static Method isLinkZhihu;
+    static Method isLinkZhihuWrap;
     static Method isReadyPageTurning;
     static Method getMenuName;
     static Method shouldInterceptRequest;
     static Method addPreferencesFromResource;
     static Method inflate;
     static Method getItemCount;
-    static Method body;
+    static Method convert;
 
     static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
@@ -162,7 +164,7 @@ public class Helper {
             MainActivity = classLoader.loadClass("com.zhihu.android.app.ui.activity.MainActivity");
             BasePreferenceFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.BasePreferenceFragment");
             PreferenceGroup = classLoader.loadClass("androidx.preference.PreferenceGroup");
-            IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.market.newhome.ui.view.VillaLayout").getDeclaredMethod("getWebView").getReturnType();
+            IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
             BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
             MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
             InnerDeserializer = classLoader.loadClass("com.zhihu.android.api.util.ZHObjectRegistryCenter$InnerDeserializer");
@@ -180,7 +182,11 @@ public class Helper {
             NestChildScrollChange = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNestChildScrollChange$1");
             NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
             DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
-            VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
+            try {
+                VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
+            } catch (ClassNotFoundException e) {
+                VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.widget.VerticalViewPager$VerticalPageTransformer");
+            }
             AnswerContentView = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView");
             AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
             FeedsTabsFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment");
@@ -188,14 +194,20 @@ public class Helper {
             ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
             BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
             BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
-            NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
+            try {
+                NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
+            } catch (ClassNotFoundException ignored) {
+            }
             NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
             LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
             VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
             BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
             IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
             AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
-            AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
+            try {
+                AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
+            } catch (ClassNotFoundException ignored) {
+            }
             InternalNotificationManager = classLoader.loadClass("com.zhihu.android.app.feed.notification.InternalNotificationManager");
             ImageBaseActivity = classLoader.loadClass("com.zhihu.android.picture.activity.a");
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
@@ -220,7 +232,15 @@ public class Helper {
             ViewHolder = classLoader.loadClass("androidx.recyclerview.widget.RecyclerView$ViewHolder");
             SugarHolder = classLoader.loadClass("com.zhihu.android.sugaradapter.SugarHolder");
             TemplateRoot = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateRoot");
-            Response = classLoader.loadClass("retrofit2.Response");
+            try {
+                JacksonResponseBodyConverter = classLoader.loadClass("com.zhihu.android.net.b.b");
+            } catch (ClassNotFoundException e) {
+                try {
+                    JacksonResponseBodyConverter = classLoader.loadClass("retrofit2.b.a.c");
+                } catch (ClassNotFoundException e2) {
+                    JacksonResponseBodyConverter = classLoader.loadClass("j.b.a.c");
+                }
+            }
             SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
             PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
 
@@ -232,23 +252,16 @@ public class Helper {
             setChecked = SwitchPreference.getMethod("g", boolean.class);
             setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
             setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
-            addFragmentToOverlay = MainActivity.getMethod("addFragmentToOverlay", ZHIntent);
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             getContext = BasePreferenceFragment.getMethod("getContext");
             getText = EditTextPreference.getMethod("i");
             onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
-            isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
             isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
             getMenuName = IMenuItem.getMethod("a");
             addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
             inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, Helper.PreferenceGroup);
-            body = Response.getMethod("f");
-            if (body.getReturnType() != Object.class)
-                body = Response.getMethod("e");
-            if (body.getReturnType() != Object.class)
-                throw new NoSuchMethodException("Method body not found");
+            convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
 
-            boolean foundshouldInterceptRequest = false;
             for (char i = 'a'; i <= 'z'; i++) {
                 Class<?> ZhihuWebViewClient = XposedHelpers.findClassIfExists("com.zhihu.android.appview.a$" + i, classLoader);
                 if (ZhihuWebViewClient != null) {
@@ -257,14 +270,12 @@ public class Helper {
                     } catch (NoSuchMethodException e) {
                         continue;
                     }
-                    foundshouldInterceptRequest = true;
                     break;
                 }
             }
-            if (!foundshouldInterceptRequest)
+            if (shouldInterceptRequest == null)
                 throw new NoSuchMethodException("Method shouldInterceptRequest not found");
 
-            boolean foundisShowLaunchAd = false;
             for (char i = 'a'; i <= 'z'; i++) {
                 Class<?> LaunchAdInterface = XposedHelpers.findClassIfExists("com.zhihu.android.app.util.c" + i, classLoader);
                 if (LaunchAdInterface != null) {
@@ -273,28 +284,61 @@ public class Helper {
                     } catch (NoSuchMethodException e) {
                         continue;
                     }
-                    foundisShowLaunchAd = true;
                     break;
                 }
             }
-            if (!foundisShowLaunchAd)
+            if (isShowLaunchAd == null)
                 throw new NoSuchMethodException("Method isShowLaunchAd not found");
 
-            boolean foundshowShareAd = false;
             Class<?> ShareFragment = XposedHelpers.findClassIfExists("com.zhihu.android.library.sharecore.fragment.ShareFragment", classLoader);
             if (ShareFragment != null) {
                 Method[] methods = ShareFragment.getDeclaredMethods();
                 for (Method method : methods) {
                     Class<?>[] types = method.getParameterTypes();
                     if (types.length == 1 && types[0] == View.class) {
-                        foundshowShareAd = true;
                         showShareAd = method;
                         break;
                     }
                 }
             }
-            if (ShareFragment == null || !foundshowShareAd)
+            if (showShareAd == null)
                 throw new NoSuchMethodException("Method showShareAd not found");
+
+            try {
+                addFragmentToOverlay = MainActivity.getMethod("addFragmentToOverlay", ZHIntent);
+            } catch (NoSuchMethodException e) {
+                Method[] methods = MainActivity.getMethods();
+                for (Method method : methods) {
+                    Class<?>[] types = method.getParameterTypes();
+                    if (method.getName().equals("a") && types.length == 5 && types[0] == ZHIntent) {
+                        addFragmentToOverlay_old = method;
+                        break;
+                    }
+                }
+                if (addFragmentToOverlay_old == null)
+                    throw new NoSuchMethodException("Method addFragmentToOverlay not found");
+            }
+
+            try {
+                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            } catch (NoSuchMethodException e) {
+                LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.j");
+                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            }
+
+            {
+                Method[] methods = LinkZhihuHelper.getMethods();
+                for (Method method : methods) {
+                    Class<?>[] types = method.getParameterTypes();
+                    if (method.getName().equals("a") && method.getReturnType() == boolean.class &&
+                            types.length == 3 && types[2] == String.class && types[1] != Uri.class) {
+                        isLinkZhihuWrap = method;
+                        break;
+                    }
+                }
+                if (isLinkZhihuWrap == null)
+                    throw new NoSuchMethodException("Method isLinkZhihuWrap not found");
+            }
 
             ApiTemplateRoot_extra = ApiTemplateRoot.getField("extra");
             ApiTemplateRoot_common_card = ApiTemplateRoot.getField("common_card");

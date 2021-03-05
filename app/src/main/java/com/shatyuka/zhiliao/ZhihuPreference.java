@@ -242,7 +242,7 @@ public class ZhihuPreference {
                         Helper.setVisible.invoke(category_eula, false);
                     } else {
                         Object switch_main = Helper.findPreference.invoke(param.thisObject, "switch_mainswitch");
-                        switch_main.getClass().getMethod("g", boolean.class).invoke(switch_main, false);
+                        Helper.setChecked.invoke(switch_main, false);
                     }
                     return null;
                 }
@@ -359,7 +359,10 @@ public class ZhihuPreference {
                     Object thisObject = param.thisObject;
                     Intent intent = ((Activity) thisObject).getIntent();
                     if (intent.hasExtra("zhiliao_settings")) {
-                        Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
+                        if (Helper.addFragmentToOverlay != null)
+                            Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
+                        else
+                            Helper.addFragmentToOverlay_old.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)), null, 0, null, false);
                     }
                 }
             });
@@ -369,8 +372,10 @@ public class ZhihuPreference {
                     Object thisObject = param.thisObject;
                     Intent intent = (Intent) param.args[0];
                     if (intent.hasExtra("zhiliao_settings")) {
-                        Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
-                    }
+                        if (Helper.addFragmentToOverlay != null)
+                            Helper.addFragmentToOverlay.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)));
+                        else
+                            Helper.addFragmentToOverlay_old.invoke(thisObject, Helper.ZHIntent.getConstructors()[0].newInstance(Helper.DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(Helper.PageInfoType, 0)), null, 0, null, false);                    }
                 }
             });
 

@@ -137,14 +137,16 @@ public class Functions {
                     }
                 }
             });
-            XposedHelpers.findAndHookMethod(Helper.AnswerListWrapper, "insertAdBrandToList", ArrayList.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
-                        param.setResult(null);
+            if (Helper.AnswerListWrapper != null) {
+                XposedHelpers.findAndHookMethod(Helper.AnswerListWrapper, "insertAdBrandToList", ArrayList.class, new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
+                            param.setResult(null);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveCommentAdParam", Context.class, "com.zhihu.android.api.model.CommentListAd", Boolean.class, new XC_MethodHook() {
                 @Override
@@ -289,11 +291,12 @@ public class Functions {
                 XposedHelpers.findAndHookMethod(Helper.ZHMainTabLayout, "d", XC_MethodReplacement.returnConstant(null));
                 XposedHelpers.findAndHookMethod(Helper.BottomNavMenuItemView, "a", int.class, XC_MethodReplacement.returnConstant(null));
                 XposedHelpers.findAndHookMethod(Helper.BottomNavMenuItemViewForIconOnly, "a", int.class, XC_MethodReplacement.returnConstant(null));
-                XposedHelpers.findAndHookMethod(Helper.NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
+                if (Helper.NotiUnreadCountKt != null)
+                    XposedHelpers.findAndHookMethod(Helper.NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
                 XposedHelpers.findAndHookMethod(Helper.NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
             }
 
-            XposedHelpers.findAndHookMethod(Helper.LinkZhihuHelper, "a", "com.zhihu.android.app.mercury.api.c", "com.zhihu.android.app.mercury.api.IZhihuWebView", String.class, new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.isLinkZhihuWrap, new XC_MethodHook() {
                 XC_MethodHook.Unhook hook_isLinkZhihu;
 
                 @Override
@@ -436,26 +439,23 @@ public class Functions {
                 });
             }
 
-            XposedBridge.hookMethod(Helper.body, new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.convert, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_searchad", true)) {
                         Object result = param.getResult();
                         if (result != null) {
-                            try {
-                                switch (result.getClass().getName()) {
-                                    case "com.zhihu.android.api.model.SearchTopTabsItemList": {
-                                        Helper.SearchTopTabsItemList_commercialData.set(result, null);
-                                        break;
-                                    }
-                                    case "com.zhihu.android.api.model.PresetWords": {
-                                        Helper.PresetWords_preset.set(result, null);
-                                        break;
-                                    }
+                            switch (result.getClass().getName()) {
+                                case "com.zhihu.android.api.model.SearchTopTabsItemList": {
+                                    Helper.SearchTopTabsItemList_commercialData.set(result, null);
+                                    break;
                                 }
-                                param.setResult(result);
-                            } catch (Exception ignore) {
+                                case "com.zhihu.android.api.model.PresetWords": {
+                                    Helper.PresetWords_preset.set(result, null);
+                                    break;
+                                }
                             }
+                            param.setResult(result);
                         }
                     }
                 }
