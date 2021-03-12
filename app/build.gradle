@@ -10,7 +10,7 @@ android {
         versionName appVerName
         resConfigs "zh", "xxhdpi"
         ndk {
-            abiFilters 'armeabi-v7a'
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
     }
     applicationVariants.all { variant ->
@@ -36,7 +36,7 @@ android {
             version "3.10.2"
         }
     }
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
 }
 
 dependencies {
