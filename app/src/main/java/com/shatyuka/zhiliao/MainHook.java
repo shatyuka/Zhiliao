@@ -15,12 +15,29 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     final static String hookPackage = "com.zhihu.android";
     final static String modulePackage = "com.shatyuka.zhiliao";
+    static String modulePath;
+
+    private native void initNative();
+
+    private static boolean is64Bit(ClassLoader classLoader) {
+        try {
+            String path = (String)ClassLoader.class.getDeclaredMethod("findLibrary", String.class).invoke(classLoader, "art");
+            if (path != null) {
+                return path.contains("lib64");
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         if (modulePackage.equals(lpparam.packageName)) {
             XposedHelpers.findAndHookMethod("com.shatyuka.zhiliao.MySettingsFragment", lpparam.classLoader, "isModuleActive", XC_MethodReplacement.returnConstant(true));
         } else if (hookPackage.equals(lpparam.packageName)) {
+            System.load(modulePath.substring(0, modulePath.lastIndexOf('/')) + (is64Bit(lpparam.classLoader) ? "/lib/arm64/libzhiliao.so" : "/lib/arm/libzhiliao.so"));
+            initNative();
+
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
@@ -46,6 +63,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
+        modulePath = startupParam.modulePath;
         Helper.modRes = Helper.getModuleRes(startupParam.modulePath);
     }
 }
