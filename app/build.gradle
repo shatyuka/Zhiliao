@@ -36,11 +36,14 @@ android {
             version "3.10.2"
         }
     }
+    buildFeatures {
+        prefab true
+    }
     buildToolsVersion '30.0.3'
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.preference:preference:1.1.1'
     compileOnly 'de.robv.android.xposed:api:82'
 }
