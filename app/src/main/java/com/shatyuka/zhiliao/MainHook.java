@@ -20,6 +20,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     private native void initNative();
 
     private static boolean is64Bit(ClassLoader classLoader) {
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            return android.os.Process.is64Bit();
+        }
         try {
             String path = (String)ClassLoader.class.getDeclaredMethod("findLibrary", String.class).invoke(classLoader, "art");
             if (path != null) {
@@ -35,8 +38,16 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         if (modulePackage.equals(lpparam.packageName)) {
             XposedHelpers.findAndHookMethod("com.shatyuka.zhiliao.MySettingsFragment", lpparam.classLoader, "isModuleActive", XC_MethodReplacement.returnConstant(true));
         } else if (hookPackage.equals(lpparam.packageName)) {
-            System.load(modulePath.substring(0, modulePath.lastIndexOf('/')) + (is64Bit(lpparam.classLoader) ? "/lib/arm64/libzhiliao.so" : "/lib/arm/libzhiliao.so"));
-            initNative();
+            try {
+                System.loadLibrary("zhiliao");
+                initNative();
+            } catch (Throwable ignored) {
+                try { // Let's try again
+                    System.load(modulePath.substring(0, modulePath.lastIndexOf('/')) + (is64Bit(lpparam.classLoader) ? "/lib/arm64/libzhiliao.so" : "/lib/arm/libzhiliao.so"));
+                    initNative();
+                } catch (Throwable ignored2) {
+                }
+            }
 
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
                 @Override
