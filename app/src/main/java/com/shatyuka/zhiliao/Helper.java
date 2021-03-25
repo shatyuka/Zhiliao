@@ -231,6 +231,9 @@ public class Helper {
                 }
                 ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
                 ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("f");
+                if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
+                    ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("g");
+                }
                 ContentMixAdapter_fragment.setAccessible(true);
                 ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
             }
