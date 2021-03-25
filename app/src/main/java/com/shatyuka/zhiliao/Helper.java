@@ -132,6 +132,7 @@ public class Helper {
     static Field ContentMixAdapter_fragment;
     static Field ContentMixPagerFragment_type;
     static Field FeedList_data;
+    static Field FeedFollowAvatarCommonViewHolder_dot;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -370,6 +371,8 @@ public class Helper {
             SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
             PresetWords_preset = PresetWords.getField("preset");
             FeedList_data = classLoader.loadClass("com.zhihu.android.api.model.FeedList").getField("data");
+            FeedFollowAvatarCommonViewHolder_dot = FeedFollowAvatarCommonViewHolder.getDeclaredField("f");
+            FeedFollowAvatarCommonViewHolder_dot.setAccessible(true);
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
