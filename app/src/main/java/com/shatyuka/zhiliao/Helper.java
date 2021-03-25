@@ -219,9 +219,14 @@ public class Helper {
                 try {
                     ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
                     getItemCount = ContentMixAdapter.getMethod("getItemCount");
-                } catch (NoSuchMethodException e) {
-                    ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.b.a");
-                    getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                } catch (Throwable e) {
+                    try {
+                        ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.b.a");
+                        getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                    } catch (Throwable e2) {
+                        ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.adapter.a");
+                        getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                    }
                 }
                 ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
                 ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("f");
