@@ -427,6 +427,18 @@ public class Functions {
                         }
                     });
                 }
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_horizontal", false)) {
+                    XposedBridge.hookAllMethods(Helper.AnswerRouterDispatcher, "buildNormal", new XC_MethodReplacement() {
+                        @Override
+                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            Object arg = param.args[0];
+                            Object url = Helper.MatchResult_url.get(arg);
+                            Object bundle = Helper.MatchResult_bundle.get(arg);
+                            Object module = Helper.MatchResult_module.get(arg);
+                            return Helper.MatchResult.newInstance(url, bundle, Helper.AnswerPagerFragment, module);
+                        }
+                    });
+                }
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_article", false)) {
                     XposedBridge.hookMethod(Helper.getItemCount, new XC_MethodHook() {
                         @Override

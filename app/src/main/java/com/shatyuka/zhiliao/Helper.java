@@ -12,6 +12,7 @@ import android.webkit.WebResourceRequest;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
@@ -85,6 +86,7 @@ public class Helper {
     static Class<?> JacksonResponseBodyConverter;
     static Class<?> SearchTopTabsItemList;
     static Class<?> PresetWords;
+    static Class<?> AnswerRouterDispatcher;
 
     static Method findPreference;
     static Method setSummary;
@@ -133,6 +135,11 @@ public class Helper {
     static Field ContentMixPagerFragment_type;
     static Field FeedList_data;
     static Field FeedFollowAvatarCommonViewHolder_dot;
+    static Field MatchResult_url;
+    static Field MatchResult_bundle;
+    static Field MatchResult_module;
+
+    static Constructor<?> MatchResult;
 
     static Pattern regex_title;
     static Pattern regex_author;
@@ -236,6 +243,20 @@ public class Helper {
                 }
                 ContentMixAdapter_fragment.setAccessible(true);
                 ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
+                AnswerRouterDispatcher = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerRouterDispatcher");
+                Method[] methods = AnswerRouterDispatcher.getDeclaredMethods();
+                for (Method method : methods) {
+                    if (method.getName().equals("buildNormal")) {
+                        Class<?> matchResultClass = method.getReturnType();
+                        MatchResult = matchResultClass.getConstructors()[0];
+                        MatchResult_url = method.getReturnType().getField("a");
+                        MatchResult_bundle = method.getReturnType().getField("b");
+                        MatchResult_module = method.getReturnType().getField("d");
+                        break;
+                    }
+                }
+                if (MatchResult == null)
+                    throw new NoSuchMethodException("Class MatchResult not found");
             }
             BaseTemplateNewFeedHolder = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.BaseTemplateNewFeedHolder");
             TemplateFeed = classLoader.loadClass("com.zhihu.android.api.model.template.TemplateFeed");
