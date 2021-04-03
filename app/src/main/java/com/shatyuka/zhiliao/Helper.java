@@ -87,6 +87,7 @@ public class Helper {
     static Class<?> SearchTopTabsItemList;
     static Class<?> PresetWords;
     static Class<?> AnswerRouterDispatcher;
+    static Class<?> StatusBarUtil;
 
     static Method findPreference;
     static Method setSummary;
@@ -274,6 +275,11 @@ public class Helper {
             }
             SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
             PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
+            try {
+                StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.x$b");
+            } catch (ClassNotFoundException ignored) {
+                StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.y$b");
+            }
 
             findPreference = SettingsFragment.getMethod("a", CharSequence.class);
             setSummary = Preference.getMethod("a", CharSequence.class);

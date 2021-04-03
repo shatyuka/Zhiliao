@@ -113,6 +113,12 @@
             android:key="switch_tag"
             android:title="显示卡片类别"
             android:summary="在推荐卡片标题前显示类别标签"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_statusbar"
+            android:title="状态栏沉浸"
+            android:summary="沉浸式状态栏"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference

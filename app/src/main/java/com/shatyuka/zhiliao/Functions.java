@@ -3,10 +3,12 @@ package com.shatyuka.zhiliao;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -515,6 +517,29 @@ public class Functions {
                 }
             });
 
+
+            XposedHelpers.findAndHookConstructor(Helper.StatusBarUtil, int.class, int.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_statusbar", false))
+                        param.args[0] = getStatusbarColor();
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.StatusBarUtil, "a", int.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_statusbar", false))
+                        param.args[0] = getStatusbarColor();
+                }
+            });
+            XposedHelpers.findAndHookMethod(Helper.AnswerPagerFragment, "onViewCreated", View.class, Bundle.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_statusbar", false))
+                        ((View)param.args[0]).setBackgroundColor(getStatusbarColor());
+                }
+            });
+
             if (DEBUG_WEBVIEW) {
                 XposedBridge.hookAllConstructors(WebView.class, new XC_MethodHook() {
                     @Override
@@ -566,5 +591,14 @@ public class Functions {
             default:
                 return backgrounds[0];
         }
+    }
+
+    static int getStatusbarColor()
+    {
+        boolean darkMode = (Helper.context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        if (darkMode)
+            return 0xFF121212;
+        else
+            return 0xFFFFFFFF;
     }
 }
