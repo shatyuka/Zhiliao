@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -33,7 +32,7 @@ public class ZhihuPreference {
     private static int settings_res_id = 0;
     private static int debug_res_id = 0;
 
-    static boolean init(final ClassLoader classLoader) {
+    static boolean init() {
         try {
             XposedHelpers.findAndHookMethod(Helper.PreferenceInflater, "a", int.class, Helper.PreferenceGroup, new XC_MethodHook() {
                 @Override
@@ -291,12 +290,9 @@ public class ZhihuPreference {
                             ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_sourcecode);
                             break;
                         case "preference_donate":
-                            Intent donate_intent = new Intent();
-                            donate_intent.setAction(Intent.ACTION_MAIN);
-                            donate_intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            donate_intent.putExtra("zhiliao_donate", true);
-                            donate_intent.setClassName(modulePackage, "com.shatyuka.zhiliao.SettingsActivity");
-                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(donate_intent);
+                            Uri uri_donate = Uri.parse("https://github.com/shatyuka/Zhiliao/wiki/Donate");
+                            Intent intent_donate = new Intent(Intent.ACTION_VIEW, uri_donate);
+                            ((Context) Helper.getContext.invoke(param.thisObject)).startActivity(intent_donate);
                             break;
                         case "switch_externlink":
                             Object switch_externlinkex = Helper.findPreference.invoke(param.thisObject, "switch_externlinkex");
