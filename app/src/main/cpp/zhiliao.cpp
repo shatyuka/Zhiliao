@@ -12,6 +12,7 @@ FILE *fake_fopen(const char *filename, const char *mode) {
     size_t len = strlen(filename);
     if (len >= 8) {
         if (!strcmp(filename + len - 8, "base.apk")) {
+            DobbyDestroy((void*)fopen);
             pthread_exit(nullptr);
         }
     }

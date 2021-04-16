@@ -12,7 +12,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
-    final static String hookPackage = "com.zhihu.android";
+    public final static String hookPackage = "com.zhihu.android";
     static String modulePath;
 
     private native void initNative();
@@ -59,9 +59,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                         Helper.context = ((Application) param.args[0]).getApplicationContext();
                         Helper.prefs = Helper.context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
 
-                        if (!Helper.init(lpparam.classLoader) || !ZhihuPreference.init() || !Functions.init(lpparam.classLoader)) {
+                        if (!Helper.init(lpparam.classLoader))
                             Toast.makeText(Helper.context, "知了初始化失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_SHORT).show();
-                        }
+                        else
+                            Hooks.init(lpparam.classLoader);
                     }
                 }
             });
