@@ -8,8 +8,13 @@ android {
         targetSdkVersion 30
         versionCode appVerCode.toInteger()
         versionName appVerName
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        externalNativeBuild {
+            cmake {
+                abiFilters "arm64-v8a", "armeabi-v7a"
+                arguments "-DANDROID_STL=none"
+                cppFlags "-Qunused-arguments", "-fno-rtti", "-fno-exceptions", "-ffunction-sections", "-fdata-sections", "-Wl,--exclude-libs,ALL", "-s", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
+                cFlags "-Qunused-arguments", "-fno-rtti", "-fno-exceptions", "-ffunction-sections", "-fdata-sections", "-Wl,--exclude-libs,ALL", "-s", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
+            }
         }
     }
     applicationVariants.all { variant ->
@@ -42,6 +47,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'dev.rikka.ndk.thirdparty:cxx:1.1.0'
     compileOnly 'de.robv.android.xposed:api:82'
 }
