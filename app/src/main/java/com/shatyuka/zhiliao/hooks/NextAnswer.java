@@ -28,16 +28,16 @@ public class NextAnswer implements IHook {
     public void hook() throws Throwable {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
             XposedHelpers.findAndHookMethod(Helper.AnswerPagerFragment, "setupNextAnswerBtn", XC_MethodReplacement.returnConstant(null));
-        }
 
-        if (Helper.packageInfo.versionCode > 2614) {
-            XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) {
-                    if (param.args[0].getClass() == NextContentAnimationView)
-                        ((View) param.args[0]).setVisibility(View.GONE);
-                }
-            });
+            if (Helper.packageInfo.versionCode > 2614) {
+                XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        if (param.args[0].getClass() == NextContentAnimationView)
+                            ((View) param.args[0]).setVisibility(View.GONE);
+                    }
+                });
+            }
         }
     }
 }
