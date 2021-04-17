@@ -11,7 +11,7 @@ endmacro()
 SET_OPTION(DOBBY_GENERATE_SHARED OFF)
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     SET_OPTION(DOBBY_DEBUG OFF)
-endif (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif ()
 
 add_subdirectory(external/Dobby)
 
