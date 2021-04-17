@@ -56,26 +56,29 @@ public class Horizontal implements IHook {
         } catch (ClassNotFoundException e) {
             VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.widget.VerticalViewPager$VerticalPageTransformer");
         }
-        AnswerRouterDispatcher = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerRouterDispatcher");
 
         onNestChildScrollRelease = NestChildScrollChange.getMethod("onNestChildScrollRelease", float.class, int.class);
         isReadyPageTurning = DirectionBoundView.getMethod("isReadyPageTurning");
 
         ActionSheetLayout_callbackList = ActionSheetLayout.getDeclaredField("z");
         ActionSheetLayout_callbackList.setAccessible(true);
-        Method[] methods = AnswerRouterDispatcher.getDeclaredMethods();
-        for (Method method : methods) {
-            if (method.getName().equals("buildNormal")) {
-                Class<?> matchResultClass = method.getReturnType();
-                MatchResult = matchResultClass.getConstructors()[0];
-                MatchResult_url = method.getReturnType().getField("a");
-                MatchResult_bundle = method.getReturnType().getField("b");
-                MatchResult_module = method.getReturnType().getField("d");
-                break;
+
+        if (Helper.packageInfo.versionCode > 2614) {
+            AnswerRouterDispatcher = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerRouterDispatcher");
+            Method[] methods = AnswerRouterDispatcher.getDeclaredMethods();
+            for (Method method : methods) {
+                if (method.getName().equals("buildNormal")) {
+                    Class<?> matchResultClass = method.getReturnType();
+                    MatchResult = matchResultClass.getConstructors()[0];
+                    MatchResult_url = method.getReturnType().getField("a");
+                    MatchResult_bundle = method.getReturnType().getField("b");
+                    MatchResult_module = method.getReturnType().getField("d");
+                    break;
+                }
             }
+            if (MatchResult == null)
+                throw new NoSuchMethodException("Class MatchResult not found");
         }
-        if (MatchResult == null)
-            throw new NoSuchMethodException("Class MatchResult not found");
 
         height = (int) (Helper.context.getResources().getDisplayMetrics().density * 160);
         width = height / 2;
