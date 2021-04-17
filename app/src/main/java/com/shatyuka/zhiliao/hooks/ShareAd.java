@@ -32,7 +32,7 @@ public class ShareAd implements IHook {
             }
         }
         if (showShareAd == null)
-            throw new NoSuchMethodException("Method showShareAd not found");
+            throw new NoSuchMethodException("com.zhihu.android.library.sharecore.fragment.ShareFragment.showShareAd()");
     }
 
     @Override

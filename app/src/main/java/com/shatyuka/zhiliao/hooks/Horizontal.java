@@ -77,7 +77,7 @@ public class Horizontal implements IHook {
                 }
             }
             if (MatchResult == null)
-                throw new NoSuchMethodException("Class MatchResult not found");
+                throw new ClassNotFoundException("com.zhihu.router.MatchResult");
         }
 
         height = (int) (Helper.context.getResources().getDisplayMetrics().density * 160);

@@ -44,7 +44,7 @@ public class ExternLink implements IHook {
             }
         }
         if (isLinkZhihuWrap == null)
-            throw new NoSuchMethodException("isLinkZhihuWrap");
+            throw new NoSuchMethodException("com.zhihu.android.app.mercury.LinkZhihuHelper.isLinkZhihuWrap(H5Page, IZhihuWebView, String)");
     }
 
     @Override

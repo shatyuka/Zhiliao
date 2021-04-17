@@ -39,7 +39,7 @@ public class AnswerAd implements IHook {
             }
         }
         if (shouldInterceptRequest == null)
-            throw new NoSuchMethodException("shouldInterceptRequest");
+            throw new NoSuchMethodException("com.zhihu.android.appview.AppView$ZhihuWebViewClient.shouldInterceptRequest(IZhihuWebView, WebResourceRequest)");
     }
 
     @Override

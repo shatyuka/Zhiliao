@@ -33,7 +33,7 @@ public class LaunchAd implements IHook {
             }
         }
         if (isShowLaunchAd == null)
-            throw new NoSuchMethodException("isShowLaunchAd");
+            throw new NoSuchMethodException("com.zhihu.android.sdk.launchad.AdNetworkManager.isShowLaunchAd()");
     }
 
     @Override
