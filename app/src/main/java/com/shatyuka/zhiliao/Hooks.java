@@ -29,41 +29,40 @@ import com.shatyuka.zhiliao.hooks.ZhihuPreference;
 import de.robv.android.xposed.XposedBridge;
 
 public class Hooks {
-    static final Class<?>[] classes = {
-            ZhihuPreference.class,
-            LaunchAd.class,
-            CustomFilter.class,
-            FeedAd.class,
-            AnswerListAd.class,
-            CommentAd.class,
-            AnswerAd.class,
-            ShareAd.class,
-            LiveButton.class,
-            Horizontal.class,
-            NextAnswer.class,
-            RedDot.class,
-            ExternLink.class,
-            VIPBanner.class,
-            NavButton.class,
-            HotBanner.class,
-            ColorMode.class,
-            Article.class,
-            Tag.class,
-            SearchAd.class,
-            StatusBar.class
-            //,WebView.class
+    static final IHook[] hooks = {
+            //new WebView(),
+            new ZhihuPreference(),
+            new LaunchAd(),
+            new CustomFilter(),
+            new FeedAd(),
+            new AnswerListAd(),
+            new CommentAd(),
+            new AnswerAd(),
+            new ShareAd(),
+            new LiveButton(),
+            new Horizontal(),
+            new NextAnswer(),
+            new RedDot(),
+            new ExternLink(),
+            new VIPBanner(),
+            new NavButton(),
+            new HotBanner(),
+            new ColorMode(),
+            new Article(),
+            new Tag(),
+            new SearchAd(),
+            new StatusBar(),
     };
 
     public static void init(final ClassLoader classLoader) {
-        for (Class<?> clazz : classes) {
+        for (IHook hook : hooks) {
             String hookName = "";
             try {
-                IHook hook = ((Class<IHook>)clazz).newInstance();
                 hookName = hook.getName();
                 hook.init(classLoader);
                 hook.hook();
             } catch (Throwable e) {
-                Toast.makeText(Helper.context,  hookName + "功能加载失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Helper.context, hookName + "功能加载失败", Toast.LENGTH_SHORT).show();
                 XposedBridge.log("[Zhiliao] " + e.toString());
             }
         }
