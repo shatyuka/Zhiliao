@@ -1,6 +1,5 @@
 package com.shatyuka.zhiliao.hooks;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -52,8 +51,7 @@ public class StatusBar implements IHook {
     }
 
     static int getStatusbarColor() {
-        boolean darkMode = (Helper.context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-        if (darkMode)
+        if (Helper.getDarkMode())
             return 0xFF121212;
         else
             return 0xFFFFFFFF;

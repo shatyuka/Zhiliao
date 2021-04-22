@@ -50,7 +50,7 @@ public class ExternLink implements IHook {
     @Override
     public void hook() throws Throwable {
         XposedBridge.hookMethod(isLinkZhihuWrap, new XC_MethodHook() {
-            XC_MethodHook.Unhook hook_isLinkZhihu;
+            Unhook hook_isLinkZhihu;
 
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {

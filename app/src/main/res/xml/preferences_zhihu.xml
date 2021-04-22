@@ -171,6 +171,13 @@
             android:key="switch_horizontal"
             android:title="左右划切换回答"
             android:summary="先凑合用吧 ＞﹏＜"/>
+        <SeekBarPreference
+            android:dependency="switch_horizontal"
+            android:key="seekbar_sensitivity"
+            android:title="灵敏度"
+            android:summary="调节左右划灵敏度"
+            android:defaultValue="5"
+            android:max="9"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"

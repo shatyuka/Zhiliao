@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 
 import java.lang.reflect.Field;
@@ -22,6 +23,9 @@ public class Helper {
     public static Pattern regex_author;
     public static Pattern regex_content;
 
+    public static float scale;
+    public static int sensitivity;
+
     public static Context context;
     public static SharedPreferences prefs;
     public static Resources modRes;
@@ -39,6 +43,9 @@ public class Helper {
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
             regex_content = compileRegex(prefs.getString("edit_content", ""));
+
+            scale = context.getResources().getDisplayMetrics().density;
+            sensitivity = prefs.getInt("seekbar_sensitivity", 5);
 
             return true;
         } catch (Exception e) {
@@ -61,5 +68,9 @@ public class Helper {
         AssetManager assetManager = AssetManager.class.newInstance();
         AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, path);
         return new Resources(assetManager, null, null);
+    }
+
+    public static boolean getDarkMode() {
+        return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 }

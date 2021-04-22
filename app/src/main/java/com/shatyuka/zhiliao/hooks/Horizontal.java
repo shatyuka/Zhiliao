@@ -36,8 +36,8 @@ public class Horizontal implements IHook {
 
     static Constructor<?> MatchResult;
 
-    static int width;
-    static int height;
+    static float width;
+    static float height;
 
     @Override
     public String getName() {
@@ -80,7 +80,7 @@ public class Horizontal implements IHook {
                 throw new ClassNotFoundException("com.zhihu.router.MatchResult");
         }
 
-        height = (int) (Helper.context.getResources().getDisplayMetrics().density * 160);
+        height = Helper.scale * 160 / 5;
         width = height / 2;
     }
 
@@ -102,7 +102,7 @@ public class Horizontal implements IHook {
                         case MotionEvent.ACTION_UP:
                             float dx = e.getX() - old_x;
                             float dy = e.getY() - old_y;
-                            if (Math.abs(dx) > width && Math.abs(dy) < height) {
+                            if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity) {
                                 for (Object callback : (List) ActionSheetLayout_callbackList.get(param.thisObject)) {
                                     if (callback.getClass() == NestChildScrollChange) {
                                         onNestChildScrollRelease.invoke(callback, dx, 5201314);
@@ -131,7 +131,7 @@ public class Horizontal implements IHook {
                 }
             });
             XposedHelpers.findAndHookMethod(NestChildScrollChange, "onNestChildScrollRelease", float.class, int.class, new XC_MethodHook() {
-                XC_MethodHook.Unhook hook_isReadyPageTurning;
+                Unhook hook_isReadyPageTurning;
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
