@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -189,18 +190,31 @@ public class ZhihuPreference implements IHook {
                     final int _4dp = (int) (Helper.scale * 4 + 0.5);
                     final int _12dp = (int) (Helper.scale * 12 + 0.5);
 
-                    View icon = viewGroup.getChildAt(0);
-                    icon.setPadding(0, _4dp, _12dp, _4dp);
+                    View iconFrame = viewGroup.getChildAt(0);
+                    iconFrame.setPadding(0, _4dp, _12dp, _4dp);
 
-                    TextView title = (TextView) ((ViewGroup) viewGroup.getChildAt(1)).getChildAt(0);
+                    ViewGroup childViewGroup = (ViewGroup) viewGroup.getChildAt(1);
+                    TextView title = (TextView) childViewGroup.getChildAt(0);
                     title.setTextColor(Helper.getDarkMode() ? 0xffd3d3d3 : 0xff444444);
 
-                    TextView summary = (TextView) ((ViewGroup) viewGroup.getChildAt(1)).getChildAt(1);
+                    TextView summary = (TextView) childViewGroup.getChildAt(1);
                     summary.setTextColor(Helper.getDarkMode() ? 0xff999999 : 0xff121212);
                     summary.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
 
-                    TextView seekbarValue = (TextView) ((ViewGroup) ((ViewGroup) viewGroup.getChildAt(1)).getChildAt(2)).getChildAt(1);
+                    TextView seekbarValue = (TextView) ((ViewGroup) childViewGroup.getChildAt(2)).getChildAt(1);
                     seekbarValue.setTextColor(Helper.getDarkMode() ? 0xffd3d3d3 : 0xff444444);
+
+                    View divideLine = LayoutInflater.from(Helper.context).inflate(Helper.modRes.getLayout(R.layout.layout_divide_line), viewGroup, false);
+                    divideLine.setBackgroundColor(Helper.getDarkMode() ? 0xff1b1b1b : 0xffebebeb);
+                    LinearLayout root = new LinearLayout(Helper.context);
+                    {
+                        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        root.setOrientation(LinearLayout.VERTICAL);
+                        root.setLayoutParams(layoutParams);
+                        root.addView(viewGroup);
+                        root.addView(divideLine);
+                    }
+                    param.setResult(root);
                 }
             }
         });

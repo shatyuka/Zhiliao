@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhihu.android.base.view.ZHView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_above="@+id/btn_complete" android:layout_marginStart="?android:attr/listPreferredItemPaddingStart" android:layout_marginEnd="?android:attr/listPreferredItemPaddingEnd"/>
