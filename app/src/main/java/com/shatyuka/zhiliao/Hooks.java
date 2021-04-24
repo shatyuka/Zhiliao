@@ -56,13 +56,11 @@ public class Hooks {
 
     public static void init(final ClassLoader classLoader) {
         for (IHook hook : hooks) {
-            String hookName = "";
             try {
-                hookName = hook.getName();
                 hook.init(classLoader);
                 hook.hook();
             } catch (Throwable e) {
-                Toast.makeText(Helper.context, hookName + "功能加载失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Helper.context, hook.getName() + "功能加载失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_LONG).show();
                 XposedBridge.log("[Zhiliao] " + e.toString());
             }
         }
