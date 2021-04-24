@@ -27,17 +27,18 @@ public class SearchAd implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         try {
             JacksonResponseBodyConverter = classLoader.loadClass("com.zhihu.android.net.b.b");
-        } catch (ClassNotFoundException e) {
+            convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             try {
                 JacksonResponseBodyConverter = classLoader.loadClass("retrofit2.b.a.c");
-            } catch (ClassNotFoundException e2) {
+                convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
+            } catch (ClassNotFoundException | NoSuchMethodException e2) {
                 JacksonResponseBodyConverter = classLoader.loadClass("j.b.a.c");
+                convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
             }
         }
         SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
         PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
-
-        convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
 
         SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
         PresetWords_preset = PresetWords.getField("preset");
