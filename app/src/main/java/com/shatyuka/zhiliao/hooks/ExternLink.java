@@ -25,13 +25,17 @@ public class ExternLink implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
-
+        LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.l");
         try {
             isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
         } catch (NoSuchMethodException e) {
-            LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.j");
-            isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            try {
+                LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
+                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            } catch (NoSuchMethodException e2) {
+                LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.j");
+                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+            }
         }
 
         Method[] methods = LinkZhihuHelper.getMethods();
