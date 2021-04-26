@@ -32,7 +32,7 @@ public class Tag implements IHook {
 
     @Override
     public String getName() {
-        return null;
+        return "显示卡片类别";
     }
 
     @Override
@@ -51,12 +51,12 @@ public class Tag implements IHook {
         }
         SugarHolder_mData.setAccessible(true);
         TemplateRoot_unique = TemplateRoot.getField("unique");
-
-        id_title = Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage);
     }
 
     @Override
     public void hook() throws Throwable {
+        id_title = Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage);
+
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
             XposedHelpers.findAndHookMethod(BaseTemplateNewFeedHolder, "a", TemplateFeed, new XC_MethodHook() {
                 @SuppressLint("ResourceType")

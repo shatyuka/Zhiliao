@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class ShareAd implements IHook {
     static Method showShareAd;
@@ -20,7 +19,7 @@ public class ShareAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Class<?> ShareFragment = XposedHelpers.findClassIfExists("com.zhihu.android.library.sharecore.fragment.ShareFragment", classLoader);
+        Class<?> ShareFragment = classLoader.loadClass("com.zhihu.android.library.sharecore.fragment.ShareFragment");
         if (ShareFragment != null) {
             Method[] methods = ShareFragment.getDeclaredMethods();
             for (Method method : methods) {

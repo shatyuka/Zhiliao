@@ -21,7 +21,11 @@ public class StatusBar implements IHook {
         try {
             StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.x$b");
         } catch (ClassNotFoundException ignored) {
-            StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.y$b");
+            try {
+                StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.y$b");
+            } catch (ClassNotFoundException ignored2) {
+                StatusBarUtil = classLoader.loadClass("com.zhihu.android.base.util.z$b");
+            }
         }
     }
 

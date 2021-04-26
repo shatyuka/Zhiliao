@@ -11,7 +11,6 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class AnswerAd implements IHook {
     static Class<?> IZhihuWebView;
@@ -28,15 +27,13 @@ public class AnswerAd implements IHook {
         IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
 
         for (char i = 'a'; i <= 'z'; i++) {
-            Class<?> ZhihuWebViewClient = XposedHelpers.findClassIfExists("com.zhihu.android.appview.a$" + i, classLoader);
-            if (ZhihuWebViewClient != null) {
-                try {
-                    shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", IZhihuWebView, WebResourceRequest.class);
-                } catch (NoSuchMethodException e) {
-                    continue;
-                }
-                break;
+            try {
+                Class<?> ZhihuWebViewClient = classLoader.loadClass("com.zhihu.android.appview.a$" + i);
+                shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", IZhihuWebView, WebResourceRequest.class);
+            } catch (Exception e) {
+                continue;
             }
+            break;
         }
         if (shouldInterceptRequest == null)
             throw new NoSuchMethodException("com.zhihu.android.appview.AppView$ZhihuWebViewClient.shouldInterceptRequest(IZhihuWebView, WebResourceRequest)");
