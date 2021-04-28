@@ -22,6 +22,7 @@ import com.shatyuka.zhiliao.hooks.SearchAd;
 import com.shatyuka.zhiliao.hooks.ShareAd;
 import com.shatyuka.zhiliao.hooks.StatusBar;
 import com.shatyuka.zhiliao.hooks.Tag;
+import com.shatyuka.zhiliao.hooks.ThirdPartyLogin;
 import com.shatyuka.zhiliao.hooks.VIPBanner;
 import com.shatyuka.zhiliao.hooks.WebView;
 import com.shatyuka.zhiliao.hooks.ZhihuPreference;
@@ -52,6 +53,7 @@ public class Hooks {
             new Tag(),
             new SearchAd(),
             new StatusBar(),
+            new ThirdPartyLogin()
     };
 
     public static void init(final ClassLoader classLoader) {

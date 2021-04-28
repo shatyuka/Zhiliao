@@ -119,6 +119,12 @@
             android:key="switch_statusbar"
             android:title="状态栏沉浸"
             android:summary="沉浸式状态栏"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_thirdpartylogin"
+            android:title="第三方登录"
+            android:summary="解锁全部第三方登录方式"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference

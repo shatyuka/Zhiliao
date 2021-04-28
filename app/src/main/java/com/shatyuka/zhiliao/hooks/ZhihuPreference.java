@@ -288,6 +288,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_externlink = findPreference.invoke(thisObject, "switch_externlink");
                 Object switch_externlinkex = findPreference.invoke(thisObject, "switch_externlinkex");
                 Object switch_tag = findPreference.invoke(thisObject, "switch_tag");
+                Object switch_thirdpartylogin = findPreference.invoke(thisObject, "switch_thirdpartylogin");
                 Object switch_livebutton = findPreference.invoke(thisObject, "switch_livebutton");
                 Object switch_reddot = findPreference.invoke(thisObject, "switch_reddot");
                 Object switch_vipbanner = findPreference.invoke(thisObject, "switch_vipbanner");
@@ -301,6 +302,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
                 setOnPreferenceClickListener.invoke(switch_externlinkex, thisObject);
                 setOnPreferenceClickListener.invoke(switch_tag, thisObject);
+                setOnPreferenceClickListener.invoke(switch_thirdpartylogin, thisObject);
                 setOnPreferenceClickListener.invoke(switch_livebutton, thisObject);
                 setOnPreferenceClickListener.invoke(switch_reddot, thisObject);
                 setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
@@ -361,6 +363,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_colormode"), Helper.modRes.getDrawable(R.drawable.ic_color));
                 setIcon.invoke(switch_tag, Helper.modRes.getDrawable(R.drawable.ic_label));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_statusbar"), Helper.modRes.getDrawable(R.drawable.ic_fullscreen));
+                setIcon.invoke(switch_thirdpartylogin, Helper.modRes.getDrawable(R.drawable.ic_login));
                 setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                 setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                 setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
@@ -448,6 +451,7 @@ public class ZhihuPreference implements IHook {
                         setChecked.invoke(switch_externlink, false);
                         break;
                     case "switch_tag":
+                    case "switch_thirdpartylogin":
                     case "switch_livebutton":
                     case "switch_reddot":
                     case "switch_vipbanner":
