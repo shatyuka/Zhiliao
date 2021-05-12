@@ -90,6 +90,7 @@ public class Horizontal implements IHook {
             XposedHelpers.findAndHookMethod(ActionSheetLayout, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
                 float old_x = 0;
                 float old_y = 0;
+                long time = 0;
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -98,11 +99,12 @@ public class Horizontal implements IHook {
                         case MotionEvent.ACTION_DOWN:
                             old_x = e.getX();
                             old_y = e.getY();
+                            time = System.currentTimeMillis();
                             break;
                         case MotionEvent.ACTION_UP:
                             float dx = e.getX() - old_x;
                             float dy = e.getY() - old_y;
-                            if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity) {
+                            if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity && (System.currentTimeMillis() - time) < 500) {
                                 for (Object callback : (List) ActionSheetLayout_callbackList.get(param.thisObject)) {
                                     if (callback.getClass() == NestChildScrollChange) {
                                         onNestChildScrollRelease.invoke(callback, dx, 5201314);
