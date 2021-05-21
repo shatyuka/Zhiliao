@@ -2,21 +2,28 @@ package com.shatyuka.zhiliao.hooks;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
 
 import com.shatyuka.zhiliao.Helper;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URLDecoder;
+import java.util.Map;
 
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
 public class ExternLink implements IHook {
-    static Class<?> LinkZhihuHelper;
+    static Class<?> H5Event;
 
-    static Method isLinkZhihu;
-    static Method isLinkZhihuWrap;
+    static Method shouldOverrideUrlLoading;
+    static Method openUrl;
+
+    static Field H5Event_params;
 
     @Override
     public String getName() {
@@ -25,61 +32,124 @@ public class ExternLink implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.l");
-        try {
-            isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
-        } catch (NoSuchMethodException e) {
+        for (char i = 'a'; i <= 'z'; i++) {
             try {
-                LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.k");
-                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
-            } catch (NoSuchMethodException e2) {
-                LinkZhihuHelper = classLoader.loadClass("com.zhihu.android.app.mercury.j");
-                isLinkZhihu = LinkZhihuHelper.getMethod("b", Uri.class);
+                Class<?> WebViewClientWrapper = classLoader.loadClass("com.zhihu.android.app.mercury.web." + i);
+                shouldOverrideUrlLoading = WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
+            } catch (Exception e) {
+                continue;
             }
+            break;
+        }
+        if (shouldOverrideUrlLoading == null)
+            throw new NoSuchMethodException("com.zhihu.android.app.mercury.web.WebViewClientWrapper.shouldOverrideUrlLoading(WebView, WebResourceRequest)");
+
+        try {
+            H5Event = classLoader.loadClass("com.zhihu.android.app.mercury.api.a");
+        } catch (ClassNotFoundException e) {
+            H5Event = classLoader.loadClass("com.zhihu.android.app.mercury.a.a");
         }
 
-        Method[] methods = LinkZhihuHelper.getMethods();
-        for (Method method : methods) {
-            Class<?>[] types = method.getParameterTypes();
-            if (method.getName().equals("a") && method.getReturnType() == boolean.class &&
-                    types.length == 3 && types[2] == String.class && types[1] != Uri.class) {
-                isLinkZhihuWrap = method;
-                break;
-            }
-        }
-        if (isLinkZhihuWrap == null)
-            throw new NoSuchMethodException("com.zhihu.android.app.mercury.LinkZhihuHelper.isLinkZhihuWrap(H5Page, IZhihuWebView, String)");
+        Class<?> BasePlugin2 = classLoader.loadClass("com.zhihu.android.app.mercury.plugin.BasePlugin2");
+        openUrl = BasePlugin2.getMethod("openUrl", H5Event);
+
+        H5Event_params = H5Event.getDeclaredField("i");
+        H5Event_params.setAccessible(true);
     }
 
     @Override
     public void hook() throws Throwable {
-        XposedBridge.hookMethod(isLinkZhihuWrap, new XC_MethodHook() {
-            Unhook hook_isLinkZhihu;
-
+        XposedBridge.hookMethod(shouldOverrideUrlLoading, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
-                    String url = (String) param.args[2];
-                    if (url.startsWith("https://link.zhihu.com/?target=")) {
-                        param.args[2] = URLDecoder.decode(url.substring(31), "utf-8");
+                WebResourceRequest request = (WebResourceRequest) param.args[1];
+                Uri uri = request.getUrl();
+                if ("link.zhihu.com".equals(uri.getHost())) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
+                        Uri url = Uri.parse(uri.getQueryParameter("target"));
                         if (Helper.prefs.getBoolean("switch_externlinkex", false)) {
-                            android.util.Log.d("Zhiliao", (String) param.args[2]);
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) param.args[2]));
+                            Intent intent = new Intent(Intent.ACTION_VIEW, url);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             Helper.context.startActivity(intent);
                             param.setResult(true);
                         } else {
-                            hook_isLinkZhihu = XposedBridge.hookMethod(isLinkZhihu, XC_MethodReplacement.returnConstant(true));
+                            WebResourceRequestImpl request2 = new WebResourceRequestImpl(request);
+                            request2.url = url;
+                            param.args[1] = request2;
                         }
                     }
                 }
             }
+        });
 
+        XposedBridge.hookMethod(openUrl, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) {
-                if (hook_isLinkZhihu != null)
-                    hook_isLinkZhihu.unhook();
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                JSONObject params = (JSONObject) H5Event_params.get(param.args[0]);
+                Uri uri = Uri.parse(params.optString("url"));
+                if ("link.zhihu.com".equals(uri.getHost())) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
+                        String url = uri.getQueryParameter("target");
+                        if (Helper.prefs.getBoolean("switch_externlinkex", false)) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Helper.context.startActivity(intent);
+                            param.setResult(true);
+                        } else {
+                            params.put("url", url);
+                        }
+                    }
+                }
             }
         });
+    }
+
+    private static class WebResourceRequestImpl implements WebResourceRequest {
+        public Uri url;
+        public boolean isMainFrame;
+        public boolean isRedirect;
+        public boolean hasUserGesture;
+        public String method;
+        Map<String, String> requestHeaders;
+
+        public WebResourceRequestImpl(final WebResourceRequest request) {
+            url = request.getUrl();
+            isMainFrame = request.isForMainFrame();
+            hasUserGesture = request.hasGesture();
+            method = request.getMethod();
+            requestHeaders = request.getRequestHeaders();
+            if (Build.VERSION.SDK_INT >= 24)
+                isRedirect = request.isRedirect();
+        }
+
+        @Override
+        public Uri getUrl() {
+            return url;
+        }
+
+        @Override
+        public boolean isForMainFrame() {
+            return isMainFrame;
+        }
+
+        @Override
+        public boolean isRedirect() {
+            return isRedirect;
+        }
+
+        @Override
+        public boolean hasGesture() {
+            return hasUserGesture;
+        }
+
+        @Override
+        public String getMethod() {
+            return method;
+        }
+
+        @Override
+        public Map<String, String> getRequestHeaders() {
+            return requestHeaders;
+        }
     }
 }
