@@ -1,5 +1,6 @@
 package com.shatyuka.zhiliao;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.widget.Toast;
@@ -17,33 +18,27 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
     private native void initNative();
 
-    private static boolean is64Bit(ClassLoader classLoader) {
-        if (android.os.Build.VERSION.SDK_INT >= 23) {
-            return android.os.Process.is64Bit();
-        }
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    private void tryLoadNative() {
+        String path = modulePath.substring(0, modulePath.lastIndexOf('/'));
         try {
-            String path = (String)ClassLoader.class.getDeclaredMethod("findLibrary", String.class).invoke(classLoader, "art");
-            if (path != null) {
-                return path.contains("lib64");
-            }
-        } catch (Exception ignored) {
+            System.load(path + "/lib/arm64/libzhiliao.so");
+            initNative();
+            return;
+        } catch (Throwable ignored) {
         }
-        return false;
+
+        try { // Let's try again
+            System.load(path + "/lib/arm/libzhiliao.so");
+            initNative();
+        } catch (Throwable ignored) {
+        }
     }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         if (hookPackage.equals(lpparam.packageName)) {
-            try {
-                System.loadLibrary("zhiliao");
-                initNative();
-            } catch (Throwable ignored) {
-                try { // Let's try again
-                    System.load(modulePath.substring(0, modulePath.lastIndexOf('/')) + (is64Bit(lpparam.classLoader) ? "/lib/arm64/libzhiliao.so" : "/lib/arm/libzhiliao.so"));
-                    initNative();
-                } catch (Throwable ignored2) {
-                }
-            }
+            tryLoadNative();
 
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
                 @Override
