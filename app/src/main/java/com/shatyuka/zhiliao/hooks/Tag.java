@@ -27,6 +27,7 @@ public class Tag implements IHook {
     static Field ViewHolder_itemView;
     static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
+    static Field DataUnique_type;
 
     static int id_title;
 
@@ -51,6 +52,7 @@ public class Tag implements IHook {
         }
         SugarHolder_mData.setAccessible(true);
         TemplateRoot_unique = TemplateRoot.getField("unique");
+        DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique").getField("type");
     }
 
     @Override
@@ -68,7 +70,7 @@ public class Tag implements IHook {
                     if (title != null) {
                         Object templateFeed = SugarHolder_mData.get(thisObject);
                         Object unique = TemplateRoot_unique.get(templateFeed);
-                        String type = (String) Helper.DataUnique_type.get(unique);
+                        String type = (String) DataUnique_type.get(unique);
 
                         float density = Helper.context.getResources().getDisplayMetrics().density;
 

@@ -18,12 +18,12 @@ public class CustomFilter implements IHook {
     static Class<?> ApiLine;
     static Class<?> ApiElement;
 
-    static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
     static Field ApiFeedCard_feed_content;
     static Field ApiFeedContent_title;
     static Field ApiFeedContent_content;
     static Field ApiFeedContent_sourceLine;
+    static Field ApiFeedContent_video;
     static Field ApiText_panel_text;
     static Field ApiLine_elements;
     static Field ApiElement_text;
@@ -44,12 +44,12 @@ public class CustomFilter implements IHook {
         ApiLine = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiLine");
         ApiElement = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiElement");
 
-        ApiTemplateRoot_extra = ApiTemplateRoot.getField("extra");
         ApiTemplateRoot_common_card = ApiTemplateRoot.getField("common_card");
         ApiFeedCard_feed_content = ApiFeedCard.getField("feed_content");
         ApiFeedContent_title = ApiFeedContent.getField("title");
         ApiFeedContent_content = ApiFeedContent.getField("content");
         ApiFeedContent_sourceLine = ApiFeedContent.getField("sourceLine");
+        ApiFeedContent_video = ApiFeedContent.getField("video");
         ApiText_panel_text = ApiText.getField("panel_text");
         ApiLine_elements = ApiLine.getField("elements");
         ApiElement_text = ApiElement.getField("text");
@@ -67,14 +67,14 @@ public class CustomFilter implements IHook {
                     Class<?> resultClass = result.getClass();
                     if (result != null) {
                         if (resultClass == ApiTemplateRoot) {
-                            String type = (String) Helper.DataUnique_type.get(ApiTemplateRoot_extra.get(result));
-                            if (Helper.prefs.getBoolean("switch_video", false) && (type.equals("zvideo") || type.equals("drama"))) {
+                            Object feed_content = ApiFeedCard_feed_content.get(ApiTemplateRoot_common_card.get(result));
+                            if (feed_content == null)
+                                return;
+                            Object video = ApiFeedContent_video.get(feed_content);
+                            if (Helper.prefs.getBoolean("switch_video", false) && video != null) {
                                 param.setResult(null);
                             } else {
                                 if (Helper.regex_title == null && Helper.regex_author == null && Helper.regex_content == null)
-                                    return;
-                                Object feed_content = ApiFeedCard_feed_content.get(ApiTemplateRoot_common_card.get(result));
-                                if (feed_content == null)
                                     return;
                                 if (Helper.regex_title != null) {
                                     String title = (String) ApiText_panel_text.get(ApiFeedContent_title.get(feed_content));
