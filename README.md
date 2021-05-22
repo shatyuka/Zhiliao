@@ -26,6 +26,7 @@
 - 显示卡片类别
 - 状态栏沉浸
 - 解锁第三方登录
+- 自定义起始页面
 - 移除直播按钮
 - 不显示小红点
 - 隐藏会员卡片
@@ -36,6 +37,9 @@
 - 左右划切换回答
 - 移除下一个回答按钮
 - 自定义过滤
+
+## 帮助
+[Github Wiki](https://github.com/shatyuka/Zhiliao/wiki)
 
 ## 下载
 [Github Release](https://github.com/shatyuka/Zhiliao/releases/latest)
