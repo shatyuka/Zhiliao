@@ -125,6 +125,12 @@
             android:key="switch_thirdpartylogin"
             android:title="第三方登录"
             android:summary="解锁全部第三方登录方式"/>
+        <ListPreference
+            android:defaultValue="1"
+            android:dependency="switch_mainswitch"
+            android:key="list_startpage"
+            android:title="起始页面"
+            android:summary="自定义起始页面"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference

@@ -63,6 +63,7 @@ public class ZhihuPreference implements IHook {
     static Class<?> EditTextPreference;
     static Class<?> SeekBarPreference;
     static Class<?> OnSeekBarChangeListener;
+    static Class<?> ListPreference;
 
     static Method findPreference;
     static Method setSummary;
@@ -81,6 +82,8 @@ public class ZhihuPreference implements IHook {
     static Field SeekBarPreference_mMin;
     static Field SeekBarPreference_mSeekBarValueTextView;
     static Field OnSeekBarChangeListener_seekBarPreferenceInstance;
+    static Field ListPreference_mEntries;
+    static Field ListPreference_mEntryValues;
 
     @Override
     public String getName() {
@@ -106,6 +109,7 @@ public class ZhihuPreference implements IHook {
         EditTextPreference = classLoader.loadClass("androidx.preference.EditTextPreference");
         SeekBarPreference = classLoader.loadClass("androidx.preference.SeekBarPreference");
         OnSeekBarChangeListener = classLoader.loadClass("androidx.preference.SeekBarPreference$1");
+        ListPreference = classLoader.loadClass("androidx.preference.ListPreference");
 
         findPreference = SettingsFragment.getMethod("a", CharSequence.class);
         setSummary = Preference.getMethod("a", CharSequence.class);
@@ -127,6 +131,10 @@ public class ZhihuPreference implements IHook {
         SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
         OnSeekBarChangeListener_seekBarPreferenceInstance = OnSeekBarChangeListener.getDeclaredField("a");
         OnSeekBarChangeListener_seekBarPreferenceInstance.setAccessible(true);
+        ListPreference_mEntries = ListPreference.getDeclaredField("a");
+        ListPreference_mEntries.setAccessible(true);
+        ListPreference_mEntryValues = ListPreference.getDeclaredField("b");
+        ListPreference_mEntryValues.setAccessible(true);
     }
 
     @Override
@@ -289,6 +297,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_externlinkex = findPreference.invoke(thisObject, "switch_externlinkex");
                 Object switch_tag = findPreference.invoke(thisObject, "switch_tag");
                 Object switch_thirdpartylogin = findPreference.invoke(thisObject, "switch_thirdpartylogin");
+                Object list_startpage = findPreference.invoke(thisObject, "list_startpage");
                 Object switch_livebutton = findPreference.invoke(thisObject, "switch_livebutton");
                 Object switch_reddot = findPreference.invoke(thisObject, "switch_reddot");
                 Object switch_vipbanner = findPreference.invoke(thisObject, "switch_vipbanner");
@@ -364,6 +373,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_tag, Helper.modRes.getDrawable(R.drawable.ic_label));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_statusbar"), Helper.modRes.getDrawable(R.drawable.ic_fullscreen));
                 setIcon.invoke(switch_thirdpartylogin, Helper.modRes.getDrawable(R.drawable.ic_login));
+                setIcon.invoke(list_startpage, Helper.modRes.getDrawable(R.drawable.ic_home));
                 setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                 setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                 setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
@@ -384,6 +394,9 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
                 setIcon.invoke(preference_sourcecode, Helper.modRes.getDrawable(R.drawable.ic_github));
                 setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
+
+                ListPreference_mEntries.set(list_startpage, new CharSequence[]{"关注", "推荐", "热榜"});
+                ListPreference_mEntryValues.set(list_startpage, new CharSequence[]{"0", "1", "2"});
 
                 if (Helper.prefs.getBoolean("accept_eula", false)) {
                     Object category_eula = findPreference.invoke(thisObject, "category_eula");

@@ -20,6 +20,7 @@ import com.shatyuka.zhiliao.hooks.NextAnswer;
 import com.shatyuka.zhiliao.hooks.RedDot;
 import com.shatyuka.zhiliao.hooks.SearchAd;
 import com.shatyuka.zhiliao.hooks.ShareAd;
+import com.shatyuka.zhiliao.hooks.StartPage;
 import com.shatyuka.zhiliao.hooks.StatusBar;
 import com.shatyuka.zhiliao.hooks.Tag;
 import com.shatyuka.zhiliao.hooks.ThirdPartyLogin;
@@ -53,7 +54,8 @@ public class Hooks {
             new Tag(),
             new SearchAd(),
             new StatusBar(),
-            new ThirdPartyLogin()
+            new ThirdPartyLogin(),
+            new StartPage(),
     };
 
     public static void init(final ClassLoader classLoader) {
