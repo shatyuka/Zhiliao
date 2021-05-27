@@ -17,6 +17,8 @@ public class Helper {
     public static Class<?> MorphAdHelper;
     public static Class<?> AnswerPagerFragment;
 
+    public static Field DataUnique_type;
+
     public static Pattern regex_title;
     public static Pattern regex_author;
     public static Pattern regex_content;
@@ -35,6 +37,8 @@ public class Helper {
 
             MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
             AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
+
+            DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique").getField("type");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));

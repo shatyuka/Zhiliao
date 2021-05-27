@@ -18,6 +18,7 @@ public class CustomFilter implements IHook {
     static Class<?> ApiLine;
     static Class<?> ApiElement;
 
+    static Field ApiTemplateRoot_extra;
     static Field ApiTemplateRoot_common_card;
     static Field ApiFeedCard_feed_content;
     static Field ApiFeedContent_title;
@@ -44,6 +45,7 @@ public class CustomFilter implements IHook {
         ApiLine = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiLine");
         ApiElement = classLoader.loadClass("com.zhihu.android.api.model.template.api.ApiElement");
 
+        ApiTemplateRoot_extra = ApiTemplateRoot.getField("extra");
         ApiTemplateRoot_common_card = ApiTemplateRoot.getField("common_card");
         ApiFeedCard_feed_content = ApiFeedCard.getField("feed_content");
         ApiFeedContent_title = ApiFeedContent.getField("title");
@@ -67,6 +69,11 @@ public class CustomFilter implements IHook {
                     Class<?> resultClass = result.getClass();
                     if (result != null) {
                         if (resultClass == ApiTemplateRoot) {
+                            String type = (String) Helper.DataUnique_type.get(ApiTemplateRoot_extra.get(result));
+                            if (Helper.prefs.getBoolean("switch_video", false) && (type.equals("zvideo") || type.equals("drama"))) {
+                                param.setResult(null);
+                                return;
+                            }
                             Object feed_content = ApiFeedCard_feed_content.get(ApiTemplateRoot_common_card.get(result));
                             if (feed_content == null)
                                 return;
