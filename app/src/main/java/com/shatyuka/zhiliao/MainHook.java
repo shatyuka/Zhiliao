@@ -21,17 +21,20 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     private void tryLoadNative() {
         String path = modulePath.substring(0, modulePath.lastIndexOf('/'));
-        try {
-            System.load(path + "/lib/arm64/libzhiliao.so");
-            initNative();
-            return;
-        } catch (Throwable ignored) {
-        }
+        String[] libs = {
+                path + "/lib/arm64/libzhiliao.so",
+                path + "/lib/arm/libzhiliao.so",
+                modulePath + "!/lib/arm64-v8a/libzhiliao.so",
+                modulePath + "!/lib/armeabi-v7a/libzhiliao.so"
+        };
 
-        try { // Let's try again
-            System.load(path + "/lib/arm/libzhiliao.so");
-            initNative();
-        } catch (Throwable ignored) {
+        for (String lib : libs) {
+            try {
+                System.load(lib);
+                initNative();
+                return;
+            } catch (Throwable ignored) {
+            }
         }
     }
 
