@@ -41,6 +41,12 @@ public class Article implements IHook {
             ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("f");
             if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
                 ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("g");
+                if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
+                    ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("h");
+                    if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
+                        throw new NoSuchFieldException("fragment");
+                    }
+                }
             }
             ContentMixAdapter_fragment.setAccessible(true);
             ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
