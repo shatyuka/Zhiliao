@@ -7,11 +7,13 @@ import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 public class SearchAd implements IHook {
     static Class<?> JacksonResponseBodyConverter;
     static Class<?> SearchTopTabsItemList;
     static Class<?> PresetWords;
+    static Class<?> AbSearch;
 
     static Method convert;
 
@@ -39,6 +41,14 @@ public class SearchAd implements IHook {
         }
         SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
         PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
+        if (Helper.packageInfo.versionCode > 3960) {
+            AbSearch = classLoader.loadClass("com.zhihu.android.app.a.a");
+            try { // check for future update
+                AbSearch.getField("a");
+            } catch (NoSuchFieldException e) {
+                throw new ClassNotFoundException("com.zhihu.android.app.a.AbSearch");
+            }
+        }
 
         SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
         PresetWords_preset = PresetWords.getField("preset");
@@ -67,5 +77,16 @@ public class SearchAd implements IHook {
                 }
             }
         });
+
+        if (Helper.packageInfo.versionCode > 3960) { // after 7.3.1
+            XposedHelpers.findAndHookMethod(AbSearch, "a", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_searchad", true)) {
+                        param.setResult(false);
+                    }
+                }
+            });
+        }
     }
 }
