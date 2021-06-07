@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -64,6 +65,7 @@ public class ZhihuPreference implements IHook {
     static Class<?> SeekBarPreference;
     static Class<?> OnSeekBarChangeListener;
     static Class<?> ListPreference;
+    static Class<?> TooltipCompat;
 
     static Method findPreference;
     static Method setSummary;
@@ -78,6 +80,7 @@ public class ZhihuPreference implements IHook {
     static Method getText;
     static Method addPreferencesFromResource;
     static Method inflate;
+    static Method setTooltipText;
 
     static Field SeekBarPreference_mMin;
     static Field SeekBarPreference_mSeekBarValueTextView;
@@ -110,6 +113,7 @@ public class ZhihuPreference implements IHook {
         SeekBarPreference = classLoader.loadClass("androidx.preference.SeekBarPreference");
         OnSeekBarChangeListener = classLoader.loadClass("androidx.preference.SeekBarPreference$1");
         ListPreference = classLoader.loadClass("androidx.preference.ListPreference");
+        TooltipCompat = classLoader.loadClass("androidx.appcompat.widget.TooltipCompat");
 
         findPreference = SettingsFragment.getMethod("a", CharSequence.class);
         setSummary = Preference.getMethod("a", CharSequence.class);
@@ -124,6 +128,7 @@ public class ZhihuPreference implements IHook {
         getText = EditTextPreference.getMethod("i");
         addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
         inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+        setTooltipText = TooltipCompat.getMethod("setTooltipText", View.class, CharSequence.class);
 
         SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("b");
         SeekBarPreference_mMin.setAccessible(true);
@@ -273,8 +278,19 @@ public class ZhihuPreference implements IHook {
                         if (field.getType().getName().equals("com.zhihu.android.app.ui.widget.SystemBar")) {
                             field.setAccessible(true);
                             Object systemBar = field.get(param.thisObject);
-                            Object toolbar = systemBar.getClass().getMethod("getToolbar").invoke(systemBar);
+                            ViewGroup toolbar = (ViewGroup) systemBar.getClass().getMethod("getToolbar").invoke(systemBar);
                             toolbar.getClass().getMethod("setTitle", CharSequence.class).invoke(toolbar, "知了");
+
+                            ImageView restart = new ImageView(Helper.context);
+                            final int _48dp = (int) (Helper.scale * 48 + 0.5);
+                            restart.setLayoutParams(new ViewGroup.MarginLayoutParams(_48dp, _48dp));
+                            restart.setImageDrawable(Helper.modRes.getDrawable(R.drawable.ic_restart));
+                            restart.setScaleType(ImageView.ScaleType.CENTER);
+                            restart.setOnClickListener(v -> Helper.doRestart(Helper.context));
+                            restart.setColorFilter(Helper.getDarkMode() ? 0xffd3d3d3 : 0xff646464);
+                            setTooltipText.invoke(null, restart, "重启知乎");
+                            ViewGroup actionMenuView = (ViewGroup)(toolbar.getChildAt(0));
+                            actionMenuView.addView(restart);
                             break;
                         }
                     }
