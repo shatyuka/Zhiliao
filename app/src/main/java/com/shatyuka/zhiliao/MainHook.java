@@ -36,12 +36,17 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             } catch (Throwable ignored) {
             }
         }
+
+        Toast.makeText(Helper.context, "知了native模块加载失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         if (hookPackage.equals(lpparam.packageName)) {
             tryLoadNative();
+
+            if (!hookPackage.equals(lpparam.processName))
+                return;
 
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
                 @Override
@@ -59,8 +64,11 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
                         if (!Helper.init(lpparam.classLoader))
                             Toast.makeText(Helper.context, "知了初始化失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_SHORT).show();
-                        else
+                        else {
                             Hooks.init(lpparam.classLoader);
+                            if (!Helper.prefs.getBoolean("switch_mainswitch", false))
+                                Toast.makeText(Helper.context, "知了加载成功，请到设置页面开启功能。", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
