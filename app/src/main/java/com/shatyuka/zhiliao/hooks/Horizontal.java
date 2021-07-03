@@ -2,6 +2,8 @@ package com.shatyuka.zhiliao.hooks;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
+import android.webkit.WebView;
 
 import com.shatyuka.zhiliao.Helper;
 
@@ -16,6 +18,7 @@ import de.robv.android.xposed.XposedHelpers;
 
 public class Horizontal implements IHook {
     static boolean horizontal = false;
+    static boolean scrolling = false;
 
     static Class<?> ActionSheetLayout;
     static Class<?> NestChildScrollChange;
@@ -101,7 +104,10 @@ public class Horizontal implements IHook {
                         case MotionEvent.ACTION_UP:
                             float dx = e.getX() - old_x;
                             float dy = e.getY() - old_y;
-                            if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity && (System.currentTimeMillis() - time) < 500) {
+                            if (Math.abs(dx) > width * Helper.sensitivity &&
+                                    Math.abs(dy) < height * Helper.sensitivity &&
+                                    (System.currentTimeMillis() - time) < 500 &&
+                                    !scrolling) {
                                 for (Object callback : (List) ActionSheetLayout_callbackList.get(param.thisObject)) {
                                     if (callback.getClass() == NestChildScrollChange) {
                                         onNestChildScrollRelease.invoke(callback, dx, 5201314);
@@ -180,7 +186,10 @@ public class Horizontal implements IHook {
                             case MotionEvent.ACTION_UP:
                                 float dx = e.getX() - old_x;
                                 float dy = e.getY() - old_y;
-                                if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity && (System.currentTimeMillis() - time) < 500) {
+                                if (Math.abs(dx) > width * Helper.sensitivity &&
+                                        Math.abs(dy) < height * Helper.sensitivity &&
+                                        (System.currentTimeMillis() - time) < 500 &&
+                                        !scrolling) {
                                     if (dx < 0)
                                         nextAnswer.invoke(param.thisObject, UserAction_DRAG_UP.get(null));
                                     else
@@ -191,6 +200,39 @@ public class Horizontal implements IHook {
                     }
                 });
             }
+
+            XposedHelpers.findAndHookMethod(WebView.class, "onTouchEvent", MotionEvent.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    MotionEvent event = (MotionEvent) param.args[0];
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        ViewParent viewParent = findViewParentIfNeeds((WebView) param.thisObject);
+                        if (viewParent != null) scrolling = true;
+                    }
+                }
+            });
+            XposedHelpers.findAndHookMethod(WebView.class, "onOverScrolled", int.class, int.class, boolean.class, boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    boolean clampedX = (boolean) param.args[2];
+                    if (clampedX) {
+                        ViewParent viewParent = findViewParentIfNeeds((WebView) param.thisObject);
+                        if (viewParent != null) scrolling = false;
+                    }
+                }
+            });
+        }
+    }
+
+    private static ViewParent findViewParentIfNeeds(View v) {
+        ViewParent parent = v.getParent();
+        if (parent == null) return null;
+        if (MixPagerContainer.isInstance(parent)) {
+            return parent;
+        } else if (parent instanceof View) {
+            return findViewParentIfNeeds((View) parent);
+        } else {
+            return parent;
         }
     }
 }
