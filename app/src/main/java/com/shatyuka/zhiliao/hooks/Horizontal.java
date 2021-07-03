@@ -5,7 +5,6 @@ import android.view.View;
 
 import com.shatyuka.zhiliao.Helper;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -22,19 +21,17 @@ public class Horizontal implements IHook {
     static Class<?> NestChildScrollChange;
     static Class<?> AnswerContentView;
     static Class<?> NextBtnClickListener;
-    static Class<?> DirectionBoundView;
     static Class<?> VerticalPageTransformer;
-    static Class<?> AnswerRouterDispatcher;
+    static Class<?> MixPagerContainer;
 
     static Method onNestChildScrollRelease;
     static Method isReadyPageTurning;
+    static Method nextAnswer;
+    static Method lastAnswer;
 
     static Field ActionSheetLayout_callbackList;
-    static Field MatchResult_url;
-    static Field MatchResult_bundle;
-    static Field MatchResult_module;
-
-    static Constructor<?> MatchResult;
+    static Field UserAction_DRAG_UP;
+    static Field UserAction_DRAG_DOWN;
 
     static float width;
     static float height;
@@ -50,7 +47,7 @@ public class Horizontal implements IHook {
         NestChildScrollChange = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNestChildScrollChange$1");
         AnswerContentView = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView");
         NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
-        DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
+        Class<?> DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
         try {
             VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
         } catch (ClassNotFoundException e) {
@@ -64,20 +61,20 @@ public class Horizontal implements IHook {
         ActionSheetLayout_callbackList.setAccessible(true);
 
         if (Helper.packageInfo.versionCode > 2614) {
-            AnswerRouterDispatcher = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerRouterDispatcher");
-            Method[] methods = AnswerRouterDispatcher.getDeclaredMethods();
-            for (Method method : methods) {
-                if (method.getName().equals("buildNormal")) {
-                    Class<?> matchResultClass = method.getReturnType();
-                    MatchResult = matchResultClass.getConstructors()[0];
-                    MatchResult_url = method.getReturnType().getField("a");
-                    MatchResult_bundle = method.getReturnType().getField("b");
-                    MatchResult_module = method.getReturnType().getField("d");
-                    break;
-                }
+            MixPagerContainer = classLoader.loadClass("com.zhihu.android.mix.widget.MixPagerContainer");
+            Class<?> VerticalPagerContainer = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.VerticalPagerContainer");
+            Class<?> UserAction = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.e");
+            if (!UserAction.isEnum()) {
+                UserAction = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.f");
+                if (!UserAction.isEnum())
+                    throw new ClassNotFoundException("com.zhihu.android.bootstrap.vertical_pager.UserAction");
             }
-            if (MatchResult == null)
-                throw new ClassNotFoundException("com.zhihu.router.MatchResult");
+
+            nextAnswer = VerticalPagerContainer.getMethod("a", UserAction);
+            lastAnswer = VerticalPagerContainer.getMethod("b", UserAction);
+
+            UserAction_DRAG_UP = UserAction.getField("DRAG_UP");
+            UserAction_DRAG_DOWN = UserAction.getField("DRAG_DOWN");
         }
 
         height = Helper.scale * 160 / 5;
@@ -166,15 +163,31 @@ public class Horizontal implements IHook {
             });
 
             if (Helper.packageInfo.versionCode > 2614) {
-                // Force use old AnswerPagerFragment
-                XposedBridge.hookAllMethods(AnswerRouterDispatcher, "buildNormal", new XC_MethodReplacement() {
+                XposedHelpers.findAndHookMethod(MixPagerContainer, "dispatchTouchEvent", MotionEvent.class, new XC_MethodHook() {
+                    float old_x = 0;
+                    float old_y = 0;
+                    long time = 0;
+
                     @Override
-                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                        Object arg = param.args[0];
-                        Object url = MatchResult_url.get(arg);
-                        Object bundle = MatchResult_bundle.get(arg);
-                        Object module = MatchResult_module.get(arg);
-                        return MatchResult.newInstance(url, bundle, Helper.AnswerPagerFragment, module);
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        MotionEvent e = (MotionEvent) param.args[0];
+                        switch (e.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                old_x = e.getX();
+                                old_y = e.getY();
+                                time = System.currentTimeMillis();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                float dx = e.getX() - old_x;
+                                float dy = e.getY() - old_y;
+                                if (Math.abs(dx) > width * Helper.sensitivity && Math.abs(dy) < height * Helper.sensitivity && (System.currentTimeMillis() - time) < 500) {
+                                    if (dx < 0)
+                                        nextAnswer.invoke(param.thisObject, UserAction_DRAG_UP.get(null));
+                                    else
+                                        lastAnswer.invoke(param.thisObject, UserAction_DRAG_DOWN.get(null));
+                                }
+                                break;
+                        }
                     }
                 });
             }
