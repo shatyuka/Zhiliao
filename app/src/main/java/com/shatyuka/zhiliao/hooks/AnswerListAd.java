@@ -4,9 +4,8 @@ import android.content.Context;
 
 import com.shatyuka.zhiliao.Helper;
 
-import java.util.ArrayList;
-
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class AnswerListAd implements IHook {
@@ -36,7 +35,7 @@ public class AnswerListAd implements IHook {
             }
         });
         if (AnswerListWrapper != null) {
-            XposedHelpers.findAndHookMethod(AnswerListWrapper, "insertAdBrandToList", ArrayList.class, new XC_MethodHook() {
+            XposedBridge.hookAllMethods(AnswerListWrapper, "insertAdBrandToList", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
                     if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
