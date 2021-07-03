@@ -7,18 +7,13 @@ import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class SearchAd implements IHook {
-    static Class<?> JacksonResponseBodyConverter;
-    static Class<?> SearchTopTabsItemList;
-    static Class<?> PresetWords;
-    static Class<?> AbSearch;
-
     static Method convert;
 
     static Field SearchTopTabsItemList_commercialData;
     static Field PresetWords_preset;
+    static Field SearchRecommendQuery_content;
 
     @Override
     public String getName() {
@@ -27,6 +22,7 @@ public class SearchAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
+        Class<?> JacksonResponseBodyConverter;
         try {
             JacksonResponseBodyConverter = classLoader.loadClass("com.zhihu.android.net.b.b");
             convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
@@ -39,15 +35,12 @@ public class SearchAd implements IHook {
                 convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
             }
         }
-        SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
-        PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
-        if (Helper.packageInfo.versionCode > 3960) {
-            AbSearch = classLoader.loadClass("com.zhihu.android.app.a.a");
-            try { // check for future update
-                AbSearch.getField("a");
-            } catch (NoSuchFieldException e) {
-                throw new ClassNotFoundException("com.zhihu.android.app.a.AbSearch");
-            }
+        Class<?> SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
+        Class<?> PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
+        try {
+            Class<?> SearchRecommendQuery = classLoader.loadClass("com.zhihu.android.api.model.SearchRecommendQuery");
+            SearchRecommendQuery_content = SearchRecommendQuery.getField("content");
+        } catch (ClassNotFoundException ignored) {
         }
 
         SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
@@ -71,22 +64,15 @@ public class SearchAd implements IHook {
                                 PresetWords_preset.set(result, null);
                                 break;
                             }
+                            case "com.zhihu.android.api.model.SearchRecommendQuery": {
+                                SearchRecommendQuery_content.set(result, null);
+                                break;
+                            }
                         }
                         param.setResult(result);
                     }
                 }
             }
         });
-
-        if (Helper.packageInfo.versionCode > 3960) { // after 7.3.1
-            XposedHelpers.findAndHookMethod(AbSearch, "a", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_searchad", true)) {
-                        param.setResult(false);
-                    }
-                }
-            });
-        }
     }
 }
