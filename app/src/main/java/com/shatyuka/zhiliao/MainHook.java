@@ -37,7 +37,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             }
         }
 
-        Toast.makeText(Helper.context, "知了native模块加载失败", Toast.LENGTH_SHORT).show();
+        XposedBridge.log("[Zhiliao] 知了native模块加载失败");
     }
 
     @Override
