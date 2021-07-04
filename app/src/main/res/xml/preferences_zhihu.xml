@@ -175,6 +175,12 @@
             android:key="switch_article"
             android:title="精简文章页面"
             android:summary="隐藏相关推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_navres"
+            android:title="禁用活动主题"
+            android:summary="禁止导航栏使用活动主题"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference

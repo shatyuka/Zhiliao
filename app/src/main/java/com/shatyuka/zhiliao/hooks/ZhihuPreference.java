@@ -320,6 +320,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_vipnav = findPreference.invoke(thisObject, "switch_vipnav");
                 Object switch_videonav = findPreference.invoke(thisObject, "switch_videonav");
                 Object switch_article = findPreference.invoke(thisObject, "switch_article");
+                Object switch_navres = findPreference.invoke(thisObject, "switch_navres");
                 Object switch_horizontal = findPreference.invoke(thisObject, "switch_horizontal");
                 Object switch_nextanswer = findPreference.invoke(thisObject, "switch_nextanswer");
 
@@ -334,6 +335,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_vipnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_videonav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_article, thisObject);
+                setOnPreferenceClickListener.invoke(switch_navres, thisObject);
                 setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
                 setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
                 setOnPreferenceClickListener.invoke(preference_version, thisObject);
@@ -397,6 +399,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_videonav, Helper.modRes.getDrawable(R.drawable.ic_play_circle));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_hotbanner"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(switch_article, Helper.modRes.getDrawable(R.drawable.ic_article));
+                setIcon.invoke(switch_navres, Helper.modRes.getDrawable(R.drawable.ic_event));
                 setIcon.invoke(switch_horizontal, Helper.modRes.getDrawable(R.drawable.ic_swap_horiz));
                 setIcon.invoke(findPreference.invoke(thisObject, "seekbar_sensitivity"), Helper.modRes.getDrawable(R.drawable.ic_bolt));
                 setIcon.invoke(switch_nextanswer, Helper.modRes.getDrawable(R.drawable.ic_circle_down));
@@ -479,6 +482,8 @@ public class ZhihuPreference implements IHook {
                         Object switch_externlink = findPreference.invoke(param.thisObject, "switch_externlink");
                         setChecked.invoke(switch_externlink, false);
                         break;
+                    case "switch_navres":
+                        Helper.deleteDirectory(Helper.context.getFilesDir() + "/bottom_nav");
                     case "switch_tag":
                     case "switch_thirdpartylogin":
                     case "switch_livebutton":

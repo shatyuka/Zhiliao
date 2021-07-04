@@ -11,6 +11,7 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -95,5 +96,26 @@ public class Helper {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    public static boolean deleteDirectory(String filePath) {
+        File dirFile = new File(filePath);
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return false;
+        }
+        boolean result;
+        File[] files = dirFile.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    result = new File(file.getAbsolutePath()).delete();
+                    if (!result) return false;
+                } else if (file.isDirectory()) {
+                    result = deleteDirectory(file.getAbsolutePath());
+                    if (!result) return false;
+                }
+            }
+        }
+        return dirFile.delete();
     }
 }

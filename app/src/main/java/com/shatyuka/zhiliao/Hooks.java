@@ -16,6 +16,7 @@ import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
 import com.shatyuka.zhiliao.hooks.NavButton;
+import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
 import com.shatyuka.zhiliao.hooks.RedDot;
 import com.shatyuka.zhiliao.hooks.SearchAd;
@@ -56,6 +57,7 @@ public class Hooks {
             new StatusBar(),
             new ThirdPartyLogin(),
             new StartPage(),
+            new NavRes(),
     };
 
     public static void init(final ClassLoader classLoader) {
