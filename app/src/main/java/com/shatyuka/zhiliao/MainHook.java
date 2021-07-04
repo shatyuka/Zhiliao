@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.io.File;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -69,6 +71,16 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                             if (!Helper.prefs.getBoolean("switch_mainswitch", false))
                                 Toast.makeText(Helper.context, "知了加载成功，请到设置页面开启功能。", Toast.LENGTH_LONG).show();
                         }
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(File.class, "exists", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    File file = (File) param.thisObject;
+                    if (file.getName().equals(".allowXposed")) {
+                        param.setResult(true);
                     }
                 }
             });
