@@ -4,12 +4,13 @@ import com.shatyuka.zhiliao.Helper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 public class SearchAd implements IHook {
-    static Method convert;
+    static LinkedList<Method> converts = new LinkedList<Method>();
 
     static Field SearchTopTabsItemList_commercialData;
     static Field PresetWords_preset;
@@ -22,19 +23,23 @@ public class SearchAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
+        String[] classNames = {
+                "com.zhihu.android.net.b.b",
+                "retrofit2.b.a.c",
+                "j.b.a.c"
+        };
         Class<?> JacksonResponseBodyConverter;
-        try {
-            JacksonResponseBodyConverter = classLoader.loadClass("com.zhihu.android.net.b.b");
-            convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+        for (String className : classNames) {
             try {
-                JacksonResponseBodyConverter = classLoader.loadClass("retrofit2.b.a.c");
-                convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
-            } catch (ClassNotFoundException | NoSuchMethodException e2) {
-                JacksonResponseBodyConverter = classLoader.loadClass("j.b.a.c");
-                convert = JacksonResponseBodyConverter.getMethod("convert", Object.class);
+                JacksonResponseBodyConverter = classLoader.loadClass(className);
+                converts.add(JacksonResponseBodyConverter.getMethod("convert", Object.class));
+            } catch (Throwable ignored) {
             }
         }
+        if (converts.isEmpty()) {
+            throw new ClassNotFoundException("retrofit2.converter.jackson.JacksonResponseBodyConverter");
+        }
+
         Class<?> SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
         Class<?> PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
         try {
@@ -49,7 +54,7 @@ public class SearchAd implements IHook {
 
     @Override
     public void hook() throws Throwable {
-        XposedBridge.hookMethod(convert, new XC_MethodHook() {
+        XC_MethodHook hook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_searchad", true)) {
@@ -73,6 +78,8 @@ public class SearchAd implements IHook {
                     }
                 }
             }
-        });
+        };
+        for (Method convert : converts)
+            XposedBridge.hookMethod(convert, hook);
     }
 }
