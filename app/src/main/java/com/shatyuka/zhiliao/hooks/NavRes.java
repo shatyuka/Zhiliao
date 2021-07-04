@@ -15,7 +15,15 @@ public class NavRes implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        BottomNav = classLoader.loadClass("com.zhihu.android.bottomnav.b");
+        try {
+            BottomNav = classLoader.loadClass("com.zhihu.android.bottomnav.a");
+            if (BottomNav.getDeclaredField("a").getType() != boolean.class)
+                throw new Throwable("");
+        } catch (Throwable ignored) {
+            BottomNav = classLoader.loadClass("com.zhihu.android.bottomnav.b");
+            if (BottomNav.getDeclaredField("a").getType() != boolean.class)
+                throw new ClassNotFoundException("com.zhihu.android.bottomnav.BottomNav");
+        }
     }
 
     @Override
