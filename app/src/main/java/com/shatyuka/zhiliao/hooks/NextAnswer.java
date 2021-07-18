@@ -33,7 +33,7 @@ public class NextAnswer implements IHook {
                 XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) {
-                        if (param.args[0].getClass() == NextContentAnimationView)
+                        if (NextContentAnimationView.isAssignableFrom(param.args[0].getClass()))
                             ((View) param.args[0]).setVisibility(View.GONE);
                     }
                 });
@@ -41,7 +41,7 @@ public class NextAnswer implements IHook {
                 XposedHelpers.findAndHookMethod(View.class, "setVisibility", int.class, new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
-                        if (param.thisObject.getClass() == NextContentAnimationView)
+                        if (NextContentAnimationView.isAssignableFrom(param.thisObject.getClass()))
                             param.args[0] = View.GONE;
                     }
                 });
