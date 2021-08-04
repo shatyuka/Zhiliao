@@ -1,5 +1,6 @@
 package com.shatyuka.zhiliao.hooks;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +23,7 @@ public class ExternLink implements IHook {
 
     static Method shouldOverrideUrlLoading;
     static Method openUrl;
+    static Method openUrl2;
 
     static Field H5Event_params;
 
@@ -52,6 +54,14 @@ public class ExternLink implements IHook {
 
         Class<?> BasePlugin2 = classLoader.loadClass("com.zhihu.android.app.mercury.plugin.BasePlugin2");
         openUrl = BasePlugin2.getMethod("openUrl", H5Event);
+
+        try {
+            Class<?> IntentUtils = classLoader.loadClass("com.zhihu.android.app.router.IntentUtils");
+            openUrl2 = IntentUtils.getMethod("openUrl", Context.class, Uri.class, boolean.class, boolean.class);
+        } catch (Exception e) {
+            Class<?> IntentUtils = classLoader.loadClass("com.zhihu.android.app.router.c");
+            openUrl2 = IntentUtils.getMethod("a", Context.class, Uri.class, boolean.class, boolean.class);
+        }
 
         H5Event_params = H5Event.getDeclaredField("i");
         H5Event_params.setAccessible(true);
@@ -97,6 +107,26 @@ public class ExternLink implements IHook {
                             param.setResult(true);
                         } else {
                             params.put("url", url);
+                        }
+                    }
+                }
+            }
+        });
+
+        XposedBridge.hookMethod(openUrl2, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                Uri uri = (Uri)param.args[1];
+                if ("link.zhihu.com".equals(uri.getHost())) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
+                        String url = uri.getQueryParameter("target");
+                        if (Helper.prefs.getBoolean("switch_externlinkex", false)) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Helper.context.startActivity(intent);
+                            param.setResult(true);
+                        } else {
+                            param.args[1] = Uri.parse(url);
                         }
                     }
                 }
