@@ -51,4 +51,5 @@ dependencies {
     implementation 'dev.rikka.ndk.thirdparty:cxx:1.1.0'
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'de.robv.android.xposed:api:82'
+    testImplementation 'de.robv.android.xposed:api:82'
 }
