@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode appVerCode.toInteger()
         versionName appVerName
         externalNativeBuild {
@@ -43,7 +43,7 @@ android {
     buildFeatures {
         prefab true
     }
-    buildToolsVersion '30.0.3'
+    buildToolsVersion '31.0.0'
 }
 
 dependencies {
