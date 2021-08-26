@@ -32,12 +32,20 @@ public class Helper {
     public static int sensitivity;
 
     public static Context context;
+    public static Context modContext;
     public static SharedPreferences prefs;
     public static Resources modRes;
     public static PackageInfo packageInfo;
 
     static boolean init(ClassLoader classLoader) {
         try {
+            try {
+                modContext = context.createPackageContext("com.shatyuka.zhiliao", 0);
+            } catch (Throwable ignored) {
+                modContext = context;
+            }
+
+            prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
 
             MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");

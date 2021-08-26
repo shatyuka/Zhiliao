@@ -439,14 +439,14 @@ public class ZhihuPreference implements IHook {
                     case "preference_version":
                         version_click++;
                         if (version_click == 5) {
-                            Toast.makeText(Helper.context, "点我次数再多，更新也不会变快哦", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Helper.modContext, "点我次数再多，更新也不会变快哦", Toast.LENGTH_SHORT).show();
                             version_click = 0;
                         }
                         break;
                     case "preference_author":
                         author_click++;
                         if (author_click == 5) {
-                            Toast.makeText(Helper.context, Helper.modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Helper.modContext, Helper.modRes.getStringArray(R.array.click_author)[new Random().nextInt(4)], Toast.LENGTH_SHORT).show();
                             author_click = 0;
                         }
                         break;
@@ -495,7 +495,7 @@ public class ZhihuPreference implements IHook {
                     case "switch_article":
                     case "switch_horizontal":
                     case "switch_nextanswer":
-                        Toast.makeText(Helper.context, "重启知乎生效", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Helper.modContext, "重启知乎生效", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 return false;
