@@ -10,6 +10,7 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -92,6 +93,7 @@ public class Horizontal implements IHook {
                 float old_y = 0;
                 long time = 0;
 
+                @SuppressWarnings("rawtypes")
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     MotionEvent e = (MotionEvent) param.args[0];
@@ -108,7 +110,7 @@ public class Horizontal implements IHook {
                                     Math.abs(dy) < height * Helper.sensitivity &&
                                     (System.currentTimeMillis() - time) < 500 &&
                                     !scrolling) {
-                                for (Object callback : (List) ActionSheetLayout_callbackList.get(param.thisObject)) {
+                                for (Object callback : (List) Objects.requireNonNull(ActionSheetLayout_callbackList.get(param.thisObject))) {
                                     if (callback.getClass() == NestChildScrollChange) {
                                         onNestChildScrollRelease.invoke(callback, dx, 5201314);
                                     }

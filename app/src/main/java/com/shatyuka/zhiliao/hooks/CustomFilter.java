@@ -60,6 +60,7 @@ public class CustomFilter implements IHook {
     @Override
     public void hook() throws Throwable {
         XposedBridge.hookAllMethods(InnerDeserializer, "deserialize", new XC_MethodHook() {
+            @SuppressWarnings("rawtypes")
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false)) {

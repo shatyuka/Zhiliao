@@ -2,7 +2,6 @@ package com.shatyuka.zhiliao;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
 import android.widget.Toast;
 
 import java.io.File;
@@ -21,7 +20,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     private native void initNative();
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
-    private void tryLoadNative() {
+    private void tryLoadNative(boolean showLog) {
         String path = modulePath.substring(0, modulePath.lastIndexOf('/'));
         String[] libs = {
                 path + "/lib/arm64/libzhiliao.so",
@@ -39,15 +38,17 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             }
         }
 
-        XposedBridge.log("[Zhiliao] 知了native模块加载失败");
+        if (showLog)
+            XposedBridge.log("[Zhiliao] 知了native模块加载失败");
     }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) {
         if (hookPackage.equals(lpparam.packageName)) {
-            tryLoadNative();
+            boolean isMainProcess = hookPackage.equals(lpparam.processName);
+            tryLoadNative(isMainProcess);
 
-            if (!hookPackage.equals(lpparam.processName))
+            if (!isMainProcess)
                 return;
 
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
@@ -59,7 +60,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
             XposedHelpers.findAndHookMethod(android.app.Instrumentation.class, "callApplicationOnCreate", Application.class, new XC_MethodHook() {
                 @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                protected void afterHookedMethod(MethodHookParam param) {
                     if (param.args[0] instanceof Application) {
                         Helper.context = ((Application) param.args[0]).getApplicationContext();
 

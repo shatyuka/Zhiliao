@@ -1,5 +1,6 @@
 package com.shatyuka.zhiliao;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -31,7 +32,9 @@ public class Helper {
     public static float scale;
     public static int sensitivity;
 
+    @SuppressLint("StaticFieldLeak")
     public static Context context;
+    @SuppressLint("StaticFieldLeak")
     public static Context modContext;
     public static SharedPreferences prefs;
     public static Resources modRes;
@@ -77,6 +80,8 @@ public class Helper {
         }
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressLint("DiscouragedPrivateApi")
     static Resources getModuleRes(String path) throws Throwable {
         AssetManager assetManager = AssetManager.class.newInstance();
         AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, path);
@@ -87,6 +92,7 @@ public class Helper {
         return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     public static void doRestart(Context context) {
         try {
             if (context != null) {

@@ -71,7 +71,7 @@ public class ExternLink implements IHook {
     public void hook() throws Throwable {
         XposedBridge.hookMethod(shouldOverrideUrlLoading, new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) {
                 WebResourceRequest request = (WebResourceRequest) param.args[1];
                 Uri uri = request.getUrl();
                 if ("link.zhihu.com".equals(uri.getHost())) {

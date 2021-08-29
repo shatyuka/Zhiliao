@@ -10,7 +10,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 public class SearchAd implements IHook {
-    static LinkedList<Method> converts = new LinkedList<Method>();
+    static LinkedList<Method> converts = new LinkedList<>();
 
     static Field SearchTopTabsItemList_commercialData;
     static Field PresetWords_preset;

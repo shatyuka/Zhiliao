@@ -59,11 +59,13 @@ public class Tag implements IHook {
 
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
             XposedHelpers.findAndHookMethod(BaseTemplateNewFeedHolder, "a", TemplateFeed, new XC_MethodHook() {
-                @SuppressLint("ResourceType")
+                @SuppressLint({"ResourceType", "SetTextI18n"})
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
                     ViewGroup view = (ViewGroup) ViewHolder_itemView.get(thisObject);
+                    if (view == null)
+                        return;
                     TextView title = view.findViewById(id_title);
                     if (title != null) {
                         Object templateFeed = SugarHolder_mData.get(thisObject);
@@ -82,6 +84,7 @@ public class Tag implements IHook {
                             relativeLayout.setY((int) (density * 5));
                             ((ViewGroup) title.getParent()).addView(relativeLayout);
                         }
+                        assert type != null;
                         if (tag.getText() != getType(type)) {
                             tag.setText(getType(type));
                             tag.setBackground(getBackground(type));
@@ -124,6 +127,7 @@ public class Tag implements IHook {
             backgrounds[2] = Helper.modRes.getDrawable(R.drawable.bg_video);
         }
         switch (type) {
+            default:
             case "answer":
                 return backgrounds[0];
             case "article":
@@ -131,8 +135,6 @@ public class Tag implements IHook {
             case "zvideo":
             case "drama":
                 return backgrounds[2];
-            default:
-                return backgrounds[0];
         }
     }
 }
