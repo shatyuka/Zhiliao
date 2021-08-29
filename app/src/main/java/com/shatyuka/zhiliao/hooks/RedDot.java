@@ -1,6 +1,7 @@
 package com.shatyuka.zhiliao.hooks;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.shatyuka.zhiliao.Helper;
@@ -20,6 +21,7 @@ public class RedDot implements IHook {
     static Class<?> BottomNavMenuItemViewForIconOnly;
     static Class<?> NotiUnreadCountKt;
     static Class<?> NotiMsgModel;
+    static Class<?> ViewModel;
 
     static Field FeedFollowAvatarCommonViewHolder_dot;
 
@@ -38,6 +40,10 @@ public class RedDot implements IHook {
         NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
         try {
             NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
+        } catch (ClassNotFoundException ignored) {
+        }
+        try {
+            ViewModel = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.help.tabhelp.model.ViewModel");
         } catch (ClassNotFoundException ignored) {
         }
 
@@ -62,6 +68,20 @@ public class RedDot implements IHook {
             XposedHelpers.findAndHookMethod(NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
             if (NotiUnreadCountKt != null)
                 XposedHelpers.findAndHookMethod(NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
+            if (ViewModel != null) {
+                XposedHelpers.findAndHookConstructor(ViewModel, View.class, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        try {
+                            ViewGroup view = (ViewGroup) param.args[0];
+                            if (view.getChildCount() == 2) { // red_parent
+                                view.setVisibility(View.GONE);
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                });
+            }
         }
     }
 }
