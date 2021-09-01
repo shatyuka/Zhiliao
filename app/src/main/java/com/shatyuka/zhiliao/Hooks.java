@@ -66,7 +66,7 @@ public class Hooks {
                 hook.init(classLoader);
                 hook.hook();
             } catch (Throwable e) {
-                Toast.makeText(Helper.modContext, hook.getName() + "功能加载失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_LONG).show();
+                Helper.toast(hook.getName() + "功能加载失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_LONG);
                 XposedBridge.log("[Zhiliao] " + e.toString());
             }
         }

@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.widget.Toast;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -34,20 +35,12 @@ public class Helper {
 
     @SuppressLint("StaticFieldLeak")
     public static Context context;
-    @SuppressLint("StaticFieldLeak")
-    public static Context modContext;
     public static SharedPreferences prefs;
     public static Resources modRes;
     public static PackageInfo packageInfo;
 
     static boolean init(ClassLoader classLoader) {
         try {
-            try {
-                modContext = context.createPackageContext("com.shatyuka.zhiliao", 0);
-            } catch (Throwable ignored) {
-                modContext = context;
-            }
-
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
 
@@ -131,5 +124,11 @@ public class Helper {
             }
         }
         return dirFile.delete();
+    }
+
+    public static void toast(CharSequence text, int duration) {
+        Toast toast = Toast.makeText(context, "", duration);
+        toast.setText("知了：" + text);
+        toast.show();
     }
 }
