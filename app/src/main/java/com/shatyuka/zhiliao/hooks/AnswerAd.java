@@ -49,7 +49,9 @@ public class AnswerAd implements IHook {
                 WebResourceRequest request = (WebResourceRequest) param.args[1];
                 List<String> segments = request.getUrl().getPathSegments();
                 if (segments.size() > 2 && request.getMethod().equals("GET")
-                        && ((Helper.prefs.getBoolean("switch_answerad", true) && (segments.get(segments.size() - 1).equals("recommendations") || (segments.get(2).equals("brand") && segments.get(segments.size() - 1).equals("card"))))
+                        && ((Helper.prefs.getBoolean("switch_answerad", true) && (segments.get(segments.size() - 1).equals("recommendations")
+                        || (segments.get(2).equals("brand") && segments.get(segments.size() - 1).equals("card")))
+                        || segments.get(segments.size() - 2).equals("hotmodule"))
                         || (Helper.prefs.getBoolean("switch_club", false) && segments.get(segments.size() - 1).equals("bind_club"))
                         || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods"))
                         || (Helper.prefs.getBoolean("switch_article", false) && segments.get(segments.size() - 1).equals("recommendation")))) {
