@@ -289,7 +289,7 @@ public class ZhihuPreference implements IHook {
                             restart.setOnClickListener(v -> Helper.doRestart(Helper.context));
                             restart.setColorFilter(Helper.getDarkMode() ? 0xffd3d3d3 : 0xff646464);
                             setTooltipText.invoke(null, restart, "重启知乎");
-                            ViewGroup actionMenuView = (ViewGroup)(toolbar.getChildAt(0));
+                            ViewGroup actionMenuView = (ViewGroup) (toolbar.getChildAt(0));
                             actionMenuView.addView(restart);
                             break;
                         }
@@ -568,6 +568,13 @@ public class ZhihuPreference implements IHook {
                         imm.hideSoftInputFromWindow(view.getRootView().getWindowToken(), 0);
                     }
                 }
+            }
+        });
+
+        XposedHelpers.findAndHookMethod(SettingsFragment, "onViewCreated", View.class, Bundle.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                Helper.settingsView = param.args[0];
             }
         });
     }

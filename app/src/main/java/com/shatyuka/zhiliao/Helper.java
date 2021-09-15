@@ -39,6 +39,8 @@ public class Helper {
     public static Resources modRes;
     public static PackageInfo packageInfo;
 
+    public static Object settingsView;
+
     static boolean init(ClassLoader classLoader) {
         try {
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
