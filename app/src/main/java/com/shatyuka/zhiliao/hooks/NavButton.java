@@ -26,7 +26,11 @@ public class NavButton implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
         BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
-        IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
+        try {
+            IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
+        } catch (ClassNotFoundException e) {
+            IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.b.b");
+        }
 
         getMenuName = IMenuItem.getMethod("a");
 
