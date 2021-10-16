@@ -577,5 +577,14 @@ public class ZhihuPreference implements IHook {
                 Helper.settingsView = param.args[0];
             }
         });
+
+        XposedHelpers.findAndHookMethod(BasePreferenceFragment, "onDestroyView", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                if (param.thisObject.getClass() == SettingsFragment) {
+                    Helper.settingsView = null;
+                }
+            }
+        });
     }
 }
