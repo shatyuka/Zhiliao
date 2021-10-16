@@ -18,12 +18,12 @@ public class RedDot implements IHook {
     static Class<?> FeedsTabsFragment;
     static Class<?> FeedFollowAvatarCommonViewHolder;
     static Class<?> ZHMainTabLayout;
-    static Class<?> BottomNavMenuItemViewForIconOnly;
     static Class<?> NotiUnreadCountKt;
     static Class<?> NotiMsgModel;
     static Class<?> ViewModel;
 
-    static Method setUnreadCount;
+    static Method BottomNavMenuItemView_setUnreadCount;
+    static Method BottomNavMenuItemViewForIconOnly_setUnreadCount;
 
     static Field FeedFollowAvatarCommonViewHolder_dot;
 
@@ -38,7 +38,7 @@ public class RedDot implements IHook {
         FeedFollowAvatarCommonViewHolder = classLoader.loadClass("com.zhihu.android.moments.viewholders.FeedFollowAvatarCommonViewHolder");
         ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
         Class<?> BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
-        BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
+        Class<?> BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
         NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
         try {
             NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
@@ -50,9 +50,14 @@ public class RedDot implements IHook {
         }
 
         try {
-            setUnreadCount = BottomNavMenuItemView.getMethod("a", int.class);
-        } catch (NoSuchMethodError e) {
-            setUnreadCount = BottomNavMenuItemView.getMethod("b", int.class);
+            BottomNavMenuItemView_setUnreadCount = BottomNavMenuItemView.getMethod("a", int.class);
+        } catch (NoSuchMethodException e) {
+            BottomNavMenuItemView_setUnreadCount = BottomNavMenuItemView.getMethod("b", int.class);
+        }
+        try {
+            BottomNavMenuItemViewForIconOnly_setUnreadCount = BottomNavMenuItemViewForIconOnly.getMethod("a", int.class);
+        } catch (NoSuchMethodException e) {
+            BottomNavMenuItemViewForIconOnly_setUnreadCount = BottomNavMenuItemViewForIconOnly.getMethod("b", int.class);
         }
 
         FeedFollowAvatarCommonViewHolder_dot = FeedFollowAvatarCommonViewHolder.getDeclaredField("f");
@@ -71,8 +76,8 @@ public class RedDot implements IHook {
                 }
             });
             XposedHelpers.findAndHookMethod(ZHMainTabLayout, "d", XC_MethodReplacement.returnConstant(null));
-            XposedBridge.hookMethod(setUnreadCount, XC_MethodReplacement.returnConstant(null));
-            XposedHelpers.findAndHookMethod(BottomNavMenuItemViewForIconOnly, "a", int.class, XC_MethodReplacement.returnConstant(null));
+            XposedBridge.hookMethod(BottomNavMenuItemView_setUnreadCount, XC_MethodReplacement.returnConstant(null));
+            XposedBridge.hookMethod(BottomNavMenuItemViewForIconOnly_setUnreadCount, XC_MethodReplacement.returnConstant(null));
             XposedHelpers.findAndHookMethod(NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
             if (NotiUnreadCountKt != null)
                 XposedHelpers.findAndHookMethod(NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
