@@ -24,6 +24,7 @@ public class RedDot implements IHook {
 
     static Method BottomNavMenuItemView_setUnreadCount;
     static Method BottomNavMenuItemViewForIconOnly_setUnreadCount;
+    static Method setNavBadge;
 
     static Field FeedFollowAvatarCommonViewHolder_dot;
 
@@ -39,6 +40,8 @@ public class RedDot implements IHook {
         ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
         Class<?> BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
         Class<?> BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
+        Class<?> BaseBottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BaseBottomNavMenuItemView");
+        Class<?> NavBadge = classLoader.loadClass("com.zhihu.android.bottomnav.api.model.NavBadge");
         NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
         try {
             NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
@@ -51,13 +54,15 @@ public class RedDot implements IHook {
 
         try {
             BottomNavMenuItemView_setUnreadCount = BottomNavMenuItemView.getMethod("a", int.class);
-        } catch (NoSuchMethodException e) {
-            BottomNavMenuItemView_setUnreadCount = BottomNavMenuItemView.getMethod("b", int.class);
+        } catch (NoSuchMethodException ignored) {
         }
         try {
             BottomNavMenuItemViewForIconOnly_setUnreadCount = BottomNavMenuItemViewForIconOnly.getMethod("a", int.class);
-        } catch (NoSuchMethodException e) {
-            BottomNavMenuItemViewForIconOnly_setUnreadCount = BottomNavMenuItemViewForIconOnly.getMethod("b", int.class);
+        } catch (NoSuchMethodException ignored) {
+        }
+        try {
+            setNavBadge = BaseBottomNavMenuItemView.getMethod("a", NavBadge);
+        } catch (NoSuchMethodException ignored) {
         }
 
         FeedFollowAvatarCommonViewHolder_dot = FeedFollowAvatarCommonViewHolder.getDeclaredField("f");
@@ -76,8 +81,12 @@ public class RedDot implements IHook {
                 }
             });
             XposedHelpers.findAndHookMethod(ZHMainTabLayout, "d", XC_MethodReplacement.returnConstant(null));
-            XposedBridge.hookMethod(BottomNavMenuItemView_setUnreadCount, XC_MethodReplacement.returnConstant(null));
-            XposedBridge.hookMethod(BottomNavMenuItemViewForIconOnly_setUnreadCount, XC_MethodReplacement.returnConstant(null));
+            if (BottomNavMenuItemView_setUnreadCount != null)
+                XposedBridge.hookMethod(BottomNavMenuItemView_setUnreadCount, XC_MethodReplacement.returnConstant(null));
+            if (BottomNavMenuItemViewForIconOnly_setUnreadCount != null)
+                XposedBridge.hookMethod(BottomNavMenuItemViewForIconOnly_setUnreadCount, XC_MethodReplacement.returnConstant(null));
+            if (setNavBadge != null)
+                XposedBridge.hookMethod(setNavBadge, XC_MethodReplacement.returnConstant(null));
             XposedHelpers.findAndHookMethod(NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
             if (NotiUnreadCountKt != null)
                 XposedHelpers.findAndHookMethod(NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
