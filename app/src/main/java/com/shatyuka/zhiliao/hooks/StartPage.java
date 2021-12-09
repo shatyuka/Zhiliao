@@ -7,10 +7,12 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
 public class StartPage implements IHook {
     static Method getDefaultTab;
+    static Method getPreferenceInt;
 
     @Override
     public String getName() {
@@ -32,6 +34,12 @@ public class StartPage implements IHook {
                 getDefaultTab = HotToRecommendHelper.getMethod("a", int.class, String.class);
             }
         }
+
+        try {
+            Class<?> FeedSharePreferencesHelper = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.b");
+            getPreferenceInt = FeedSharePreferencesHelper.getDeclaredMethod("b", Context.class, String.class, int.class);
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
@@ -42,5 +50,9 @@ public class StartPage implements IHook {
                 param.setResult(Integer.parseInt(Helper.prefs.getString("list_startpage", "1")));
             }
         });
+
+        if (getPreferenceInt != null) {
+            XposedBridge.hookMethod(getPreferenceInt, XC_MethodReplacement.returnConstant(-1));
+        }
     }
 }
