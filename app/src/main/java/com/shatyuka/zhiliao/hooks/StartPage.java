@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.shatyuka.zhiliao.Helper;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -11,6 +12,8 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 
 public class StartPage implements IHook {
+    static Class<?> AbCenterExtensions;
+
     static Method getDefaultTab;
     static Method getPreferenceInt;
 
@@ -37,7 +40,20 @@ public class StartPage implements IHook {
 
         try {
             Class<?> FeedSharePreferencesHelper = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.b");
-            getPreferenceInt = FeedSharePreferencesHelper.getDeclaredMethod("b", Context.class, String.class, int.class);
+            getPreferenceInt = FeedSharePreferencesHelper.getMethod("b", Context.class, String.class, int.class);
+        } catch (Exception ignored) {
+        }
+
+        try {
+            AbCenterExtensions = classLoader.loadClass("com.zhihu.android.bootstrap.util.a");
+        } catch (Exception ignored) {
+        }
+
+        try {
+            Class<?> AppConfigParamUtil = classLoader.loadClass("com.zhihu.android.app.feed.util.c");
+            Field isExplore = AppConfigParamUtil.getDeclaredField("c");
+            isExplore.setAccessible(true);
+            isExplore.set(null, false);
         } catch (Exception ignored) {
         }
     }
@@ -52,7 +68,16 @@ public class StartPage implements IHook {
         });
 
         if (getPreferenceInt != null) {
-            XposedBridge.hookMethod(getPreferenceInt, XC_MethodReplacement.returnConstant(-1));
+            XposedBridge.hookMethod(getPreferenceInt, XC_MethodReplacement.returnConstant(0));
         }
+
+        XposedBridge.hookAllMethods(AbCenterExtensions, "b", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if ("exploreab_new".equals(param.args[1])) {
+                    param.setResult(0);
+                }
+            }
+        });
     }
 }
