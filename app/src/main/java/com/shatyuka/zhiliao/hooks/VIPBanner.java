@@ -17,6 +17,8 @@ import de.robv.android.xposed.XposedHelpers;
 
 public class VIPBanner implements IHook {
     static Class<?> VipEntranceView;
+    static Class<?> MoreVipData;
+    static Class<?> NewMoreFragment;
 
     @Override
     public String getName() {
@@ -26,6 +28,11 @@ public class VIPBanner implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
         VipEntranceView = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.widget.VipEntranceView");
+        try {
+            MoreVipData = classLoader.loadClass("com.zhihu.android.profile.data.model.MoreVipData");
+            NewMoreFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.NewMoreFragment");
+        } catch (ClassNotFoundException ignored) {
+        }
     }
 
     @Override
@@ -47,6 +54,10 @@ public class VIPBanner implements IHook {
             }
             XposedHelpers.findAndHookMethod(VipEntranceView, "onClick", View.class, XC_MethodReplacement.returnConstant(null));
             XposedHelpers.findAndHookMethod(VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
+
+            if (MoreVipData != null && NewMoreFragment != null) {
+                XposedHelpers.findAndHookMethod(NewMoreFragment, "a", MoreVipData, XC_MethodReplacement.returnConstant(null));
+            }
         }
     }
 }
