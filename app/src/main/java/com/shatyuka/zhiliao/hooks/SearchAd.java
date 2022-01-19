@@ -25,6 +25,7 @@ public class SearchAd implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         String[] classNames = {
                 "com.zhihu.android.net.b.b",
+                "com.zhihu.android.net.c.b",
                 "retrofit2.b.a.c",
                 "j.b.a.c"
         };
