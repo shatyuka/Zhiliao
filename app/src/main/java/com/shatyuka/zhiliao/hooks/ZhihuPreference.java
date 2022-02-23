@@ -26,6 +26,7 @@ import com.shatyuka.zhiliao.R;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Random;
@@ -88,6 +89,8 @@ public class ZhihuPreference implements IHook {
     static Field ListPreference_mEntries;
     static Field ListPreference_mEntryValues;
 
+    static Constructor<?> ZHIntent_ctor;
+
     @Override
     public String getName() {
         return "设置页面";
@@ -140,6 +143,8 @@ public class ZhihuPreference implements IHook {
         ListPreference_mEntries.setAccessible(true);
         ListPreference_mEntryValues = ListPreference.getDeclaredField("b");
         ListPreference_mEntryValues.setAccessible(true);
+
+        ZHIntent_ctor = ZHIntent.getConstructor(Class.class, Bundle.class, String.class, Array.newInstance(PageInfoType, 0).getClass());
     }
 
     @Override
@@ -248,7 +253,7 @@ public class ZhihuPreference implements IHook {
                 if (param.args[0] == preference_zhiliao) {
                     Object thisObject = param.thisObject;
                     Method a = thisObject.getClass().getMethod("a", ZHIntent);
-                    Object intent = ZHIntent.getConstructors()[0].newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoType, 0));
+                    Object intent = ZHIntent_ctor.newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoType, 0));
                     a.invoke(thisObject, intent);
                     param.setResult(false);
                 }
