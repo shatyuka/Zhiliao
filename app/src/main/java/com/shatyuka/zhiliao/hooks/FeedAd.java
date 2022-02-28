@@ -27,9 +27,15 @@ public class FeedAd implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
         BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
-        FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
-        Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
-        Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
+        try {
+            FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
+            Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
+            Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
+        } catch (ClassNotFoundException e) {
+            FeedAdvert = classLoader.loadClass("com.zhihu.android.adbase.model.FeedAdvert");
+            Advert = classLoader.loadClass("com.zhihu.android.adbase.model.Advert");
+            Ad = classLoader.loadClass("com.zhihu.android.adbase.model.Ad");
+        }
 
         FeedList_data = classLoader.loadClass("com.zhihu.android.api.model.FeedList").getField("data");
     }

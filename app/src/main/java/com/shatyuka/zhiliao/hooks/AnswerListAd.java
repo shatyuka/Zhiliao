@@ -10,6 +10,7 @@ import de.robv.android.xposed.XposedHelpers;
 
 public class AnswerListAd implements IHook {
     static Class<?> AnswerListWrapper;
+    static Class<?> AnswerListAd;
 
     @Override
     public String getName() {
@@ -22,11 +23,16 @@ public class AnswerListAd implements IHook {
             AnswerListWrapper = classLoader.loadClass("com.zhihu.android.question.api.model.AnswerListWrapper");
         } catch (ClassNotFoundException ignored) {
         }
+        try {
+            AnswerListAd = classLoader.loadClass("com.zhihu.android.api.model.AnswerListAd");
+        } catch (ClassNotFoundException e) {
+            AnswerListAd = classLoader.loadClass("com.zhihu.android.adbase.model.AnswerListAd");
+        }
     }
 
     @Override
     public void hook() throws Throwable {
-        XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveAnswerAdParam", Context.class, "com.zhihu.android.api.model.AnswerListAd", Boolean.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolveAnswerAdParam", Context.class, AnswerListAd, Boolean.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_answerlistad", true)) {
