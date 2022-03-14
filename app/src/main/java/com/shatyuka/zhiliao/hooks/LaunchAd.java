@@ -21,26 +21,11 @@ public class LaunchAd implements IHook {
     @Override
     public void init(final ClassLoader classLoader) throws Throwable {
         AdNetworkManager = classLoader.loadClass("com.zhihu.android.sdk.launchad.b");
-        for (char i = 'a'; i <= 'z'; i++) {
-            try {
-                Class<?> LaunchAdHelper = classLoader.loadClass("com.zhihu.android.app.util.c" + i);
-                isShowLaunchAd = LaunchAdHelper.getMethod("isShowLaunchAd");
-            } catch (Exception e) {
-                continue;
-            }
-            break;
-        }
-        if (isShowLaunchAd == null) {
-            for (char i = 'a'; i <= 'z'; i++) {
-                try {
-                    Class<?> LaunchAdHelper = classLoader.loadClass("com.zhihu.android.app.util.d" + i);
+        Helper.findClass(classLoader, "com.zhihu.android.app.util.", 3, 2,
+                (Class<?> LaunchAdHelper) -> {
                     isShowLaunchAd = LaunchAdHelper.getMethod("isShowLaunchAd");
-                } catch (Exception e) {
-                    continue;
-                }
-                break;
-            }
-        }
+                    return true;
+                });
         if (isShowLaunchAd == null)
             throw new NoSuchMethodException("com.zhihu.android.app.util.LaunchAdHelper.isShowLaunchAd()");
     }

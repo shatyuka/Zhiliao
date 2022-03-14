@@ -34,24 +34,11 @@ public class ExternLink implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        for (char i = 'a'; i <= 'z'; i++) {
-            try {
-                Class<?> WebViewClientWrapper = classLoader.loadClass("com.zhihu.android.app.mercury.web." + i);
-                shouldOverrideUrlLoading = WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
-            } catch (Exception e) {
-                continue;
-            }
-            break;
-        }
-        for (char i = 'a'; i <= 'z'; i++) {
-            try {
-                Class<?> WebViewClientWrapper = classLoader.loadClass("com.zhihu.android.app.mercury.web.a" + i);
-                shouldOverrideUrlLoading = WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
-            } catch (Exception e) {
-                continue;
-            }
-            break;
-        }
+        Helper.findClass(classLoader, "com.zhihu.android.app.mercury.web.", 0, 2,
+                (Class<?> WebViewClientWrapper) -> {
+                    shouldOverrideUrlLoading = WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
+                    return true;
+                });
         if (shouldOverrideUrlLoading == null)
             throw new NoSuchMethodException("com.zhihu.android.app.mercury.web.WebViewClientWrapper.shouldOverrideUrlLoading(WebView, WebResourceRequest)");
 
@@ -125,7 +112,7 @@ public class ExternLink implements IHook {
         XposedBridge.hookMethod(openUrl2, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                Uri uri = (Uri)param.args[1];
+                Uri uri = (Uri) param.args[1];
                 if ("link.zhihu.com".equals(uri.getHost())) {
                     if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_externlink", false) || Helper.prefs.getBoolean("switch_externlinkex", false))) {
                         String url = uri.getQueryParameter("target");

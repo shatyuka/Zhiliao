@@ -133,4 +133,44 @@ public class Helper {
         toast.setText("知了：" + text);
         toast.show();
     }
+
+    public interface IClassCheck {
+        boolean check(Class<?> clazz) throws Exception;
+    }
+
+    public static Class<?> findClass(ClassLoader classLoader, String beginWith, IClassCheck check) {
+        return findClass(classLoader, beginWith, 0, 1, check);
+    }
+
+    public static Class<?> findClass(ClassLoader classLoader, String beginWith, int cycleStart, int cycleRound, IClassCheck check) {
+        int count = (cycleStart + cycleRound) * 26;
+        for (int i = cycleStart * 26; i < count; i++) {
+            String className = beginWith + index2Str(i);
+            try {
+                Class<?> clazz = classLoader.loadClass(className);
+                if (check.check(clazz)) {
+                    return clazz;
+                }
+            } catch (Exception e) {
+                continue;
+            }
+            break;
+        }
+        return null;
+    }
+
+    private static String index2Str(int n) {
+        StringBuilder result = new StringBuilder();
+        while (n != 0) {
+            int m = n % 26;
+            if (m == 0) {
+                result.insert(0, 'z');
+                n = n / 26 - 1;
+            } else {
+                result.insert(0, (char) ('a' + m - 1));
+                n /= 26;
+            }
+        }
+        return result.toString();
+    }
 }
