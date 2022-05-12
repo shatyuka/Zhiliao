@@ -44,7 +44,6 @@ public class NavButton implements IHook {
             XposedHelpers.findAndHookMethod(BottomNavMenuView, "a", IMenuItem, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    XposedBridge.log("[Zhiliao] getMenuName: " + getMenuName.invoke(param.args[0]));
                     if (("market".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||
                             ("video".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_videonav", false)) ||
                             ("friend".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_friendnav", false)) ||
