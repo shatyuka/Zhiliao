@@ -172,6 +172,18 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
+            android:key="switch_friendnav"
+            android:title="隐藏关注按钮"
+            android:summary="隐藏导航栏关注按钮"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_panelnav"
+            android:title="隐藏发布按钮"
+            android:summary="隐藏导航栏发布按钮"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
             android:key="switch_hotbanner"
             android:title="隐藏热点通知"
             android:summary="隐藏顶部弹窗通知"/>
