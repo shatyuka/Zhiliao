@@ -104,9 +104,9 @@ public class ZhihuPreference implements IHook {
         SwitchPreference = classLoader.loadClass("com.zhihu.android.app.ui.widget.SwitchPreference");
         OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$c");
         OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
-        PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.g");
-        PreferenceManager = classLoader.loadClass("androidx.preference.j");
-        PreferenceInflater = classLoader.loadClass("androidx.preference.i");
+        PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.f");
+        PreferenceManager = classLoader.loadClass("androidx.preference.i");
+        PreferenceInflater = classLoader.loadClass("androidx.preference.h");
         PageInfoType = classLoader.loadClass("com.zhihu.android.data.analytics.PageInfoType");
         ZHIntent = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerPagerEntance").getMethod("buildIntent", long.class).getReturnType();
         MainActivity = classLoader.loadClass("com.zhihu.android.app.ui.activity.MainActivity");
