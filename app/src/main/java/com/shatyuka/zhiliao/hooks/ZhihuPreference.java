@@ -104,9 +104,9 @@ public class ZhihuPreference implements IHook {
         SwitchPreference = classLoader.loadClass("com.zhihu.android.app.ui.widget.SwitchPreference");
         OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$c");
         OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
-        PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.f");
-        PreferenceManager = classLoader.loadClass("androidx.preference.i");
-        PreferenceInflater = classLoader.loadClass("androidx.preference.h");
+        PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.g");
+        PreferenceManager = classLoader.loadClass("androidx.preference.j");
+        PreferenceInflater = classLoader.loadClass("androidx.preference.i");
         PageInfoType = classLoader.loadClass("com.zhihu.android.data.analytics.PageInfoType");
         ZHIntent = classLoader.loadClass("com.zhihu.android.answer.entrance.AnswerPagerEntance").getMethod("buildIntent", long.class).getReturnType();
         MainActivity = classLoader.loadClass("com.zhihu.android.app.ui.activity.MainActivity");
@@ -126,11 +126,20 @@ public class ZhihuPreference implements IHook {
         setChecked = SwitchPreference.getMethod("g", boolean.class);
         setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
         setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
-        setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+        try{
+            setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+        } catch (NoSuchMethodException e) {
+            PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.f");
+            PreferenceManager = classLoader.loadClass("androidx.preference.i");
+            PreferenceInflater = classLoader.loadClass("androidx.preference.h");
+            setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+        }
         getContext = BasePreferenceFragment.getMethod("getContext");
         getText = EditTextPreference.getMethod("i");
-        addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
-        inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
         setTooltipText = TooltipCompat.getMethod("setTooltipText", View.class, CharSequence.class);
 
         SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("b");
