@@ -416,8 +416,8 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
                 setIcon.invoke(switch_vipnav, Helper.modRes.getDrawable(R.drawable.ic_vip_nav));
                 setIcon.invoke(switch_videonav, Helper.modRes.getDrawable(R.drawable.ic_play_circle));
-                setIcon.invoke(switch_friendnav, Helper.modRes.getDrawable(R.drawable.ic_group));
-                setIcon.invoke(switch_panelnav, Helper.modRes.getDrawable(R.drawable.ic_bolt));
+                setIcon.invoke(switch_friendnav, Helper.modRes.getDrawable(R.drawable.ic_person_add_alt));
+                setIcon.invoke(switch_panelnav, Helper.modRes.getDrawable(R.drawable.ic_add_circle));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_hotbanner"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(switch_article, Helper.modRes.getDrawable(R.drawable.ic_article));
                 setIcon.invoke(switch_navres, Helper.modRes.getDrawable(R.drawable.ic_event));
