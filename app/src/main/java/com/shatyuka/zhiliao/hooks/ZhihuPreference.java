@@ -126,11 +126,20 @@ public class ZhihuPreference implements IHook {
         setChecked = SwitchPreference.getMethod("g", boolean.class);
         setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
         setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
-        setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+        try{
+            setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+        } catch (NoSuchMethodException e) {
+            PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.f");
+            PreferenceManager = classLoader.loadClass("androidx.preference.i");
+            PreferenceInflater = classLoader.loadClass("androidx.preference.h");
+            setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
+            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+        }
         getContext = BasePreferenceFragment.getMethod("getContext");
         getText = EditTextPreference.getMethod("i");
-        addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
-        inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
         setTooltipText = TooltipCompat.getMethod("setTooltipText", View.class, CharSequence.class);
 
         SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("b");
@@ -324,6 +333,8 @@ public class ZhihuPreference implements IHook {
                 Object switch_vipbanner = findPreference.invoke(thisObject, "switch_vipbanner");
                 Object switch_vipnav = findPreference.invoke(thisObject, "switch_vipnav");
                 Object switch_videonav = findPreference.invoke(thisObject, "switch_videonav");
+                Object switch_friendnav = findPreference.invoke(thisObject, "switch_friendnav");
+                Object switch_panelnav = findPreference.invoke(thisObject, "switch_panelnav");
                 Object switch_article = findPreference.invoke(thisObject, "switch_article");
                 Object switch_navres = findPreference.invoke(thisObject, "switch_navres");
                 Object switch_horizontal = findPreference.invoke(thisObject, "switch_horizontal");
@@ -339,6 +350,8 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_vipbanner, thisObject);
                 setOnPreferenceClickListener.invoke(switch_vipnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_videonav, thisObject);
+                setOnPreferenceClickListener.invoke(switch_friendnav, thisObject);
+                setOnPreferenceClickListener.invoke(switch_panelnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_article, thisObject);
                 setOnPreferenceClickListener.invoke(switch_navres, thisObject);
                 setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
@@ -403,6 +416,8 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
                 setIcon.invoke(switch_vipnav, Helper.modRes.getDrawable(R.drawable.ic_vip_nav));
                 setIcon.invoke(switch_videonav, Helper.modRes.getDrawable(R.drawable.ic_play_circle));
+                setIcon.invoke(switch_friendnav, Helper.modRes.getDrawable(R.drawable.ic_person_add_alt));
+                setIcon.invoke(switch_panelnav, Helper.modRes.getDrawable(R.drawable.ic_add_circle));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_hotbanner"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(switch_article, Helper.modRes.getDrawable(R.drawable.ic_article));
                 setIcon.invoke(switch_navres, Helper.modRes.getDrawable(R.drawable.ic_event));
@@ -497,6 +512,8 @@ public class ZhihuPreference implements IHook {
                     case "switch_vipbanner":
                     case "switch_vipnav":
                     case "switch_videonav":
+                    case "switch_friendnav":
+                    case "switch_panelnav":
                     case "switch_article":
                     case "switch_horizontal":
                     case "switch_nextanswer":
