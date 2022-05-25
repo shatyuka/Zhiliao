@@ -20,26 +20,24 @@ jobs:
       - name: Retrieve version
         run: |
           echo VERSION=$(echo ${{ github.event.head_commit.id }} | head -c 10) >> $GITHUB_ENV
+      - name: Write key
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: |
+          if [ ! -z "${{ secrets.KEY_STORE }}" ]; then
+            echo releaseStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
+            echo releaseKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
+            echo releaseKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
+            echo releaseStoreFile='key.jks' >> gradle.properties
+            echo ${{ secrets.KEY_STORE }} | base64 --decode > key.jks
+          fi
       - name: Build with Gradle
         run: bash ./gradlew -PappVerName=${{ env.VERSION }} assembleRelease
-      - name: Sign Android release
-        if: success()
-        id: sign
-        uses: r0adkll/sign-android-release@v1
-        env:
-          BUILD_TOOLS_VERSION: "31.0.0"
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
       - name: Upload built apk
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: Zhiliao_${{ env.VERSION }}.apk
-          path: ${{ steps.sign.outputs.signedReleaseFile }}
+          name: Zhiliao_${{ env.VERSION }}
+          path: ${{ github.workspace }}/app/release
       - name: Send commit to telegram
         uses: appleboy/telegram-action@master
         with:
