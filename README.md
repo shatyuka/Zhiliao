@@ -33,6 +33,8 @@
 - 隐藏会员卡片
 - 隐藏会员按钮
 - 隐藏视频按钮
+- 隐藏关注按钮
+- 隐藏发布按钮
 - 隐藏热点通知
 - 精简文章页面
 - 禁用活动主题
@@ -48,7 +50,7 @@
 
 [Xposed Repo](https://repo.xposed.info/module/com.shatyuka.zhiliao)
 
-[蓝奏云](https://wwa.lanzous.com/b00tscbwd) 密码:1hax
+[蓝奏云](https://wwa.lanzoux.com/b00tscbwd) 密码:1hax
 
 ## License
 
