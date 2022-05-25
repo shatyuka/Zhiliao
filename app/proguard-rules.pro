@@ -21,3 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -keep public class com.shatyuka.zhiliao.MainHook
+-repackageclasses "zhiliao"
+-allowaccessmodification
+-overloadaggressively
+

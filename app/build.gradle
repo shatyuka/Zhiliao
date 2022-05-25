@@ -1,19 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
+        ndkVersion "24.0.8215888"
         versionCode appVerCode.toInteger()
         versionName appVerName
         externalNativeBuild {
             cmake {
                 abiFilters "arm64-v8a", "armeabi-v7a"
                 arguments "-DANDROID_STL=none"
-                cppFlags "-Qunused-arguments", "-fno-rtti", "-fno-exceptions", "-ffunction-sections", "-fdata-sections", "-Wl,--exclude-libs,ALL", "-s", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
-                cFlags "-Qunused-arguments", "-fno-rtti", "-fno-exceptions", "-ffunction-sections", "-fdata-sections", "-Wl,--exclude-libs,ALL", "-s", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
+                cppFlags "-std=c++20", "-Qunused-arguments", "-Wno-gnu-string-literal-operator-template", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-fno-exceptions", "-fno-stack-protector", "-fomit-frame-pointer", "-Wno-builtin-macro-redefined", "-Wno-unused-value", "-D__FILE__=__FILE_NAME__"
+                cFlags "-std=c18", "-Qunused-arguments", "-Wno-gnu-string-literal-operator-template", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-fno-exceptions", "-fno-stack-protector", "-fomit-frame-pointer", "-Wno-builtin-macro-redefined", "-Wno-unused-value", "-D__FILE__=__FILE_NAME__"
             }
         }
     }
@@ -30,25 +31,37 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-flto", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections", "-fno-unwind-tables", "-fno-asynchronous-unwind-tables", "-Wl,--exclude-libs,ALL"
+                    cFlags "-flto", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections", "-fno-unwind-tables", "-fno-asynchronous-unwind-tables", "-Wl,--exclude-libs,ALL"
+                    arguments "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CXX_FLAGS_RELEASE=-Oz -DNDEBUG", "-DCMAKE_C_FLAGS_RELEASE=-Oz -DNDEBUG"
+                }
+            }
         }
         debug {
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_CXX_FLAGS_DEBUG=-Og", "-DCMAKE_C_FLAGS_DEBUG=-Og"
+                }
+            }
         }
     }
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.10.2"
+            version "3.22.1+"
         }
     }
     buildFeatures {
         prefab true
     }
-    buildToolsVersion '31.0.0'
+    buildToolsVersion '32.0.0'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'dev.rikka.ndk.thirdparty:cxx:1.1.0'
+    implementation 'dev.rikka.ndk.thirdparty:cxx:1.2.0'
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'de.robv.android.xposed:api:82'
     testImplementation 'de.robv.android.xposed:api:82'
