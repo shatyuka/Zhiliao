@@ -13,9 +13,11 @@ import de.robv.android.xposed.XposedBridge;
 
 public class StartPage implements IHook {
     static Class<?> AbCenterExtensions;
+    static Class<?> AbCenter;
 
     static Method getDefaultTab;
     static Method getPreferenceInt;
+    static Method getAbValue;
 
     @Override
     public String getName() {
@@ -49,6 +51,12 @@ public class StartPage implements IHook {
         } catch (Exception ignored) {
         }
 
+        AbCenter = classLoader.loadClass("com.zhihu.android.abcenter.b");
+        try {
+            getAbValue = AbCenter.getMethod("getAbValue", String.class, String.class);
+        } catch (Exception ignored) {
+        }
+
         try {
             Class<?> AppConfigParamUtil = classLoader.loadClass("com.zhihu.android.app.feed.util.c");
             Field isExplore = AppConfigParamUtil.getDeclaredField("c");
@@ -71,13 +79,26 @@ public class StartPage implements IHook {
             XposedBridge.hookMethod(getPreferenceInt, XC_MethodReplacement.returnConstant(0));
         }
 
-        XposedBridge.hookAllMethods(AbCenterExtensions, "b", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if ("exploreab_new".equals(param.args[1])) {
-                    param.setResult(0);
+        if (AbCenterExtensions != null) {
+            XposedBridge.hookAllMethods(AbCenterExtensions, "b", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if ("exploreab_new".equals(param.args[1])) {
+                        param.setResult(0);
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        if (getAbValue != null) {
+            XposedBridge.hookMethod(getAbValue, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if ("exp_soso_msg".equals(param.args[0])) {
+                        param.setResult("11");
+                    }
+                }
+            });
+        }
     }
 }
