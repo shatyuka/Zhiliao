@@ -30,6 +30,9 @@ public class StartPage implements IHook {
             Class<?> FeedsTabsFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment");
             Class<?> FeedTabViewModel = FeedsTabsFragment.getDeclaredField("mTabViewModel").getType();
             getDefaultTab = FeedTabViewModel.getDeclaredMethod("m");
+            if (getDefaultTab.getReturnType() != int.class) {
+                getDefaultTab = FeedTabViewModel.getDeclaredMethod("k");
+            }
         } catch (Exception ignored) {
             try {
                 Class<?> FeedsViewModel = classLoader.loadClass("com.zhihu.android.app.feed.ui.e.b");
