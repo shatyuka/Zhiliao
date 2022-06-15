@@ -21,12 +21,11 @@ import com.shatyuka.zhiliao.hooks.NextAnswer;
 import com.shatyuka.zhiliao.hooks.RedDot;
 import com.shatyuka.zhiliao.hooks.SearchAd;
 import com.shatyuka.zhiliao.hooks.ShareAd;
-import com.shatyuka.zhiliao.hooks.StartPage;
 import com.shatyuka.zhiliao.hooks.StatusBar;
 import com.shatyuka.zhiliao.hooks.Tag;
 import com.shatyuka.zhiliao.hooks.ThirdPartyLogin;
 import com.shatyuka.zhiliao.hooks.VIPBanner;
-import com.shatyuka.zhiliao.hooks.WebView;
+//import com.shatyuka.zhiliao.hooks.WebView;
 import com.shatyuka.zhiliao.hooks.ZhihuPreference;
 
 import de.robv.android.xposed.XposedBridge;
@@ -56,7 +55,6 @@ public class Hooks {
             new SearchAd(),
             new StatusBar(),
             new ThirdPartyLogin(),
-            new StartPage(),
             new NavRes(),
     };
 

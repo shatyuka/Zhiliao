@@ -126,7 +126,7 @@ public class ZhihuPreference implements IHook {
         setChecked = SwitchPreference.getMethod("g", boolean.class);
         setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
         setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
-        try{
+        try {
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
             inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
@@ -327,7 +327,6 @@ public class ZhihuPreference implements IHook {
                 Object switch_externlinkex = findPreference.invoke(thisObject, "switch_externlinkex");
                 Object switch_tag = findPreference.invoke(thisObject, "switch_tag");
                 Object switch_thirdpartylogin = findPreference.invoke(thisObject, "switch_thirdpartylogin");
-                Object list_startpage = findPreference.invoke(thisObject, "list_startpage");
                 Object switch_livebutton = findPreference.invoke(thisObject, "switch_livebutton");
                 Object switch_reddot = findPreference.invoke(thisObject, "switch_reddot");
                 Object switch_vipbanner = findPreference.invoke(thisObject, "switch_vipbanner");
@@ -410,7 +409,6 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_tag, Helper.modRes.getDrawable(R.drawable.ic_label));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_statusbar"), Helper.modRes.getDrawable(R.drawable.ic_fullscreen));
                 setIcon.invoke(switch_thirdpartylogin, Helper.modRes.getDrawable(R.drawable.ic_login));
-                setIcon.invoke(list_startpage, Helper.modRes.getDrawable(R.drawable.ic_home));
                 setIcon.invoke(switch_livebutton, Helper.modRes.getDrawable(R.drawable.ic_live_tv));
                 setIcon.invoke(switch_reddot, Helper.modRes.getDrawable(R.drawable.ic_mark_chat_unread));
                 setIcon.invoke(switch_vipbanner, Helper.modRes.getDrawable(R.drawable.ic_vip_banner));
@@ -434,9 +432,6 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
                 setIcon.invoke(preference_sourcecode, Helper.modRes.getDrawable(R.drawable.ic_github));
                 setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
-
-                ListPreference_mEntries.set(list_startpage, new CharSequence[]{"关注", "推荐", "热榜"});
-                ListPreference_mEntryValues.set(list_startpage, new CharSequence[]{"0", "1", "2"});
 
                 if (Helper.prefs.getBoolean("accept_eula", false)) {
                     Object category_eula = findPreference.invoke(thisObject, "category_eula");
