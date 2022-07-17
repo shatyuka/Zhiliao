@@ -27,11 +27,13 @@ public class Horizontal implements IHook {
     static Class<?> NextBtnClickListener;
     static Class<?> VerticalPageTransformer;
     static Class<?> MixPagerContainer;
+    static Class<?> ViewPager2;
 
     static Method onNestChildScrollRelease;
     static Method isReadyPageTurning;
     static Method nextAnswer;
     static Method lastAnswer;
+    static Method setUserInputEnabled;
 
     static Field ActionSheetLayout_callbackList;
     static Field UserAction_DRAG_UP;
@@ -79,6 +81,9 @@ public class Horizontal implements IHook {
 
             UserAction_DRAG_UP = UserAction.getField("DRAG_UP");
             UserAction_DRAG_DOWN = UserAction.getField("DRAG_DOWN");
+
+            ViewPager2 = classLoader.loadClass("androidx.viewpager2.widget.ViewPager2");
+            setUserInputEnabled = ViewPager2.getMethod("setUserInputEnabled", boolean.class);
         }
 
         height = Helper.scale * 160 / 5;
@@ -179,13 +184,23 @@ public class Horizontal implements IHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         MotionEvent e = (MotionEvent) param.args[0];
+                        ViewParent viewPager2 = ((View) param.thisObject).getParent();
+                        while (viewPager2 != null && viewPager2.getClass() != ViewPager2)
+                            viewPager2 = viewPager2.getParent();
+                        if (viewPager2.getClass() != ViewPager2)
+                            viewPager2 = null;
                         switch (e.getAction()) {
                             case MotionEvent.ACTION_DOWN:
+                                if (viewPager2 != null)
+                                    setUserInputEnabled.invoke(viewPager2, false);
+                                ((View) param.thisObject).getParent().requestDisallowInterceptTouchEvent(true);
                                 old_x = e.getX();
                                 old_y = e.getY();
                                 time = System.currentTimeMillis();
                                 break;
                             case MotionEvent.ACTION_UP:
+                                if (viewPager2 != null)
+                                    setUserInputEnabled.invoke(viewPager2, true);
                                 float dx = e.getX() - old_x;
                                 float dy = e.getY() - old_y;
                                 if (Math.abs(dx) > width * Helper.sensitivity &&
