@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
-        minSdkVersion 24
-        targetSdkVersion 32
-        ndkVersion "24.0.8215888"
+        minSdkVersion 26
+        targetSdkVersion 33
+        ndkVersion "25.0.8775105"
         versionCode appVerCode.toInteger()
         versionName appVerName
         externalNativeBuild {
