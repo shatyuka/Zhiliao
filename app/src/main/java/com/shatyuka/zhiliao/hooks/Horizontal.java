@@ -28,6 +28,8 @@ public class Horizontal implements IHook {
     static Class<?> VerticalPageTransformer;
     static Class<?> MixPagerContainer;
     static Class<?> ViewPager2;
+    static Class<?> ContentMixPagerFragment;
+    static Class<?> MixPagerContainerFragment;
 
     static Method onNestChildScrollRelease;
     static Method isReadyPageTurning;
@@ -38,6 +40,7 @@ public class Horizontal implements IHook {
     static Field ActionSheetLayout_callbackList;
     static Field UserAction_DRAG_UP;
     static Field UserAction_DRAG_DOWN;
+    static Field MixPagerContainerFragment_mixPagerContainer;
 
     static float width;
     static float height;
@@ -84,6 +87,19 @@ public class Horizontal implements IHook {
 
             ViewPager2 = classLoader.loadClass("androidx.viewpager2.widget.ViewPager2");
             setUserInputEnabled = ViewPager2.getMethod("setUserInputEnabled", boolean.class);
+
+            ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
+            MixPagerContainerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.MixPagerContainerFragment");
+
+            Field[] fields = MixPagerContainerFragment.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.getType() == MixPagerContainer) {
+                    MixPagerContainerFragment_mixPagerContainer = field;
+                    break;
+                }
+            }
+            if (MixPagerContainerFragment_mixPagerContainer == null)
+                throw new NoSuchFieldException("com.zhihu.android.mix.fragment.MixPagerContainerFragment.mixPagerContainer");
         }
 
         height = Helper.scale * 160 / 5;
@@ -176,7 +192,7 @@ public class Horizontal implements IHook {
             });
 
             if (Helper.packageInfo.versionCode > 2614) {
-                XposedHelpers.findAndHookMethod(MixPagerContainer, "dispatchTouchEvent", MotionEvent.class, new XC_MethodHook() {
+                XposedHelpers.findAndHookMethod(ContentMixPagerFragment, "a", MotionEvent.class, new XC_MethodHook() {
                     float old_x = 0;
                     float old_y = 0;
                     long time = 0;
@@ -184,16 +200,15 @@ public class Horizontal implements IHook {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         MotionEvent e = (MotionEvent) param.args[0];
-                        ViewParent viewPager2 = ((View) param.thisObject).getParent();
+                        View mixPagerContainer = (View) MixPagerContainerFragment_mixPagerContainer.get(param.thisObject);
+                        ViewParent viewPager2 = mixPagerContainer.getParent();
                         while (viewPager2 != null && viewPager2.getClass() != ViewPager2)
                             viewPager2 = viewPager2.getParent();
-                        if (viewPager2.getClass() != ViewPager2)
-                            viewPager2 = null;
                         switch (e.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 if (viewPager2 != null)
                                     setUserInputEnabled.invoke(viewPager2, false);
-                                ((View) param.thisObject).getParent().requestDisallowInterceptTouchEvent(true);
+                                mixPagerContainer.getParent().requestDisallowInterceptTouchEvent(true);
                                 old_x = e.getX();
                                 old_y = e.getY();
                                 time = System.currentTimeMillis();
@@ -208,9 +223,9 @@ public class Horizontal implements IHook {
                                         (System.currentTimeMillis() - time) < 500 &&
                                         !scrolling) {
                                     if (dx < 0)
-                                        nextAnswer.invoke(param.thisObject, UserAction_DRAG_UP.get(null));
+                                        nextAnswer.invoke(mixPagerContainer, UserAction_DRAG_UP.get(null));
                                     else
-                                        lastAnswer.invoke(param.thisObject, UserAction_DRAG_DOWN.get(null));
+                                        lastAnswer.invoke(mixPagerContainer, UserAction_DRAG_DOWN.get(null));
                                 }
                                 break;
                         }
