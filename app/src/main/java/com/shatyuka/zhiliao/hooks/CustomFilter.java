@@ -75,7 +75,11 @@ public class CustomFilter implements IHook {
                                 param.setResult(null);
                                 return;
                             }
-                            if (Helper.prefs.getBoolean("switch_removearticle", false) && "article".equals(type)) {
+                            if (Helper.prefs.getBoolean("switch_removearticle", false) && ("article".equals(type) || "Post".equals(type))) {
+                                param.setResult(null);
+                                return;
+                            }
+                            if (Helper.prefs.getBoolean("switch_pin", false) && "pin".equals(type)) {
                                 param.setResult(null);
                                 return;
                             }
