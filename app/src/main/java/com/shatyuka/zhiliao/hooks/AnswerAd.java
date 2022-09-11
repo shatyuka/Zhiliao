@@ -13,8 +13,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 public class AnswerAd implements IHook {
-    static Class<?> IZhihuWebView;
-
     static Method shouldInterceptRequest;
 
     @Override
@@ -24,11 +22,9 @@ public class AnswerAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
-
         Helper.findClass(classLoader, "com.zhihu.android.appview.a$",
                 (Class<?> ZhihuWebViewClient) -> {
-                    shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", IZhihuWebView, WebResourceRequest.class);
+                    shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", Helper.IZhihuWebView, WebResourceRequest.class);
                     return true;
                 });
         if (shouldInterceptRequest == null)

@@ -238,6 +238,25 @@
             android:title="内容"
             android:summary="支持正则表达式，留空为忽略"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="WebView" android:key="category_webview">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_webview_debug"
+            android:title="开启WebView调试"
+            android:summary="chrome://inspect"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_watermark"
+            android:title="去除背景盲水印"
+            android:summary="禁止开盒"/>
+        <EditTextPreference
+            android:dependency="switch_mainswitch"
+            android:key="edit_js"
+            android:title="注入JS脚本"
+            android:summary="注入自定义JS脚本"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
             android:key="preference_version"

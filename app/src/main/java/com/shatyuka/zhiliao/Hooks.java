@@ -25,14 +25,13 @@ import com.shatyuka.zhiliao.hooks.StatusBar;
 import com.shatyuka.zhiliao.hooks.Tag;
 import com.shatyuka.zhiliao.hooks.ThirdPartyLogin;
 import com.shatyuka.zhiliao.hooks.VIPBanner;
-//import com.shatyuka.zhiliao.hooks.WebView;
+import com.shatyuka.zhiliao.hooks.WebView;
 import com.shatyuka.zhiliao.hooks.ZhihuPreference;
 
 import de.robv.android.xposed.XposedBridge;
 
 public class Hooks {
     static final IHook[] hooks = {
-            //new WebView(),
             new ZhihuPreference(),
             new LaunchAd(),
             new CustomFilter(),
@@ -56,6 +55,7 @@ public class Hooks {
             new StatusBar(),
             new ThirdPartyLogin(),
             new NavRes(),
+            new WebView(),
     };
 
     public static void init(final ClassLoader classLoader) {

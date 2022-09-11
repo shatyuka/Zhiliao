@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import java.io.File;
@@ -23,6 +24,8 @@ import de.robv.android.xposed.XposedBridge;
 public class Helper {
     public static Class<?> MorphAdHelper;
     public static Class<?> AnswerPagerFragment;
+    public static Class<?> IZhihuWebView;
+    public static Class<?> WebViewClientWrapper;
 
     public static Field DataUnique_type;
 
@@ -43,13 +46,10 @@ public class Helper {
 
     static boolean init(ClassLoader classLoader) {
         try {
+            init_class(classLoader);
+
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
-
-            MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
-            AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
-
-            DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique").getField("type");
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
@@ -63,6 +63,18 @@ public class Helper {
             XposedBridge.log("[Zhiliao] " + e.toString());
             return false;
         }
+    }
+
+    public static void init_class(ClassLoader classLoader) throws Exception {
+        MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
+        AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
+        IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
+        WebViewClientWrapper = findClass(classLoader, "com.zhihu.android.app.mercury.web.", 0, 2,
+                (Class<?> clazz) -> clazz.getSuperclass() == WebViewClient.class);
+        if (WebViewClientWrapper == null)
+            throw new ClassNotFoundException("com.zhihu.android.app.mercury.web.WebViewClientWrapper");
+
+        DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique").getField("type");
     }
 
     public static Pattern compileRegex(String regex) {
@@ -151,10 +163,8 @@ public class Helper {
                 if (check.check(clazz)) {
                     return clazz;
                 }
-            } catch (Exception e) {
-                continue;
+            } catch (Exception ignored) {
             }
-            break;
         }
         return null;
     }

@@ -34,13 +34,7 @@ public class ExternLink implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Helper.findClass(classLoader, "com.zhihu.android.app.mercury.web.", 0, 2,
-                (Class<?> WebViewClientWrapper) -> {
-                    shouldOverrideUrlLoading = WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
-                    return true;
-                });
-        if (shouldOverrideUrlLoading == null)
-            throw new NoSuchMethodException("com.zhihu.android.app.mercury.web.WebViewClientWrapper.shouldOverrideUrlLoading(WebView, WebResourceRequest)");
+        shouldOverrideUrlLoading = Helper.WebViewClientWrapper.getMethod("shouldOverrideUrlLoading", WebView.class, WebResourceRequest.class);
 
         try {
             H5Event = classLoader.loadClass("com.zhihu.android.app.mercury.api.a");

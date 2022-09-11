@@ -70,6 +70,7 @@ public class HookTest {
             try {
                 Helper.packageInfo = new android.content.pm.PackageInfo();
                 Helper.packageInfo.versionCode = packageInfo.versionCode;
+                Helper.init_class(packageInfo.classLoader);
                 hook.init(packageInfo.classLoader);
             } catch (Throwable e) {
                 fail(hook.getName() + ", " + packageInfo.name);
