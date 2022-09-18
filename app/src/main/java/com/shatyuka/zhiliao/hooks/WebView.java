@@ -14,7 +14,9 @@ public class WebView implements IHook {
     static Method onReceivedTitle;
     static Method evaluateJavascript;
 
-    static final String script_water_mark_script = "setTimeout(function(){let styleEle=document.createElement(\"style\");styleEle.innerHTML=\".App{background-image:none!important}\";document.body.append(styleEle);},500);";
+    static int[] timeout_array = {100, 500, 1000};
+    static final String script_hide_water_mark = getScript("zhiliao_hide_water_mark", "let styleEle=document.createElement(\"style\");styleEle.innerHTML=\".App{background-image:none!important}\";document.body.append(styleEle);");
+    static final String script_hide_subscribe = getScript("zhiliao_hide_subscribe", "var subscribe=document.getElementsByClassName(\"Toolbar-functionButtons\")[0].lastChild;if(subscribe.firstChild.classList.contains(\"Avatar\")){subscribe.style.display=\"none\"};");
 
     @Override
     public String getName() {
@@ -49,7 +51,10 @@ public class WebView implements IHook {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_watermark", false)) {
-                    evaluateJavascript.invoke(param.args[0], script_water_mark_script, null);
+                    evaluateJavascript.invoke(param.args[0], script_hide_water_mark, null);
+                }
+                if (Helper.prefs.getBoolean("switch_subscribe", false)) {
+                    evaluateJavascript.invoke(param.args[0], script_hide_subscribe, null);
                 }
             }
         });
@@ -57,16 +62,37 @@ public class WebView implements IHook {
         XposedHelpers.findAndHookMethod(Helper.WebViewClientWrapper, "onPageFinished", android.webkit.WebView.class, String.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                android.webkit.WebView webview = (android.webkit.WebView) param.args[0];
+                // also works after page reload
                 if (Helper.prefs.getBoolean("switch_watermark", false)) {
-                    // double insurance :D
-                    ((android.webkit.WebView) param.args[0]).evaluateJavascript(script_water_mark_script, null);
+                    webview.evaluateJavascript(script_hide_water_mark, null);
+                }
+                if (Helper.prefs.getBoolean("switch_subscribe", false)) {
+                    webview.evaluateJavascript(script_hide_subscribe, null);
                 }
 
                 String js = Helper.prefs.getString("edit_js", null);
                 if (js != null) {
-                    ((android.webkit.WebView) param.args[0]).evaluateJavascript(js, null);
+                    webview.evaluateJavascript(js, null);
                 }
             }
         });
+    }
+
+    static String getScript(String name, String script) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("function ");
+        sb.append(name);
+        sb.append("(){");
+        sb.append(script);
+        sb.append("}");
+        for (int timeout : timeout_array) {
+            sb.append("setTimeout(");
+            sb.append(name);
+            sb.append(",");
+            sb.append(timeout);
+            sb.append(");");
+        }
+        return sb.toString();
     }
 }

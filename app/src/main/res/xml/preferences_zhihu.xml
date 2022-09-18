@@ -251,6 +251,12 @@
             android:key="switch_watermark"
             android:title="去除背景盲水印"
             android:summary="禁止开盒"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_subscribe"
+            android:title="去除回答页面关注头像"
+            android:summary="防止误触"/>
         <EditTextPreference
             android:dependency="switch_mainswitch"
             android:key="edit_js"
