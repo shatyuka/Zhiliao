@@ -336,6 +336,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_panelnav = findPreference.invoke(thisObject, "switch_panelnav");
                 Object switch_article = findPreference.invoke(thisObject, "switch_article");
                 Object switch_navres = findPreference.invoke(thisObject, "switch_navres");
+                Object switch_nipple = findPreference.invoke(thisObject, "switch_nipple");
                 Object switch_horizontal = findPreference.invoke(thisObject, "switch_horizontal");
                 Object switch_nextanswer = findPreference.invoke(thisObject, "switch_nextanswer");
 
@@ -353,6 +354,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_panelnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_article, thisObject);
                 setOnPreferenceClickListener.invoke(switch_navres, thisObject);
+                setOnPreferenceClickListener.invoke(switch_nipple, thisObject);
                 setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
                 setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
                 setOnPreferenceClickListener.invoke(preference_version, thisObject);
@@ -420,6 +422,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_hotbanner"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(switch_article, Helper.modRes.getDrawable(R.drawable.ic_article));
                 setIcon.invoke(switch_navres, Helper.modRes.getDrawable(R.drawable.ic_event));
+                setIcon.invoke(switch_nipple, Helper.modRes.getDrawable(R.drawable.ic_do_disturb_on));
                 setIcon.invoke(switch_horizontal, Helper.modRes.getDrawable(R.drawable.ic_swap_horiz));
                 setIcon.invoke(findPreference.invoke(thisObject, "seekbar_sensitivity"), Helper.modRes.getDrawable(R.drawable.ic_bolt));
                 setIcon.invoke(switch_nextanswer, Helper.modRes.getDrawable(R.drawable.ic_circle_down));
@@ -517,6 +520,7 @@ public class ZhihuPreference implements IHook {
                     case "switch_article":
                     case "switch_horizontal":
                     case "switch_nextanswer":
+                    case "switch_nipple":
                         Helper.toast("重启知乎生效", Toast.LENGTH_SHORT);
                         break;
                 }
