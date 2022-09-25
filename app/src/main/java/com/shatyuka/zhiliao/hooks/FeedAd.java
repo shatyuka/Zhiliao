@@ -14,6 +14,7 @@ import de.robv.android.xposed.XposedHelpers;
 public class FeedAd implements IHook {
     static Class<?> BasePagingFragment;
     static Class<?> FeedAdvert;
+    static Class<?> ListAd;
     static Class<?> Advert;
     static Class<?> Ad;
 
@@ -29,10 +30,12 @@ public class FeedAd implements IHook {
         BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
         try {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
+            ListAd = classLoader.loadClass("com.zhihu.android.api.model.ListAd");
             Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
             Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
         } catch (ClassNotFoundException e) {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.adbase.model.FeedAdvert");
+            ListAd = classLoader.loadClass("com.zhihu.android.adbase.model.ListAd");
             Advert = classLoader.loadClass("com.zhihu.android.adbase.model.Advert");
             Ad = classLoader.loadClass("com.zhihu.android.adbase.model.Ad");
         }
@@ -77,6 +80,14 @@ public class FeedAd implements IHook {
             }
         });
         XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                    param.setResult(false);
+                }
+            }
+        });
+        XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, ListAd, Boolean.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
