@@ -30,6 +30,7 @@ public class Horizontal implements IHook {
     static Class<?> ViewPager2;
     static Class<?> ContentMixPagerFragment;
     static Class<?> MixPagerContainerFragment;
+    static Class<?> UserAction;
 
     static Method onNestChildScrollRelease;
     static Method isReadyPageTurning;
@@ -72,12 +73,15 @@ public class Horizontal implements IHook {
         if (Helper.packageInfo.versionCode > 2614) {
             MixPagerContainer = classLoader.loadClass("com.zhihu.android.mix.widget.MixPagerContainer");
             Class<?> VerticalPagerContainer = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.VerticalPagerContainer");
-            Class<?> UserAction = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.e");
-            if (!UserAction.isEnum()) {
-                UserAction = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.f");
-                if (!UserAction.isEnum())
-                    throw new ClassNotFoundException("com.zhihu.android.bootstrap.vertical_pager.UserAction");
-            }
+            Helper.findClass(classLoader, "com.zhihu.android.bootstrap.vertical_pager.",
+                    (Class<?> clazz) -> {
+                        if (!clazz.isEnum())
+                            return false;
+                        UserAction = clazz;
+                        return true;
+                    });
+            if (UserAction == null)
+                throw new ClassNotFoundException("com.zhihu.android.bootstrap.vertical_pager.UserAction");
 
             nextAnswer = VerticalPagerContainer.getMethod("a", UserAction);
             lastAnswer = VerticalPagerContainer.getMethod("b", UserAction);
