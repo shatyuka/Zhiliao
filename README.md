@@ -37,9 +37,11 @@
 - 隐藏热点通知
 - 精简文章页面
 - 禁用活动主题
+- 隐藏导航栏突起
 - 左右划切换回答
 - 移除下一个回答按钮
 - 自定义过滤
+- 注入JS脚本
 
 ## 帮助
 [Github Wiki](https://github.com/shatyuka/Zhiliao/wiki)
