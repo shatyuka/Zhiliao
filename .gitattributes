@@ -1,1 +1,0 @@
-app/test/*.jar filter=lfs diff=lfs merge=lfs -text
