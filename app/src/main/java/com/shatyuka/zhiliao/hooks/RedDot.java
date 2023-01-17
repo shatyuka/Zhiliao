@@ -17,14 +17,16 @@ import de.robv.android.xposed.XposedHelpers;
 public class RedDot implements IHook {
     static Class<?> FeedsTabsFragment;
     static Class<?> FeedFollowAvatarCommonViewHolder;
-    static Class<?> ZHMainTabLayout;
-    static Class<?> NotiUnreadCountKt;
     static Class<?> NotiMsgModel;
     static Class<?> ViewModel;
 
+    static Method ZHMainTabLayout_updateBadges;
     static Method BottomNavMenuItemView_setUnreadCount;
     static Method BottomNavMenuItemViewForIconOnly_setUnreadCount;
-    static Method setNavBadge;
+    static Method BaseBottomNavMenuItemView_setNavBadge;
+    static Method NotiUnreadCountKt_hasUnread;
+    static Method IconWithDotAndCountView_setUnreadCount;
+    static Method CountDotView_setUnreadCount;
 
     static Field FeedFollowAvatarCommonViewHolder_dot;
 
@@ -37,13 +39,18 @@ public class RedDot implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         FeedsTabsFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment");
         FeedFollowAvatarCommonViewHolder = classLoader.loadClass("com.zhihu.android.moments.viewholders.FeedFollowAvatarCommonViewHolder");
-        ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
+        Class<?> ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
         Class<?> BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
         Class<?> BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
         NotiMsgModel = classLoader.loadClass("com.zhihu.android.notification.model.viewmodel.NotiMsgModel");
         try {
-            NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
-        } catch (ClassNotFoundException ignored) {
+            ZHMainTabLayout_updateBadges = ZHMainTabLayout.getDeclaredMethod("d");
+        } catch (NoSuchMethodException ignored) {
+        }
+        try {
+            Class<?> NotiUnreadCountKt = classLoader.loadClass("com.zhihu.android.notification.model.NotiUnreadCountKt");
+            NotiUnreadCountKt_hasUnread = NotiUnreadCountKt.getMethod("hasUnread", int.class);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
         }
         try {
             ViewModel = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.help.tabhelp.model.ViewModel");
@@ -61,7 +68,19 @@ public class RedDot implements IHook {
         try {
             Class<?> BaseBottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BaseBottomNavMenuItemView");
             Class<?> NavBadge = classLoader.loadClass("com.zhihu.android.bottomnav.api.model.NavBadge");
-            setNavBadge = BaseBottomNavMenuItemView.getMethod("a", NavBadge);
+            BaseBottomNavMenuItemView_setNavBadge = BaseBottomNavMenuItemView.getMethod("a", NavBadge);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+        }
+
+        try {
+            Class<?> IconWithDotAndCountView = classLoader.loadClass("com.zhihu.android.community_base.view.icon.IconWithDotAndCountView");
+            IconWithDotAndCountView_setUnreadCount = IconWithDotAndCountView.getMethod("a", int.class, boolean.class, int.class);
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+        }
+
+        try {
+            Class<?> CountDotView = classLoader.loadClass("com.zhihu.android.notification.widget.CountDotView");
+            CountDotView_setUnreadCount = CountDotView.getMethod("a", int.class, boolean.class);
         } catch (ClassNotFoundException | NoSuchMethodException ignored) {
         }
 
@@ -80,16 +99,28 @@ public class RedDot implements IHook {
                     dot.setVisibility(View.GONE);
                 }
             });
-            XposedHelpers.findAndHookMethod(ZHMainTabLayout, "d", XC_MethodReplacement.returnConstant(null));
+            if (ZHMainTabLayout_updateBadges != null)
+                XposedBridge.hookMethod(ZHMainTabLayout_updateBadges, XC_MethodReplacement.returnConstant(null));
             if (BottomNavMenuItemView_setUnreadCount != null)
                 XposedBridge.hookMethod(BottomNavMenuItemView_setUnreadCount, XC_MethodReplacement.returnConstant(null));
             if (BottomNavMenuItemViewForIconOnly_setUnreadCount != null)
                 XposedBridge.hookMethod(BottomNavMenuItemViewForIconOnly_setUnreadCount, XC_MethodReplacement.returnConstant(null));
-            if (setNavBadge != null)
-                XposedBridge.hookMethod(setNavBadge, XC_MethodReplacement.returnConstant(null));
+            if (BaseBottomNavMenuItemView_setNavBadge != null)
+                XposedBridge.hookMethod(BaseBottomNavMenuItemView_setNavBadge, XC_MethodReplacement.returnConstant(null));
             XposedHelpers.findAndHookMethod(NotiMsgModel, "getUnreadCount", XC_MethodReplacement.returnConstant(0));
-            if (NotiUnreadCountKt != null)
-                XposedHelpers.findAndHookMethod(NotiUnreadCountKt, "hasUnread", int.class, XC_MethodReplacement.returnConstant(false));
+            if (NotiUnreadCountKt_hasUnread != null)
+                XposedBridge.hookMethod(NotiUnreadCountKt_hasUnread, XC_MethodReplacement.returnConstant(false));
+            if (IconWithDotAndCountView_setUnreadCount != null)
+                XposedBridge.hookMethod(IconWithDotAndCountView_setUnreadCount, XC_MethodReplacement.returnConstant(null));
+            if (CountDotView_setUnreadCount != null)
+                XposedBridge.hookMethod(CountDotView_setUnreadCount, new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam param) {
+                        View obj = (View) param.thisObject;
+                        obj.setVisibility(View.GONE);
+                        return null;
+                    }
+                });
             if (ViewModel != null) {
                 XposedHelpers.findAndHookConstructor(ViewModel, View.class, new XC_MethodHook() {
                     @Override
