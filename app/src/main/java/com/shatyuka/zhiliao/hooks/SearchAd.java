@@ -41,15 +41,19 @@ public class SearchAd implements IHook {
             throw new ClassNotFoundException("retrofit2.converter.jackson.JacksonResponseBodyConverter");
         }
 
-        Class<?> SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
-        Class<?> PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
         try {
-            Class<?> SearchRecommendQuery = classLoader.loadClass("com.zhihu.android.api.model.SearchRecommendQuery");
-            SearchRecommendQuery_content = SearchRecommendQuery.getField("content");
+            Class<?> SearchTopTabsItemList = classLoader.loadClass("com.zhihu.android.api.model.SearchTopTabsItemList");
+            SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
         } catch (ClassNotFoundException ignored) {
         }
 
-        SearchTopTabsItemList_commercialData = SearchTopTabsItemList.getField("commercialData");
+        try {
+            Class<?> SearchRecommendQuery = classLoader.loadClass("com.zhihu.android.api.model.SearchRecommendQuery");
+            SearchRecommendQuery_content = SearchRecommendQuery.getField("content");
+        } catch (ClassNotFoundException | NoSuchFieldException ignored) {
+        }
+
+        Class<?> PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
         PresetWords_preset = PresetWords.getField("preset");
     }
 
@@ -63,7 +67,8 @@ public class SearchAd implements IHook {
                     if (result != null) {
                         switch (result.getClass().getName()) {
                             case "com.zhihu.android.api.model.SearchTopTabsItemList": {
-                                SearchTopTabsItemList_commercialData.set(result, null);
+                                if (SearchTopTabsItemList_commercialData != null)
+                                    SearchTopTabsItemList_commercialData.set(result, null);
                                 break;
                             }
                             case "com.zhihu.android.api.model.PresetWords": {
@@ -71,7 +76,8 @@ public class SearchAd implements IHook {
                                 break;
                             }
                             case "com.zhihu.android.api.model.SearchRecommendQuery": {
-                                SearchRecommendQuery_content.set(result, null);
+                                if (SearchRecommendQuery_content != null)
+                                    SearchRecommendQuery_content.set(result, null);
                                 break;
                             }
                         }

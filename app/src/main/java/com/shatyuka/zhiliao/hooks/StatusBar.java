@@ -36,8 +36,13 @@ public class StatusBar implements IHook {
                 CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$a");
                 StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$b");
             } catch (ClassNotFoundException ignored2) {
-                CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$a");
-                StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$b");
+                try {
+                    CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$a");
+                    StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$b");
+                } catch (ClassNotFoundException ignored3) {
+                    CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$a");
+                    StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$b");
+                }
             }
         }
         ThemeChangedEvent = classLoader.loadClass("com.zhihu.android.app.event.ThemeChangedEvent");
