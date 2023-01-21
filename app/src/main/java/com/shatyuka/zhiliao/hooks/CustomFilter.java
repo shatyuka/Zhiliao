@@ -83,6 +83,10 @@ public class CustomFilter implements IHook {
                                 param.setResult(null);
                                 return;
                             }
+                            if (Helper.prefs.getBoolean("switch_feedad", true) && "SvipActivity".equals(type)) {
+                                param.setResult(null);
+                                return;
+                            }
                             Object feed_content = ApiFeedCard_feed_content.get(ApiTemplateRoot_common_card.get(result));
                             if (feed_content == null)
                                 return;

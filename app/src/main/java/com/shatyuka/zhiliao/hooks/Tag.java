@@ -142,8 +142,10 @@ public class Tag implements IHook {
         switch (type) {
             default:
             case "answer":
+            case "Answer":
                 return backgrounds[0];
             case "article":
+            case "Post":
                 return backgrounds[1];
             case "zvideo":
             case "drama":
