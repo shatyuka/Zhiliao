@@ -382,12 +382,14 @@ public class ZhihuPreference implements IHook {
                     Object category_ui = findPreference.invoke(thisObject, "category_ui");
                     Object category_swap_answers = findPreference.invoke(thisObject, "category_swap_answers");
                     Object category_filter = findPreference.invoke(thisObject, "category_filter");
+                    Object category_webview = findPreference.invoke(thisObject, "category_webview");
                     setVisible.invoke(category_eula, false);
                     setVisible.invoke(category_ads, false);
                     setVisible.invoke(category_misc, false);
                     setVisible.invoke(category_ui, false);
                     setVisible.invoke(category_swap_answers, false);
                     setVisible.invoke(category_filter, false);
+                    setVisible.invoke(category_webview, false);
                     return null;
                 }
 
