@@ -269,6 +269,23 @@
             android:title="注入JS脚本"
             android:summary="注入自定义JS脚本"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="临时文件" android:key="category_cleaner">
+        <Preference
+                android:key="preference_clean"
+                android:title="清理临时文件"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+                android:defaultValue="false"
+                android:dependency="switch_mainswitch"
+                android:key="switch_autoclean"
+                android:title="自动清理临时文件"
+                android:summary="自动释放空间"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+                android:defaultValue="false"
+                android:dependency="switch_mainswitch"
+                android:key="switch_silenceclean"
+                android:title="静默清理"
+                android:summary="沉默是金"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
             android:key="preference_version"

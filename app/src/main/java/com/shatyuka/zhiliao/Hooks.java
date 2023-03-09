@@ -5,6 +5,7 @@ import android.widget.Toast;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.Cleaner;
 import com.shatyuka.zhiliao.hooks.ColorMode;
 import com.shatyuka.zhiliao.hooks.CommentAd;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
@@ -56,6 +57,7 @@ public class Hooks {
             new ThirdPartyLogin(),
             new NavRes(),
             new WebView(),
+            new Cleaner(),
     };
 
     public static void init(final ClassLoader classLoader) {

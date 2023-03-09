@@ -119,8 +119,7 @@ public class Helper {
         }
     }
 
-    public static boolean deleteDirectory(String filePath) {
-        File dirFile = new File(filePath);
+    public static boolean deleteDirectory(File dirFile) {
         if (!dirFile.exists() || !dirFile.isDirectory()) {
             return false;
         }
@@ -138,6 +137,10 @@ public class Helper {
             }
         }
         return dirFile.delete();
+    }
+
+    public static boolean deleteDirectory(String filePath) {
+        return deleteDirectory(new File(filePath));
     }
 
     public static void toast(CharSequence text, int duration) {

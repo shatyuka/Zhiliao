@@ -339,6 +339,8 @@ public class ZhihuPreference implements IHook {
                 Object switch_nipple = findPreference.invoke(thisObject, "switch_nipple");
                 Object switch_horizontal = findPreference.invoke(thisObject, "switch_horizontal");
                 Object switch_nextanswer = findPreference.invoke(thisObject, "switch_nextanswer");
+                Object preference_clean = findPreference.invoke(thisObject, "preference_clean");
+                Object switch_autoclean = findPreference.invoke(thisObject, "switch_autoclean");
 
                 setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                 setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
@@ -357,6 +359,8 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_nipple, thisObject);
                 setOnPreferenceClickListener.invoke(switch_horizontal, thisObject);
                 setOnPreferenceClickListener.invoke(switch_nextanswer, thisObject);
+                setOnPreferenceClickListener.invoke(preference_clean, thisObject);
+                setOnPreferenceClickListener.invoke(switch_autoclean, thisObject);
                 setOnPreferenceClickListener.invoke(preference_version, thisObject);
                 setOnPreferenceClickListener.invoke(preference_author, thisObject);
                 setOnPreferenceClickListener.invoke(preference_help, thisObject);
@@ -383,6 +387,7 @@ public class ZhihuPreference implements IHook {
                     Object category_swap_answers = findPreference.invoke(thisObject, "category_swap_answers");
                     Object category_filter = findPreference.invoke(thisObject, "category_filter");
                     Object category_webview = findPreference.invoke(thisObject, "category_webview");
+                    Object category_cleaner = findPreference.invoke(thisObject, "category_cleaner");
                     setVisible.invoke(category_eula, false);
                     setVisible.invoke(category_ads, false);
                     setVisible.invoke(category_misc, false);
@@ -390,6 +395,7 @@ public class ZhihuPreference implements IHook {
                     setVisible.invoke(category_swap_answers, false);
                     setVisible.invoke(category_filter, false);
                     setVisible.invoke(category_webview, false);
+                    setVisible.invoke(category_cleaner, false);
                     return null;
                 }
 
@@ -435,6 +441,9 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_watermark"), Helper.modRes.getDrawable(R.drawable.ic_layers));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_subscribe"), Helper.modRes.getDrawable(R.drawable.ic_person_add_alt));
                 setIcon.invoke(findPreference.invoke(thisObject, "edit_js"), Helper.modRes.getDrawable(R.drawable.ic_javascript));
+                setIcon.invoke(preference_clean, Helper.modRes.getDrawable(R.drawable.ic_delete));
+                setIcon.invoke(switch_autoclean, Helper.modRes.getDrawable(R.drawable.ic_auto_delete));
+                setIcon.invoke(findPreference.invoke(thisObject, "switch_silenceclean"), Helper.modRes.getDrawable(R.drawable.ic_notifications_off));
                 setIcon.invoke(preference_version, Helper.modRes.getDrawable(R.drawable.ic_info));
                 setIcon.invoke(preference_author, Helper.modRes.getDrawable(R.drawable.ic_person));
                 setIcon.invoke(preference_help, Helper.modRes.getDrawable(R.drawable.ic_help));
@@ -450,6 +459,9 @@ public class ZhihuPreference implements IHook {
                     Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
                     setChecked.invoke(switch_main, false);
                 }
+
+                setSummary.invoke(preference_clean, "广告缓存和日志文件 " + Cleaner.humanReadableByteCount(Cleaner.getFileSize(Cleaner.getCacheFiles())));
+
                 return null;
             }
         });
@@ -508,6 +520,13 @@ public class ZhihuPreference implements IHook {
                         Object switch_externlink = findPreference.invoke(param.thisObject, "switch_externlink");
                         setChecked.invoke(switch_externlink, false);
                         break;
+                    case "preference_clean":
+                        String size = Cleaner.humanReadableByteCount(Cleaner.doClean());
+                        if (!Helper.prefs.getBoolean("switch_silenceclean", false)) {
+                            Toast.makeText(Helper.context, "共清理 " + size + " 临时文件", Toast.LENGTH_SHORT).show();
+                        }
+                        setSummary.invoke(preference, "广告缓存和日志文件 " + Cleaner.humanReadableByteCount(Cleaner.getFileSize(Cleaner.getCacheFiles())));
+                        break;
                     case "switch_navres":
                         Helper.deleteDirectory(Helper.context.getFilesDir() + "/bottom_nav");
                     case "switch_tag":
@@ -523,6 +542,7 @@ public class ZhihuPreference implements IHook {
                     case "switch_horizontal":
                     case "switch_nextanswer":
                     case "switch_nipple":
+                    case "switch_autoclean":
                         Helper.toast("重启知乎生效", Toast.LENGTH_SHORT);
                         break;
                 }
