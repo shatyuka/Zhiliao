@@ -133,14 +133,14 @@ public class Tag implements IHook {
     @SuppressWarnings("deprecation")
     static Drawable getBackground(String type) {
         if (backgrounds == null) {
-            backgrounds = new Drawable[4];
+            backgrounds = new Drawable[5];
             backgrounds[0] = Helper.modRes.getDrawable(R.drawable.bg_answer);
             backgrounds[1] = Helper.modRes.getDrawable(R.drawable.bg_article);
             backgrounds[2] = Helper.modRes.getDrawable(R.drawable.bg_video);
             backgrounds[3] = Helper.modRes.getDrawable(R.drawable.bg_pin);
+            backgrounds[4] = Helper.modRes.getDrawable(R.drawable.bg_others);
         }
         switch (type) {
-            default:
             case "answer":
             case "Answer":
                 return backgrounds[0];
@@ -152,6 +152,8 @@ public class Tag implements IHook {
                 return backgrounds[2];
             case "pin":
                 return backgrounds[3];
+            default:
+                return backgrounds[4];
         }
     }
 }
