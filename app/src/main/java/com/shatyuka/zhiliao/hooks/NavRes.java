@@ -13,6 +13,7 @@ import de.robv.android.xposed.XposedHelpers;
 public class NavRes implements IHook {
     static Class<?> BottomNav;
     static Class<?> BottomNavBgViewExploreA;
+    static Class<?> FeedConfigManager;
 
     static Field BottomNavBgViewExploreA_right;
     static Field BottomNavBgViewExploreA_center;
@@ -41,12 +42,16 @@ public class NavRes implements IHook {
             BottomNavBgViewExploreA_center.setAccessible(true);
         } catch (Throwable ignored) {
         }
+        FeedConfigManager = Helper.findClass(classLoader, "com.zhihu.android.", (Class<?> FeedConfigManager) -> FeedConfigManager.getMethod("a").getReturnType().getDeclaredField("a").getType().equals(String.class));
     }
 
     @Override
     public void hook() throws Throwable {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_navres", false)) {
             XposedHelpers.findAndHookMethod(BottomNav, "b", XC_MethodReplacement.returnConstant(null));
+            if (FeedConfigManager != null) {
+                XposedHelpers.findAndHookMethod(FeedConfigManager, "a", XC_MethodReplacement.returnConstant(null));
+            }
         }
 
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_nipple", false)) {
