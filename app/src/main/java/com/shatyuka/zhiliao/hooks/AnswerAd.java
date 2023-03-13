@@ -46,8 +46,9 @@ public class AnswerAd implements IHook {
                         || segments.get(segments.size() - 2).equals("hotmodule"))
                         || (Helper.prefs.getBoolean("switch_club", false) && segments.get(segments.size() - 1).equals("bind_club"))
                         || (Helper.prefs.getBoolean("switch_goods", false) && segments.get(segments.size() - 2).equals("goods"))
-                        || (Helper.prefs.getBoolean("switch_article", false) && segments.get(segments.size() - 1).equals("recommendation")))) {
-                    WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("null\n".getBytes()));
+                        || (Helper.prefs.getBoolean("switch_article", false) && segments.get(segments.size() - 1).equals("recommendation"))
+                        || (Helper.prefs.getBoolean("switch_related", false) && segments.get(segments.size() - 3).equals("related_queries")))) {
+                    WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", new ByteArrayInputStream("{}".getBytes()));
                     response.setStatusCodeAndReasonPhrase(200, "OK");
                     param.setResult(response);
                 }

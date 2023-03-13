@@ -414,6 +414,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_marketcard"), Helper.modRes.getDrawable(R.drawable.ic_vip));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_club"), Helper.modRes.getDrawable(R.drawable.ic_group));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_goods"), Helper.modRes.getDrawable(R.drawable.ic_local_mall));
+                setIcon.invoke(findPreference.invoke(thisObject, "switch_related"), Helper.modRes.getDrawable(R.drawable.ic_search_off));
                 setIcon.invoke(switch_externlink, Helper.modRes.getDrawable(R.drawable.ic_link));
                 setIcon.invoke(switch_externlinkex, Helper.modRes.getDrawable(R.drawable.ic_link));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_colormode"), Helper.modRes.getDrawable(R.drawable.ic_color));
