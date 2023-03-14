@@ -21,15 +21,13 @@ public class ColorMode implements IHook {
 
     @Override
     public void hook() throws Throwable {
-        if (Build.VERSION.SDK_INT >= 26) {
-            XposedHelpers.findAndHookMethod(Window.class, "setColorMode", int.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_colormode", false)) {
-                        param.setResult(null);
-                    }
+        XposedHelpers.findAndHookMethod(Window.class, "setColorMode", int.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_colormode", false)) {
+                    param.setResult(null);
                 }
-            });
-        }
+            }
+        });
     }
 }

@@ -6,7 +6,7 @@ android {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 26
         targetSdkVersion 33
-        ndkVersion "25.0.8775105"
+        ndkVersion "25.2.9519653"
         versionCode appVerCode.toInteger()
         versionName appVerName
         externalNativeBuild {
@@ -74,7 +74,7 @@ android {
     buildFeatures {
         prefab true
     }
-    buildToolsVersion '32.0.0'
+    buildToolsVersion '33.0.2'
 
     packagingOptions {
         exclude 'META-INF/**'

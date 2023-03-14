@@ -138,8 +138,7 @@ public class ExternLink implements IHook {
             hasUserGesture = request.hasGesture();
             method = request.getMethod();
             requestHeaders = request.getRequestHeaders();
-            if (Build.VERSION.SDK_INT >= 24)
-                isRedirect = request.isRedirect();
+            isRedirect = request.isRedirect();
         }
 
         @Override
