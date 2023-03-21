@@ -102,11 +102,17 @@
             android:title="去商品推荐"
             android:summary="去除回答底部商品推荐"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
-                android:defaultValue="false"
-                android:dependency="switch_mainswitch"
-                android:key="switch_related"
-                android:title="去相关搜索"
-                android:summary="去除回答底部相关搜索"/>
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_related"
+            android:title="去相关搜索"
+            android:summary="去除回答底部相关搜索"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_searchwords"
+            android:title="去关键字搜索"
+            android:summary="去除页内关键字搜索"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
