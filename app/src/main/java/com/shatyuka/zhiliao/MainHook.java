@@ -85,12 +85,15 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             if (!isMainProcess)
                 return;
 
-            XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.tencent.tinker.loader.app.TinkerApplication", lpparam.classLoader), new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    param.args[0] = 0;
-                }
-            });
+            try {
+                XposedBridge.hookAllConstructors(lpparam.classLoader.loadClass("com.tencent.tinker.loader.app.TinkerApplication"), new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        param.args[0] = 0;
+                    }
+                });
+            } catch (ClassNotFoundException ignored) {
+            }
 
             XposedHelpers.findAndHookMethod(android.app.Instrumentation.class, "callApplicationOnCreate", Application.class, new XC_MethodHook() {
                 @Override
