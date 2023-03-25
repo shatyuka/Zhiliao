@@ -56,6 +56,7 @@ public class AnswerAd implements IHook {
                 }
             }
 
+            @SuppressWarnings("ResultOfMethodCallIgnored")
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 if (!Helper.prefs.getBoolean("switch_mainswitch", false))

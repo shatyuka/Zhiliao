@@ -73,6 +73,7 @@ public class Cleaner implements IHook {
         return Helper.context.getFilesDir().listFiles(new Filter());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static long doClean() {
         File[] files = getCacheFiles();
         long size = 0;

@@ -36,6 +36,7 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
+@SuppressWarnings("deprecation")
 public class ZhihuPreference implements IHook {
     final static String modulePackage = "com.shatyuka.zhiliao";
 

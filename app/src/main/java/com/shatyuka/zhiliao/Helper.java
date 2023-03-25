@@ -60,7 +60,7 @@ public class Helper {
 
             return true;
         } catch (Exception e) {
-            XposedBridge.log("[Zhiliao] " + e.toString());
+            XposedBridge.log("[Zhiliao] " + e);
             return false;
         }
     }
@@ -87,7 +87,7 @@ public class Helper {
         }
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressWarnings({"JavaReflectionMemberAccess", "deprecation"})
     @SuppressLint("DiscouragedPrivateApi")
     static Resources getModuleRes(String path) throws Throwable {
         AssetManager assetManager = AssetManager.class.newInstance();

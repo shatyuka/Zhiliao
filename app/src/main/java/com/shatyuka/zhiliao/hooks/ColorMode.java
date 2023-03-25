@@ -1,6 +1,5 @@
 package com.shatyuka.zhiliao.hooks;
 
-import android.os.Build;
 import android.view.Window;
 
 import com.shatyuka.zhiliao.Helper;
