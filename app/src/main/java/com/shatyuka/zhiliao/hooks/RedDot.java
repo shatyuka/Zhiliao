@@ -2,11 +2,9 @@ package com.shatyuka.zhiliao.hooks;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.shatyuka.zhiliao.Helper;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -16,7 +14,6 @@ import de.robv.android.xposed.XposedHelpers;
 
 public class RedDot implements IHook {
     static Class<?> FeedsTabsFragment;
-    static Class<?> FeedFollowAvatarCommonViewHolder;
     static Class<?> NotiMsgModel;
     static Class<?> ViewModel;
 
@@ -27,8 +24,8 @@ public class RedDot implements IHook {
     static Method NotiUnreadCountKt_hasUnread;
     static Method IconWithDotAndCountView_setUnreadCount;
     static Method CountDotView_setUnreadCount;
-
-    static Field FeedFollowAvatarCommonViewHolder_dot;
+    static Method BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility;
+    static Method RevisitView_getCanShowRedDot;
 
     @Override
     public String getName() {
@@ -38,7 +35,6 @@ public class RedDot implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
         FeedsTabsFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsTabsFragment");
-        FeedFollowAvatarCommonViewHolder = classLoader.loadClass("com.zhihu.android.moments.viewholders.FeedFollowAvatarCommonViewHolder");
         Class<?> ZHMainTabLayout = classLoader.loadClass("com.zhihu.android.app.ui.widget.ZHMainTabLayout");
         Class<?> BottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemView");
         Class<?> BottomNavMenuItemViewForIconOnly = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuItemViewForIconOnly");
@@ -84,21 +80,32 @@ public class RedDot implements IHook {
         } catch (ClassNotFoundException | NoSuchMethodException ignored) {
         }
 
-        FeedFollowAvatarCommonViewHolder_dot = FeedFollowAvatarCommonViewHolder.getDeclaredField("f");
-        FeedFollowAvatarCommonViewHolder_dot.setAccessible(true);
+        Class<?> BaseFeedFollowAvatarViewHolder = null;
+        try {
+            BaseFeedFollowAvatarViewHolder = classLoader.loadClass("com.zhihu.android.moments.viewholders.BaseFeedFollowAvatarViewHolder");
+        } catch (ClassNotFoundException ignored) {
+            try {
+                BaseFeedFollowAvatarViewHolder = classLoader.loadClass("com.zhihu.android.recentlyviewed.ui.viewholder.BaseFeedFollowAvatarViewHolder");
+            } catch (ClassNotFoundException ignored2) {
+            }
+        }
+        if (BaseFeedFollowAvatarViewHolder != null) {
+            BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility = BaseFeedFollowAvatarViewHolder.getDeclaredMethod("a", View.class, boolean.class);
+        }
+
+        try {
+            Class<?> RevisitView = classLoader.loadClass("com.zhihu.android.app.feed.ui2.tab.RevisitView");
+            RevisitView_getCanShowRedDot = RevisitView.getDeclaredMethod("getCanShowRedDot");
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+        }
     }
 
     @Override
     public void hook() throws Throwable {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_reddot", false)) {
             XposedBridge.hookAllMethods(FeedsTabsFragment, "onUnReadCountLoaded", XC_MethodReplacement.returnConstant(null));
-            XposedBridge.hookAllMethods(FeedFollowAvatarCommonViewHolder, "c", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    ImageView dot = (ImageView) FeedFollowAvatarCommonViewHolder_dot.get(param.thisObject);
-                    dot.setVisibility(View.GONE);
-                }
-            });
+            if (BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility != null)
+                XposedBridge.hookMethod(BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility, XC_MethodReplacement.returnConstant(null));
             if (ZHMainTabLayout_updateBadges != null)
                 XposedBridge.hookMethod(ZHMainTabLayout_updateBadges, XC_MethodReplacement.returnConstant(null));
             if (BottomNavMenuItemView_setUnreadCount != null)
@@ -135,6 +142,8 @@ public class RedDot implements IHook {
                     }
                 });
             }
+            if (RevisitView_getCanShowRedDot != null)
+                XposedBridge.hookMethod(RevisitView_getCanShowRedDot, XC_MethodReplacement.returnConstant(false));
         }
     }
 }
