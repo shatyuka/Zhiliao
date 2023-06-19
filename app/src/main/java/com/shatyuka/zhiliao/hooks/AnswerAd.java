@@ -67,7 +67,11 @@ public class AnswerAd implements IHook {
                     if (Helper.prefs.getBoolean("switch_searchwords", false) && segments.get(0).equals("appview") && segments.get(segments.size() - 2).equals("answer")) {
                         WebResourceResponse response = (WebResourceResponse) param.getResult();
                         try {
-                            byte[] data = new byte[response.getData().available()];
+                            int available = response.getData().available();
+                            if (available == 0) {
+                                available = 0x100000;
+                            }
+                            byte[] data = new byte[available];
                             response.getData().read(data);
                             String content = new String(data);
                             content = content.replace("\"searchWords\"", "\"searchWords_bak\"");
