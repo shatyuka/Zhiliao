@@ -1,7 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    namespace 'com.shatyuka.zhiliao'
+    compileSdk 33
+    buildToolsVersion '33.0.2'
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 26
@@ -28,16 +30,16 @@ android {
             }
         }
     }
-    applicationVariants.all { variant ->
+    applicationVariants.configureEach { variant ->
         variant.resValue "string", "app_version", variant.versionName
-        variant.outputs.all { output ->
+        variant.outputs.configureEach { output ->
             if (variant.buildType.name == 'release') {
                 outputFileName = "Zhiliao_${defaultConfig.versionName}.apk"
             }
         }
     }
     buildTypes {
-        all {
+        configureEach {
             if (project.hasProperty('releaseStoreFile')) {
                 signingConfig signingConfigs.config
             } else {
@@ -74,13 +76,13 @@ android {
     buildFeatures {
         prefab true
     }
-    buildToolsVersion '33.0.2'
-
     packagingOptions {
-        exclude 'META-INF/**'
-        exclude 'kotlin/**'
-        exclude 'google/**'
-        exclude '**.bin'
+        jniLibs {
+            excludes += ['META-INF/**', 'kotlin/**', 'google/**']
+        }
+        resources {
+            excludes += ['META-INF/**', 'kotlin/**', 'google/**', '**.bin']
+        }
     }
 }
 
