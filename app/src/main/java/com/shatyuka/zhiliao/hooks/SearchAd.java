@@ -26,7 +26,9 @@ public class SearchAd implements IHook {
         String[] classNames = {
                 "com.zhihu.android.net.b.b",
                 "com.zhihu.android.net.c.b",
+                "com.zhihu.android.c3.f.c",
                 "retrofit2.b.a.c",
+                "retrofit2.p.a.c",
                 "j.b.a.c"
         };
         Class<?> JacksonResponseBodyConverter;
