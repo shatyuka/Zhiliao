@@ -32,7 +32,11 @@ public class NavButton implements IHook {
             try {
                 IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.b.b");
             } catch (ClassNotFoundException e2) {
-                IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.t.g");
+                try {
+                    IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.t.g");
+                } catch (ClassNotFoundException e3) {
+                    IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.w.d");
+                }
             }
         }
 

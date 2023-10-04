@@ -226,4 +226,20 @@ public class Helper {
         }
         return null;
     }
+
+    public static Method getMethodByParameterTypes(Class<?> clazz, int skip, Class<?>... parameterTypes) {
+        if (clazz == null) return null;
+        int count = 0;
+        for (Method method : clazz.getDeclaredMethods()) {
+            Class<?>[] types = method.getParameterTypes();
+            if (Arrays.equals(types, parameterTypes)) {
+                if (count < skip) {
+                    count++;
+                    continue;
+                }
+                return method;
+            }
+        }
+        return null;
+    }
 }

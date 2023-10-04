@@ -56,15 +56,24 @@ public class RedDot implements IHook {
         BottomNavMenuItemView_setUnreadCount = Helper.getMethodByParameterTypes(BottomNavMenuItemView, int.class);
         BottomNavMenuItemViewForIconOnly_setUnreadCount = Helper.getMethodByParameterTypes(BottomNavMenuItemViewForIconOnly, int.class);
 
-        Class<?> BaseBottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BaseBottomNavMenuItemView");
-        Class<?> NavBadge = classLoader.loadClass("com.zhihu.android.bottomnav.api.model.NavBadge");
-        BaseBottomNavMenuItemView_setNavBadge = Helper.getMethodByParameterTypes(BaseBottomNavMenuItemView, NavBadge);
+        try {
+            Class<?> BaseBottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BaseBottomNavMenuItemView");
+            Class<?> NavBadge = classLoader.loadClass("com.zhihu.android.bottomnav.api.model.NavBadge");
+            BaseBottomNavMenuItemView_setNavBadge = Helper.getMethodByParameterTypes(BaseBottomNavMenuItemView, NavBadge);
+        } catch (ClassNotFoundException ignored) {
+        }
 
-        Class<?> IconWithDotAndCountView = classLoader.loadClass("com.zhihu.android.community_base.view.icon.IconWithDotAndCountView");
-        IconWithDotAndCountView_setUnreadCount = Helper.getMethodByParameterTypes(IconWithDotAndCountView, int.class, boolean.class, int.class);
+        try {
+            Class<?> IconWithDotAndCountView = classLoader.loadClass("com.zhihu.android.community_base.view.icon.IconWithDotAndCountView");
+            IconWithDotAndCountView_setUnreadCount = Helper.getMethodByParameterTypes(IconWithDotAndCountView, int.class, boolean.class, int.class);
+        } catch (ClassNotFoundException ignored) {
+        }
 
-        Class<?> CountDotView = classLoader.loadClass("com.zhihu.android.notification.widget.CountDotView");
-        CountDotView_setUnreadCount = Helper.getMethodByParameterTypes(CountDotView, int.class, boolean.class);
+        try {
+            Class<?> CountDotView = classLoader.loadClass("com.zhihu.android.notification.widget.CountDotView");
+            CountDotView_setUnreadCount = Helper.getMethodByParameterTypes(CountDotView, int.class, boolean.class);
+        } catch (ClassNotFoundException ignored) {
+        }
 
         Class<?> BaseFeedFollowAvatarViewHolder = null;
         try {
