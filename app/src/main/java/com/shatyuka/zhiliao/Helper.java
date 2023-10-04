@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -68,7 +70,11 @@ public class Helper {
     public static void init_class(ClassLoader classLoader) throws Exception {
         MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
         AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
-        IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
+        try {
+            IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.mercury.api.IZhihuWebView");
+        } catch (ClassNotFoundException ignore) {
+            IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
+        }
         WebViewClientWrapper = findClass(classLoader, "com.zhihu.android.app.mercury.web.", 0, 2,
                 (Class<?> clazz) -> clazz.getSuperclass() == WebViewClient.class);
         if (WebViewClientWrapper == null)
@@ -168,10 +174,21 @@ public class Helper {
                 }
             } catch (Exception ignored) {
             }
+            if (i > 26) {
+                String classNameNew = beginWith + index2StrNew(i);
+                try {
+                    Class<?> clazz = classLoader.loadClass(classNameNew);
+                    if (check.check(clazz)) {
+                        return clazz;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
         }
         return null;
     }
 
+    // a...z, aa...az, ba...bz
     private static String index2Str(int n) {
         StringBuilder result = new StringBuilder();
         while (n != 0) {
@@ -185,5 +202,44 @@ public class Helper {
             }
         }
         return result.toString();
+    }
+
+    // a...z, a0...z0, a1...z1
+    private static String index2StrNew(int n) {
+        StringBuilder result = new StringBuilder();
+        int m = n % 26;
+        result.insert(0, (char) ('a' + m));
+        int cnt = n / 26;
+        if (cnt > 0) {
+            result.append(cnt - 1);
+        }
+        return result.toString();
+    }
+
+    public static Method getMethodByParameterTypes(Class<?> clazz, Class<?>... parameterTypes) {
+        if (clazz == null) return null;
+        for (Method method : clazz.getDeclaredMethods()) {
+            Class<?>[] types = method.getParameterTypes();
+            if (Arrays.equals(types, parameterTypes)) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    public static Method getMethodByParameterTypes(Class<?> clazz, int skip, Class<?>... parameterTypes) {
+        if (clazz == null) return null;
+        int count = 0;
+        for (Method method : clazz.getDeclaredMethods()) {
+            Class<?>[] types = method.getParameterTypes();
+            if (Arrays.equals(types, parameterTypes)) {
+                if (count < skip) {
+                    count++;
+                    continue;
+                }
+                return method;
+            }
+        }
+        return null;
     }
 }

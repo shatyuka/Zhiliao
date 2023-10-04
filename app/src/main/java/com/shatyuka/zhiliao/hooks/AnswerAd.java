@@ -23,10 +23,13 @@ public class AnswerAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Helper.findClass(classLoader, "com.zhihu.android.appview.a$",
+        Class<?> AppView = classLoader.loadClass("com.zhihu.android.answer.module.content.appview.AnswerAppView").getSuperclass();
+        if (AppView == null)
+            throw new ClassNotFoundException("com.zhihu.android.appview.AppView");
+        Helper.findClass(classLoader, AppView.getName() + "$",
                 (Class<?> ZhihuWebViewClient) -> {
-                    shouldInterceptRequest = ZhihuWebViewClient.getMethod("a", Helper.IZhihuWebView, WebResourceRequest.class);
-                    return true;
+                    shouldInterceptRequest = Helper.getMethodByParameterTypes(ZhihuWebViewClient, Helper.IZhihuWebView, WebResourceRequest.class);
+                    return shouldInterceptRequest != null;
                 });
         if (shouldInterceptRequest == null)
             throw new NoSuchMethodException("com.zhihu.android.appview.AppView$ZhihuWebViewClient.shouldInterceptRequest(IZhihuWebView, WebResourceRequest)");

@@ -53,31 +53,26 @@ public class RedDot implements IHook {
         } catch (ClassNotFoundException ignored) {
         }
 
-        try {
-            BottomNavMenuItemView_setUnreadCount = BottomNavMenuItemView.getMethod("a", int.class);
-        } catch (NoSuchMethodException ignored) {
-        }
-        try {
-            BottomNavMenuItemViewForIconOnly_setUnreadCount = BottomNavMenuItemViewForIconOnly.getMethod("a", int.class);
-        } catch (NoSuchMethodException ignored) {
-        }
+        BottomNavMenuItemView_setUnreadCount = Helper.getMethodByParameterTypes(BottomNavMenuItemView, int.class);
+        BottomNavMenuItemViewForIconOnly_setUnreadCount = Helper.getMethodByParameterTypes(BottomNavMenuItemViewForIconOnly, int.class);
+
         try {
             Class<?> BaseBottomNavMenuItemView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BaseBottomNavMenuItemView");
             Class<?> NavBadge = classLoader.loadClass("com.zhihu.android.bottomnav.api.model.NavBadge");
-            BaseBottomNavMenuItemView_setNavBadge = BaseBottomNavMenuItemView.getMethod("a", NavBadge);
-        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            BaseBottomNavMenuItemView_setNavBadge = Helper.getMethodByParameterTypes(BaseBottomNavMenuItemView, NavBadge);
+        } catch (ClassNotFoundException ignored) {
         }
 
         try {
             Class<?> IconWithDotAndCountView = classLoader.loadClass("com.zhihu.android.community_base.view.icon.IconWithDotAndCountView");
-            IconWithDotAndCountView_setUnreadCount = IconWithDotAndCountView.getMethod("a", int.class, boolean.class, int.class);
-        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            IconWithDotAndCountView_setUnreadCount = Helper.getMethodByParameterTypes(IconWithDotAndCountView, int.class, boolean.class, int.class);
+        } catch (ClassNotFoundException ignored) {
         }
 
         try {
             Class<?> CountDotView = classLoader.loadClass("com.zhihu.android.notification.widget.CountDotView");
-            CountDotView_setUnreadCount = CountDotView.getMethod("a", int.class, boolean.class);
-        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            CountDotView_setUnreadCount = Helper.getMethodByParameterTypes(CountDotView, int.class, boolean.class);
+        } catch (ClassNotFoundException ignored) {
         }
 
         Class<?> BaseFeedFollowAvatarViewHolder = null;
@@ -90,7 +85,7 @@ public class RedDot implements IHook {
             }
         }
         if (BaseFeedFollowAvatarViewHolder != null) {
-            BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility = BaseFeedFollowAvatarViewHolder.getDeclaredMethod("a", View.class, boolean.class);
+            BaseFeedFollowAvatarViewHolder_setUnreadTipVisibility = Helper.getMethodByParameterTypes(BaseFeedFollowAvatarViewHolder, View.class, boolean.class);
         }
 
         try {
