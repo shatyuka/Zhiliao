@@ -33,23 +33,40 @@ public class Article implements IHook {
                     ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.b.a");
                     getItemCount = ContentMixAdapter.getMethod("getItemCount");
                 } catch (Throwable e2) {
-                    ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.adapter.a");
-                    getItemCount = ContentMixAdapter.getMethod("getItemCount");
-                }
-            }
-            ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
-            ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("f");
-            if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
-                ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("g");
-                if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
-                    ContentMixAdapter_fragment = ContentMixAdapter.getDeclaredField("h");
-                    if (!ContentMixAdapter_fragment.getType().getName().equals("androidx.fragment.app.Fragment")) {
-                        throw new NoSuchFieldException("fragment");
+                    try {
+                        ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.adapter.a");
+                        getItemCount = ContentMixAdapter.getMethod("getItemCount");
+                    } catch (Throwable e3) {
+                        ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.adapter.ContentMixAdapter");
+                        getItemCount = ContentMixAdapter.getMethod("getItemCount");
                     }
                 }
             }
+            ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
+            String[] fragment_names = new String[]{"f", "g", "h", "B"};
+            for (String name : fragment_names) {
+                try {
+                    Field field = ContentMixAdapter.getDeclaredField(name);
+                    if (field.getType().getName().equals("androidx.fragment.app.Fragment")) {
+                        ContentMixAdapter_fragment = field;
+                        break;
+                    }
+                } catch (NoSuchFieldException ignore) {
+                }
+            }
+            if (ContentMixAdapter_fragment == null) {
+                throw new NoSuchFieldException("fragment");
+            }
             ContentMixAdapter_fragment.setAccessible(true);
-            ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
+            try {
+                ContentMixPagerFragment_type = ContentMixPagerFragment.getField("c");
+                if (ContentMixPagerFragment_type.getType() != String.class)
+                    throw new NoSuchFieldException("type");
+            } catch (NoSuchFieldException e) {
+                ContentMixPagerFragment_type = ContentMixPagerFragment.getField("t");
+                if (ContentMixPagerFragment_type.getType() != String.class)
+                    throw new NoSuchFieldException("type");
+            }
         }
     }
 
