@@ -14,7 +14,7 @@ public class NavButton implements IHook {
     static Class<?> BottomNavMenuView;
     static Class<?> IMenuItem;
 
-    static Method getMenuName;
+    static Method getItemId;
 
     static Field Tab_tabView;
 
@@ -29,10 +29,18 @@ public class NavButton implements IHook {
         try {
             IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.a.b");
         } catch (ClassNotFoundException e) {
-            IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.b.b");
+            try {
+                IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.b.b");
+            } catch (ClassNotFoundException e2) {
+                IMenuItem = classLoader.loadClass("com.zhihu.android.bottomnav.core.t.g");
+            }
         }
 
-        getMenuName = IMenuItem.getMethod("a");
+        try {
+            getItemId = IMenuItem.getMethod("getItemId");
+        } catch (NoSuchMethodException e) {
+            getItemId = IMenuItem.getMethod("a");
+        }
 
         Tab_tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
     }
@@ -43,10 +51,10 @@ public class NavButton implements IHook {
             XposedHelpers.findAndHookMethod(BottomNavMenuView, "a", IMenuItem, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (("market".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||
-                            ("video".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_videonav", false)) ||
-                            ("friend".equals(getMenuName.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_friendnav", false)) ||
-                            ("panel".equals(getMenuName.invoke(param.args[0]))&& Helper.prefs.getBoolean("switch_panelnav", false))){
+                    if (("market".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||
+                            ("video".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_videonav", false)) ||
+                            ("friend".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_friendnav", false)) ||
+                            ("panel".equals(getItemId.invoke(param.args[0]))&& Helper.prefs.getBoolean("switch_panelnav", false))){
                         ((View) Tab_tabView.get(param.getResult())).setVisibility(View.GONE);
                     }
                 }
