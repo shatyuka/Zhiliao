@@ -83,6 +83,7 @@ public class ZhihuPreference implements IHook {
     static Method addPreferencesFromResource;
     static Method inflate;
     static Method setTooltipText;
+    static Method startFragment;
 
     static Field SeekBarPreference_mMin;
     static Field SeekBarPreference_mSeekBarValueTextView;
@@ -91,6 +92,10 @@ public class ZhihuPreference implements IHook {
     static Field ListPreference_mEntryValues;
 
     static Constructor<?> ZHIntent_ctor;
+
+    static String getLayoutResId_MethodName;
+    static String getResourceId_MethodName;
+    static String onCreate_MethodName;
 
     @Override
     public String getName() {
@@ -103,8 +108,13 @@ public class ZhihuPreference implements IHook {
         DebugFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.DebugFragment");
         Preference = classLoader.loadClass("androidx.preference.Preference");
         SwitchPreference = classLoader.loadClass("com.zhihu.android.app.ui.widget.SwitchPreference");
-        OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$c");
-        OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
+        try {
+            OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$d");
+            OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$e");
+        } catch (ClassNotFoundException e) {
+            OnPreferenceChangeListener = classLoader.loadClass("androidx.preference.Preference$c");
+            OnPreferenceClickListener = classLoader.loadClass("androidx.preference.Preference$d");
+        }
         PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.g");
         PreferenceManager = classLoader.loadClass("androidx.preference.j");
         PreferenceInflater = classLoader.loadClass("androidx.preference.i");
@@ -115,18 +125,39 @@ public class ZhihuPreference implements IHook {
         PreferenceGroup = classLoader.loadClass("androidx.preference.PreferenceGroup");
         EditTextPreference = classLoader.loadClass("androidx.preference.EditTextPreference");
         SeekBarPreference = classLoader.loadClass("androidx.preference.SeekBarPreference");
-        OnSeekBarChangeListener = classLoader.loadClass("androidx.preference.SeekBarPreference$1");
+        try {
+            OnSeekBarChangeListener = classLoader.loadClass("androidx.preference.SeekBarPreference$1");
+        } catch (ClassNotFoundException e) {
+            OnSeekBarChangeListener = classLoader.loadClass("androidx.preference.SeekBarPreference$a");
+        }
         ListPreference = classLoader.loadClass("androidx.preference.ListPreference");
         TooltipCompat = classLoader.loadClass("androidx.appcompat.widget.TooltipCompat");
 
-        findPreference = SettingsFragment.getMethod("a", CharSequence.class);
-        setSummary = Preference.getMethod("a", CharSequence.class);
-        setIcon = Preference.getMethod("a", Drawable.class);
-        setVisible = Preference.getMethod("c", boolean.class);
-        getKey = Preference.getMethod("C");
-        setChecked = SwitchPreference.getMethod("g", boolean.class);
-        setOnPreferenceChangeListener = Preference.getMethod("a", OnPreferenceChangeListener);
-        setOnPreferenceClickListener = Preference.getMethod("a", OnPreferenceClickListener);
+        try {
+            findPreference = SettingsFragment.getMethod("a", CharSequence.class);
+            setSummary = Preference.getMethod("a", CharSequence.class);
+            setIcon = Preference.getMethod("a", Drawable.class);
+            setVisible = Preference.getMethod("c", boolean.class);
+            getKey = Preference.getMethod("C");
+            setChecked = SwitchPreference.getMethod("g", boolean.class);
+            getText = EditTextPreference.getMethod("i");
+            getLayoutResId_MethodName = "i";
+            getResourceId_MethodName = "v";
+            onCreate_MethodName = "h";
+        } catch (NoSuchMethodException e) {
+            findPreference = Helper.getMethodByParameterTypes(BasePreferenceFragment.getSuperclass(), CharSequence.class);
+            setSummary = Preference.getMethod("B0", CharSequence.class);
+            setIcon = Preference.getMethod("r0", Drawable.class);
+            setVisible = Preference.getMethod("E0", boolean.class);
+            getKey = Preference.getMethod("o");
+            setChecked = SwitchPreference.getMethod("O0", boolean.class);
+            getText = EditTextPreference.getMethod("R0");
+            getLayoutResId_MethodName = "vg";
+            getResourceId_MethodName = "p";
+            onCreate_MethodName = "xg";
+        }
+        setOnPreferenceChangeListener = Helper.getMethodByParameterTypes(Preference, OnPreferenceChangeListener);
+        setOnPreferenceClickListener = Helper.getMethodByParameterTypes(Preference, OnPreferenceClickListener);
         try {
             setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
             addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
@@ -135,31 +166,44 @@ public class ZhihuPreference implements IHook {
             PreferenceFragmentCompat = classLoader.loadClass("androidx.preference.f");
             PreferenceManager = classLoader.loadClass("androidx.preference.i");
             PreferenceInflater = classLoader.loadClass("androidx.preference.h");
-            setSharedPreferencesName = PreferenceManager.getMethod("a", String.class);
-            addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
-            inflate = PreferenceInflater.getMethod("a", XmlPullParser.class, PreferenceGroup);
+            setSharedPreferencesName = Helper.getMethodByParameterTypes(PreferenceManager, String.class);
+            addPreferencesFromResource = Helper.getMethodByParameterTypes(PreferenceFragmentCompat, int.class);
+            inflate = Helper.getMethodByParameterTypes(PreferenceInflater, XmlPullParser.class, PreferenceGroup);
         }
         getContext = BasePreferenceFragment.getMethod("getContext");
-        getText = EditTextPreference.getMethod("i");
         setTooltipText = TooltipCompat.getMethod("setTooltipText", View.class, CharSequence.class);
+        startFragment = Helper.getMethodByParameterTypes(BasePreferenceFragment, ZHIntent);
 
-        SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("b");
-        SeekBarPreference_mMin.setAccessible(true);
-        SeekBarPreference_mSeekBarValueTextView = SeekBarPreference.getDeclaredField("h");
-        SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
-        OnSeekBarChangeListener_seekBarPreferenceInstance = OnSeekBarChangeListener.getDeclaredField("a");
-        OnSeekBarChangeListener_seekBarPreferenceInstance.setAccessible(true);
-        ListPreference_mEntries = ListPreference.getDeclaredField("a");
-        ListPreference_mEntries.setAccessible(true);
-        ListPreference_mEntryValues = ListPreference.getDeclaredField("b");
-        ListPreference_mEntryValues.setAccessible(true);
+        try {
+            SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("b");
+            SeekBarPreference_mMin.setAccessible(true);
+            SeekBarPreference_mSeekBarValueTextView = SeekBarPreference.getDeclaredField("h");
+            SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
+            OnSeekBarChangeListener_seekBarPreferenceInstance = OnSeekBarChangeListener.getDeclaredField("a");
+            OnSeekBarChangeListener_seekBarPreferenceInstance.setAccessible(true);
+            ListPreference_mEntries = ListPreference.getDeclaredField("a");
+            ListPreference_mEntries.setAccessible(true);
+            ListPreference_mEntryValues = ListPreference.getDeclaredField("b");
+            ListPreference_mEntryValues.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            SeekBarPreference_mMin = SeekBarPreference.getDeclaredField("Y");
+            SeekBarPreference_mMin.setAccessible(true);
+            SeekBarPreference_mSeekBarValueTextView = SeekBarPreference.getDeclaredField("s0");
+            SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
+            OnSeekBarChangeListener_seekBarPreferenceInstance = OnSeekBarChangeListener.getDeclaredField("j");
+            OnSeekBarChangeListener_seekBarPreferenceInstance.setAccessible(true);
+            ListPreference_mEntries = ListPreference.getDeclaredField("s0");
+            ListPreference_mEntries.setAccessible(true);
+            ListPreference_mEntryValues = ListPreference.getDeclaredField("t0");
+            ListPreference_mEntryValues.setAccessible(true);
+        }
 
         ZHIntent_ctor = ZHIntent.getConstructor(Class.class, Bundle.class, String.class, Array.newInstance(PageInfoType, 0).getClass());
     }
 
     @Override
     public void hook() throws Throwable {
-        XposedHelpers.findAndHookMethod(PreferenceInflater, "a", int.class, PreferenceGroup, new XC_MethodHook() {
+        XposedBridge.hookMethod(Helper.getMethodByParameterTypes(PreferenceInflater, int.class, PreferenceGroup), new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 XmlResourceParser parser;
@@ -178,13 +222,13 @@ public class ZhihuPreference implements IHook {
             }
         });
 
-        XposedHelpers.findAndHookMethod(SettingsFragment, "i", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(SettingsFragment, getLayoutResId_MethodName, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 settings_res_id = (int) param.getResult();
             }
         });
-        XposedHelpers.findAndHookMethod(DebugFragment, "i", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(DebugFragment, getLayoutResId_MethodName, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) {
                 debug_res_id = (int) param.getResult();
@@ -200,7 +244,7 @@ public class ZhihuPreference implements IHook {
             }
         });
 
-        XposedHelpers.findAndHookMethod(Preference, "v", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(Preference, getResourceId_MethodName, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if ("seekbar_sensitivity".equals(getKey.invoke(param.thisObject))) {
@@ -261,15 +305,13 @@ public class ZhihuPreference implements IHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (param.args[0] == preference_zhiliao) {
-                    Object thisObject = param.thisObject;
-                    Method a = thisObject.getClass().getMethod("a", ZHIntent);
                     Object intent = ZHIntent_ctor.newInstance(DebugFragment, null, "SCREEN_NAME_NULL", Array.newInstance(PageInfoType, 0));
-                    a.invoke(thisObject, intent);
+                    startFragment.invoke(param.thisObject, intent);
                     param.setResult(false);
                 }
             }
         });
-        XposedBridge.hookMethod(DebugFragment.getMethod("a", Bundle.class, String.class), new XC_MethodHook() {
+        XposedBridge.hookMethod(Helper.getMethodByParameterTypes(BasePreferenceFragment, Bundle.class, String.class), new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (param.thisObject.getClass() == DebugFragment) {
@@ -312,7 +354,7 @@ public class ZhihuPreference implements IHook {
                 }
             }
         });
-        XposedHelpers.findAndHookMethod(DebugFragment, "h", new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(DebugFragment, onCreate_MethodName, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 Object thisObject = param.thisObject;
@@ -552,7 +594,7 @@ public class ZhihuPreference implements IHook {
                 return false;
             }
         });
-        XposedHelpers.findAndHookMethod(DebugFragment, "a", "androidx.preference.Preference", Object.class, new XC_MethodReplacement() {
+        XposedBridge.hookMethod(Helper.getMethodByParameterTypes(DebugFragment, Preference, Object.class), new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 if ((boolean) param.args[1]) {
@@ -564,7 +606,7 @@ public class ZhihuPreference implements IHook {
                 return true;
             }
         });
-        XposedHelpers.findAndHookMethod(EditTextPreference, "a", String.class, new XC_MethodHook() {
+        XposedBridge.hookMethod(Helper.getMethodByParameterTypes(EditTextPreference, String.class), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Object thisObject = param.thisObject;
@@ -590,7 +632,7 @@ public class ZhihuPreference implements IHook {
                 SeekBarPreference_mMin.setInt(param.thisObject, 1);
             }
         });
-        XposedHelpers.findAndHookMethod(SeekBarPreference, "a", int.class, boolean.class, new XC_MethodHook() {
+        XposedBridge.hookMethod(Helper.getMethodByParameterTypes(SeekBarPreference, int.class, boolean.class), new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Object thisObject = param.thisObject;

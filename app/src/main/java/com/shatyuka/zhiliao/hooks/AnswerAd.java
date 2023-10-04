@@ -28,14 +28,8 @@ public class AnswerAd implements IHook {
             throw new ClassNotFoundException("com.zhihu.android.appview.AppView");
         Helper.findClass(classLoader, AppView.getName() + "$",
                 (Class<?> ZhihuWebViewClient) -> {
-                    for (Method method : ZhihuWebViewClient.getMethods()) {
-                        Class<?>[] types = method.getParameterTypes();
-                        if (types.length == 2 && types[0] == Helper.IZhihuWebView && types[1] == WebResourceRequest.class) {
-                            shouldInterceptRequest = method;
-                            return true;
-                        }
-                    }
-                    return false;
+                    shouldInterceptRequest = Helper.getMethodByParameterTypes(ZhihuWebViewClient, Helper.IZhihuWebView, WebResourceRequest.class);
+                    return shouldInterceptRequest != null;
                 });
         if (shouldInterceptRequest == null)
             throw new NoSuchMethodException("com.zhihu.android.appview.AppView$ZhihuWebViewClient.shouldInterceptRequest(IZhihuWebView, WebResourceRequest)");

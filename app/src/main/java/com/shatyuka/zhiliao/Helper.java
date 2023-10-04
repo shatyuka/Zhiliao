@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -212,5 +214,16 @@ public class Helper {
             result.append(cnt - 1);
         }
         return result.toString();
+    }
+
+    public static Method getMethodByParameterTypes(Class<?> clazz, Class<?>... parameterTypes) {
+        if (clazz == null) return null;
+        for (Method method : clazz.getDeclaredMethods()) {
+            Class<?>[] types = method.getParameterTypes();
+            if (Arrays.equals(types, parameterTypes)) {
+                return method;
+            }
+        }
+        return null;
     }
 }
