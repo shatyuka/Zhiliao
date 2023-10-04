@@ -31,17 +31,22 @@ public class StatusBar implements IHook {
         try {
             CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.x$a");
             StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.x$b");
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException e) {
             try {
                 CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$a");
                 StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$b");
-            } catch (ClassNotFoundException ignored2) {
+            } catch (ClassNotFoundException e2) {
                 try {
                     CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$a");
                     StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$b");
-                } catch (ClassNotFoundException ignored3) {
-                    CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$a");
-                    StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$b");
+                } catch (ClassNotFoundException e3) {
+                    try {
+                        CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$a");
+                        StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$b");
+                    } catch (ClassNotFoundException e4) {
+                        CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.m0$a");
+                        StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.m0$b");
+                    }
                 }
             }
         }
@@ -49,8 +54,13 @@ public class StatusBar implements IHook {
 
         setColor = StatusBarDrawable.getMethod("a", int.class);
 
-        CombinedDrawable_statusBarDrawable = CombinedDrawable.getDeclaredField("b");
-        CombinedDrawable_statusBarDrawable.setAccessible(true);
+        try {
+            CombinedDrawable_statusBarDrawable = CombinedDrawable.getDeclaredField("b");
+            CombinedDrawable_statusBarDrawable.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            CombinedDrawable_statusBarDrawable = CombinedDrawable.getDeclaredField("j");
+            CombinedDrawable_statusBarDrawable.setAccessible(true);
+        }
     }
 
     @Override
