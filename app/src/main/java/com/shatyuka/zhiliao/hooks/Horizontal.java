@@ -83,8 +83,13 @@ public class Horizontal implements IHook {
             if (UserAction == null)
                 throw new ClassNotFoundException("com.zhihu.android.bootstrap.vertical_pager.UserAction");
 
-            nextAnswer = VerticalPagerContainer.getMethod("a", UserAction);
-            lastAnswer = VerticalPagerContainer.getMethod("b", UserAction);
+            try {
+                nextAnswer = VerticalPagerContainer.getMethod("a", UserAction);
+                lastAnswer = VerticalPagerContainer.getMethod("b", UserAction);
+            } catch (NoSuchMethodException e) {
+                nextAnswer = VerticalPagerContainer.getMethod("q0", UserAction);
+                lastAnswer = VerticalPagerContainer.getMethod("r0", UserAction);
+            }
 
             UserAction_DRAG_UP = UserAction.getField("DRAG_UP");
             UserAction_DRAG_DOWN = UserAction.getField("DRAG_DOWN");
@@ -196,7 +201,7 @@ public class Horizontal implements IHook {
             });
 
             if (Helper.packageInfo.versionCode > 2614) {
-                XposedHelpers.findAndHookMethod(ContentMixPagerFragment, "a", MotionEvent.class, new XC_MethodHook() {
+                XposedBridge.hookMethod(Helper.getMethodByParameterTypes(ContentMixPagerFragment, MotionEvent.class), new XC_MethodHook() {
                     float old_x = 0;
                     float old_y = 0;
                     long time = 0;
