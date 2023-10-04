@@ -79,22 +79,28 @@ public class FeedAd implements IHook {
                 }
             }
         });
-        XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    param.setResult(false);
+        try {
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        param.setResult(false);
+                    }
                 }
-            }
-        });
-        XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, ListAd, Boolean.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    param.setResult(false);
+            });
+        } catch (NoSuchMethodError ignore) {
+        }
+        try {
+            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, ListAd, Boolean.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                        param.setResult(false);
+                    }
                 }
-            }
-        });
+            });
+        } catch (NoSuchMethodError ignore) {
+        }
         XposedHelpers.findAndHookMethod(Advert, "isSlidingWindow", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
