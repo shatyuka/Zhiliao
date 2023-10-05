@@ -96,6 +96,7 @@ public class ZhihuPreference implements IHook {
     static String getLayoutResId_MethodName;
     static String getResourceId_MethodName;
     static String onCreate_MethodName;
+    static String onPreferenceClick_MethodName;
 
     @Override
     public String getName() {
@@ -203,6 +204,7 @@ public class ZhihuPreference implements IHook {
         }
 
         ZHIntent_ctor = ZHIntent.getConstructor(Class.class, Bundle.class, String.class, Array.newInstance(PageInfoType, 0).getClass());
+        onPreferenceClick_MethodName = Helper.getMethodByParameterTypes(OnPreferenceClickListener, Preference).getName();
     }
 
     @Override
@@ -305,7 +307,7 @@ public class ZhihuPreference implements IHook {
             }
         });
 
-        XposedHelpers.findAndHookMethod(SettingsFragment, "onPreferenceClick", Preference, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(SettingsFragment, onPreferenceClick_MethodName, Preference, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (param.args[0] == preference_zhiliao) {
@@ -514,7 +516,7 @@ public class ZhihuPreference implements IHook {
                 return null;
             }
         });
-        XposedHelpers.findAndHookMethod(DebugFragment, "onPreferenceClick", "androidx.preference.Preference", new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(DebugFragment, onPreferenceClick_MethodName, Preference, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 Object preference = param.args[0];

@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class NavButton implements IHook {
@@ -52,7 +53,7 @@ public class NavButton implements IHook {
     @Override
     public void hook() throws Throwable {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && (Helper.prefs.getBoolean("switch_vipnav", false) || Helper.prefs.getBoolean("switch_videonav", false)|| Helper.prefs.getBoolean("switch_friendnav", false) || Helper.prefs.getBoolean("switch_panelnav", false))) {
-            XposedHelpers.findAndHookMethod(BottomNavMenuView, "a", IMenuItem, new XC_MethodHook() {
+            XposedBridge.hookMethod(Helper.getMethodByParameterTypes(BottomNavMenuView, IMenuItem), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (("market".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||

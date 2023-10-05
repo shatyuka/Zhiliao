@@ -83,8 +83,13 @@ public class Horizontal implements IHook {
             if (UserAction == null)
                 throw new ClassNotFoundException("com.zhihu.android.bootstrap.vertical_pager.UserAction");
 
-            nextAnswer = Helper.getMethodByParameterTypes(VerticalPagerContainer, UserAction);
-            lastAnswer = Helper.getMethodByParameterTypes(VerticalPagerContainer, 1, UserAction);
+            try {
+                nextAnswer = VerticalPagerContainer.getMethod("a", UserAction);
+                lastAnswer = VerticalPagerContainer.getMethod("b", UserAction);
+            } catch (NoSuchMethodException e) {
+                nextAnswer = Helper.getMethodByParameterTypes(VerticalPagerContainer, 1, UserAction);
+                lastAnswer = Helper.getMethodByParameterTypes(VerticalPagerContainer, 0, UserAction);
+            }
 
             UserAction_DRAG_UP = UserAction.getField("DRAG_UP");
             UserAction_DRAG_DOWN = UserAction.getField("DRAG_DOWN");

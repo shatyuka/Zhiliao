@@ -18,6 +18,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -230,7 +231,9 @@ public class Helper {
     public static Method getMethodByParameterTypes(Class<?> clazz, int skip, Class<?>... parameterTypes) {
         if (clazz == null) return null;
         int count = 0;
-        for (Method method : clazz.getDeclaredMethods()) {
+        Method[] methods = clazz.getDeclaredMethods();
+        Arrays.sort(methods, Comparator.comparing(Method::getName));
+        for (Method method : methods) {
             Class<?>[] types = method.getParameterTypes();
             if (Arrays.equals(types, parameterTypes)) {
                 if (count < skip) {

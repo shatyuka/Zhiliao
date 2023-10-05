@@ -12,8 +12,10 @@ import com.shatyuka.zhiliao.MainHook;
 import com.shatyuka.zhiliao.R;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Tag implements IHook {
@@ -24,6 +26,8 @@ public class Tag implements IHook {
     static Class<?> ViewHolder;
     static Class<?> SugarHolder;
     static Class<?> TemplateRoot;
+
+    static Method onBindData;
 
     static Field ViewHolder_itemView;
     static Field SugarHolder_mData;
@@ -53,6 +57,12 @@ public class Tag implements IHook {
         }
         SugarHolder_mData.setAccessible(true);
         TemplateRoot_unique = TemplateRoot.getField("unique");
+
+        try {
+            onBindData = BaseTemplateNewFeedHolder.getMethod("onBindData", Object.class);
+        } catch (NoSuchMethodException e) {
+            onBindData = BaseTemplateNewFeedHolder.getDeclaredMethod("a", TemplateFeed);
+        }
     }
 
     @SuppressLint("DiscouragedApi")
@@ -62,7 +72,7 @@ public class Tag implements IHook {
         id_author = Helper.context.getResources().getIdentifier("author", "id", MainHook.hookPackage);
 
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
-            XposedHelpers.findAndHookMethod(BaseTemplateNewFeedHolder, "a", TemplateFeed, new XC_MethodHook() {
+            XposedBridge.hookMethod(onBindData, new XC_MethodHook() {
                 @SuppressLint({"ResourceType", "SetTextI18n"})
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {

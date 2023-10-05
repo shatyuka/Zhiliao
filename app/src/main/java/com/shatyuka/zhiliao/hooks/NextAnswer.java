@@ -5,15 +5,23 @@ import android.view.ViewGroup;
 
 import com.shatyuka.zhiliao.Helper;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class NextAnswer implements IHook {
     static Class<?> NextContentAnimationView;
     static Class<?> NextContentAnimationView_short;
     static Class<?> MixShortContainerFragment;
-    static Class<?> MixShortEntitySupport;
+
+    static Method initView;
+    static Method initLayout;
+
+    static Field nextButton;
 
     @Override
     public String getName() {
@@ -27,8 +35,28 @@ public class NextAnswer implements IHook {
             try {
                 NextContentAnimationView_short = classLoader.loadClass("com.zhihu.android.mixshortcontainer.function.next.NextContentAnimationView");
                 MixShortContainerFragment = classLoader.loadClass("com.zhihu.android.mixshortcontainer.MixShortContainerFragment");
-                MixShortEntitySupport = classLoader.loadClass("com.zhihu.android.mixshortcontainer.support.MixShortEntitySupport");
             } catch (Throwable ignored) {
+            }
+
+            initView = Helper.getMethodByParameterTypes(MixShortContainerFragment, 0, View.class);
+            initLayout = Helper.getMethodByParameterTypes(MixShortContainerFragment, 1, View.class);
+
+            if (MixShortContainerFragment != null) {
+                String[] nextButton_names = new String[]{"t", "f", "e"};
+                for (String name : nextButton_names) {
+                    try {
+                        Field field = MixShortContainerFragment.getDeclaredField(name);
+                        if (field.getType().getName().equals("com.zhihu.android.base.widget.ZHFrameLayout")) {
+                            nextButton = field;
+                            break;
+                        }
+                    } catch (NoSuchFieldException ignore) {
+                    }
+                }
+                if (nextButton == null) {
+                    throw new NoSuchFieldException("nextButton");
+                }
+                nextButton.setAccessible(true);
             }
         }
     }
@@ -37,8 +65,21 @@ public class NextAnswer implements IHook {
     public void hook() throws Throwable {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_nextanswer", false)) {
             XposedHelpers.findAndHookMethod(Helper.AnswerPagerFragment, "setupNextAnswerBtn", XC_MethodReplacement.returnConstant(null));
-            if (MixShortContainerFragment != null && MixShortEntitySupport != null) {
-                XposedHelpers.findAndHookMethod(MixShortContainerFragment, "a", MixShortEntitySupport, XC_MethodReplacement.returnConstant(null));
+            if (initView != null) {
+                XposedBridge.hookMethod(initView, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        nextButton.set(param.thisObject, null);
+                    }
+                });
+            }
+            if (initLayout != null) {
+                XposedBridge.hookMethod(initLayout, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        nextButton.set(param.thisObject, null);
+                    }
+                });
             }
 
             if (Helper.packageInfo.versionCode > 2614) {
