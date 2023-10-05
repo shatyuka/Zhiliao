@@ -167,7 +167,11 @@ public class ZhihuPreference implements IHook {
             PreferenceManager = classLoader.loadClass("androidx.preference.i");
             PreferenceInflater = classLoader.loadClass("androidx.preference.h");
             setSharedPreferencesName = Helper.getMethodByParameterTypes(PreferenceManager, String.class);
-            addPreferencesFromResource = Helper.getMethodByParameterTypes(PreferenceFragmentCompat, int.class);
+            try {
+                addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
+            } catch (NoSuchMethodException e2) {
+                addPreferencesFromResource = Helper.getMethodByParameterTypes(PreferenceFragmentCompat, int.class);
+            }
             inflate = Helper.getMethodByParameterTypes(PreferenceInflater, XmlPullParser.class, PreferenceGroup);
         }
         getContext = BasePreferenceFragment.getMethod("getContext");
