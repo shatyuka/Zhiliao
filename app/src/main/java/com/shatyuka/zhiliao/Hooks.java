@@ -11,6 +11,7 @@ import com.shatyuka.zhiliao.hooks.CommentAd;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
 import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
+import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
 import com.shatyuka.zhiliao.hooks.IHook;
@@ -58,6 +59,7 @@ public class Hooks {
             new NavRes(),
             new WebView(),
             new Cleaner(),
+            new FeedTopHotBanner()
     };
 
     public static void init(final ClassLoader classLoader) {

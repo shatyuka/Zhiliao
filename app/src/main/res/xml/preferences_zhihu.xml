@@ -217,6 +217,12 @@
             android:key="switch_nipple"
             android:title="隐藏导航栏突起"
             android:summary="隐藏奇奇怪怪的突出部"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_feedtophot"
+            android:title="隐藏置顶热门"
+            android:summary="隐藏推荐页顶部热门推荐"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference

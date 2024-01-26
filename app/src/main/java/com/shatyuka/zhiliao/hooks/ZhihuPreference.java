@@ -390,6 +390,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_nextanswer = findPreference.invoke(thisObject, "switch_nextanswer");
                 Object preference_clean = findPreference.invoke(thisObject, "preference_clean");
                 Object switch_autoclean = findPreference.invoke(thisObject, "switch_autoclean");
+                Object switch_feedtophot = findPreference.invoke(thisObject, "switch_feedtophot");
 
                 setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                 setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
@@ -417,6 +418,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(preference_telegram, thisObject);
                 setOnPreferenceClickListener.invoke(preference_sourcecode, thisObject);
                 setOnPreferenceClickListener.invoke(preference_donate, thisObject);
+                setOnPreferenceClickListener.invoke(switch_feedtophot, thisObject);
 
                 String real_version = null;
                 try {
@@ -502,6 +504,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_telegram, Helper.modRes.getDrawable(R.drawable.ic_telegram));
                 setIcon.invoke(preference_sourcecode, Helper.modRes.getDrawable(R.drawable.ic_github));
                 setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
+                setIcon.invoke(findPreference.invoke(thisObject, "switch_feedtophot"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
 
                 if (Helper.prefs.getBoolean("accept_eula", false)) {
                     Object category_eula = findPreference.invoke(thisObject, "category_eula");
@@ -594,6 +597,7 @@ public class ZhihuPreference implements IHook {
                     case "switch_nextanswer":
                     case "switch_nipple":
                     case "switch_autoclean":
+                    case "switch_feedtophot":
                         Helper.toast("重启知乎生效", Toast.LENGTH_SHORT);
                         break;
                 }
