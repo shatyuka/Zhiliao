@@ -29,6 +29,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Random;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -142,10 +144,8 @@ public class ZhihuPreference implements IHook {
             getKey = Preference.getMethod("C");
             setChecked = SwitchPreference.getMethod("g", boolean.class);
             getText = EditTextPreference.getMethod("i");
-            getLayoutResId_MethodName = "i";
             getResourceId_MethodName = "v";
-            onCreate_MethodName = "h";
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignore) {
             findPreference = Helper.getMethodByParameterTypes(BasePreferenceFragment.getSuperclass(), CharSequence.class);
             setSummary = Preference.getMethod("B0", CharSequence.class);
             setIcon = Preference.getMethod("r0", Drawable.class);
@@ -153,10 +153,19 @@ public class ZhihuPreference implements IHook {
             getKey = Preference.getMethod("o");
             setChecked = SwitchPreference.getMethod("O0", boolean.class);
             getText = EditTextPreference.getMethod("R0");
-            getLayoutResId_MethodName = "vg";
             getResourceId_MethodName = "p";
-            onCreate_MethodName = "xg";
         }
+
+        getLayoutResId_MethodName = Arrays.stream(BasePreferenceFragment.getDeclaredMethods())
+                .filter(method -> Modifier.isAbstract(method.getModifiers())
+                        && method.getReturnType() == int.class
+                        && method.getParameterCount() == 0).findFirst().get().getName();
+
+        onCreate_MethodName = Arrays.stream(BasePreferenceFragment.getDeclaredMethods())
+                .filter(method -> Modifier.isAbstract(method.getModifiers())
+                        && method.getReturnType() == void.class
+                        && method.getParameterCount() == 0).findFirst().get().getName();
+
         setOnPreferenceChangeListener = Helper.getMethodByParameterTypes(Preference, OnPreferenceChangeListener);
         setOnPreferenceClickListener = Helper.getMethodByParameterTypes(Preference, OnPreferenceClickListener);
         try {
@@ -197,9 +206,9 @@ public class ZhihuPreference implements IHook {
             SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
             OnSeekBarChangeListener_seekBarPreferenceInstance = OnSeekBarChangeListener.getDeclaredField("j");
             OnSeekBarChangeListener_seekBarPreferenceInstance.setAccessible(true);
-            ListPreference_mEntries = ListPreference.getDeclaredField("s0");
+            ListPreference_mEntries = ListPreference.getDeclaredFields()[0];
             ListPreference_mEntries.setAccessible(true);
-            ListPreference_mEntryValues = ListPreference.getDeclaredField("t0");
+            ListPreference_mEntryValues = ListPreference.getDeclaredFields()[1];
             ListPreference_mEntryValues.setAccessible(true);
         }
 
