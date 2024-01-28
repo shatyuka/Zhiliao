@@ -18,6 +18,7 @@ import com.shatyuka.zhiliao.hooks.HotBanner;
 import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
+import com.shatyuka.zhiliao.hooks.MineHybridView;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
@@ -61,7 +62,8 @@ public class Hooks {
             new WebView(),
             new Cleaner(),
             new FeedTopHotBanner(),
-            new HeadZoneBanner()
+            new HeadZoneBanner(),
+            new MineHybridView()
     };
 
     public static void init(final ClassLoader classLoader) {
