@@ -229,6 +229,12 @@
             android:key="switch_minehybrid"
             android:title="隐藏混合卡片"
             android:summary="隐藏「我的」底部混合卡片"/>
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="switch_mainswitch"
+            android:key="edit_tabfilter"
+            android:title="自定义首页顶栏Tab"
+            android:summary="使用 | 隔开, 留空则忽略"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference

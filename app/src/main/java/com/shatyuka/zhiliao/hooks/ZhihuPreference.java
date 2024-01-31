@@ -401,6 +401,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_autoclean = findPreference.invoke(thisObject, "switch_autoclean");
                 Object switch_feedtophot = findPreference.invoke(thisObject, "switch_feedtophot");
                 Object switch_minehybrid = findPreference.invoke(thisObject, "switch_minehybrid");
+                Object edit_tabfilter = findPreference.invoke(thisObject, "edit_tabfilter");
 
                 setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                 setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
@@ -430,6 +431,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(preference_donate, thisObject);
                 setOnPreferenceClickListener.invoke(switch_feedtophot, thisObject);
                 setOnPreferenceClickListener.invoke(switch_minehybrid, thisObject);
+                setOnPreferenceChangeListener.invoke(edit_tabfilter, thisObject);
 
                 String real_version = null;
                 try {
@@ -517,6 +519,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_feedtophot"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_minehybrid"), Helper.modRes.getDrawable(R.drawable.ic_viewcard));
+                setIcon.invoke(findPreference.invoke(thisObject, "edit_tabfilter"), Helper.modRes.getDrawable(R.drawable.ic_filter));
 
                 if (Helper.prefs.getBoolean("accept_eula", false)) {
                     Object category_eula = findPreference.invoke(thisObject, "category_eula");
@@ -620,12 +623,22 @@ public class ZhihuPreference implements IHook {
         XposedBridge.hookMethod(Helper.getMethodByParameterTypes(DebugFragment, Preference, Object.class), new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                if ((boolean) param.args[1]) {
-                    Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
-                    setChecked.invoke(switch_main, true);
-                    Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
-                    setVisible.invoke(category_eula, false);
+                if (param.args[0].getClass() == SwitchPreference) {
+                    if (param.args[1] instanceof Boolean) {
+                        if ((boolean) param.args[1]) {
+                            Object switch_main = findPreference.invoke(param.thisObject, "switch_mainswitch");
+                            setChecked.invoke(switch_main, true);
+                            Object category_eula = findPreference.invoke(param.thisObject, "category_eula");
+                            setVisible.invoke(category_eula, false);
+                        }
+                    }
+                } else if (param.args[0].getClass() == EditTextPreference) {
+                    String key = (String) getKey.invoke(param.args[0]);
+                    if ("edit_tabfilter".equals(key)) {
+                        Helper.toast("重启知乎生效", Toast.LENGTH_SHORT);
+                    }
                 }
+
                 return true;
             }
         });
