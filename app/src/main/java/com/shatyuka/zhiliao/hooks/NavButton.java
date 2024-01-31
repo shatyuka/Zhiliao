@@ -7,7 +7,6 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -29,29 +28,18 @@ public class NavButton implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
 
-        List<String> classNameList = Arrays.asList(
-                "com.zhihu.android.bottomnav.core.a.b",
-                // 9.36.0 b.b#a
-                "com.zhihu.android.bottomnav.core.b.b",
-                "com.zhihu.android.bottomnav.core.t.g",
-                "com.zhihu.android.bottomnav.core.w.d",
-                // 9.37.0 r.g#getItemId
-                "com.zhihu.android.bottomnav.core.r.g");
 
-        for (String className : classNameList) {
-            try {
-                IMenuItem = classLoader.loadClass(className);
-                try {
-                    getItemId = IMenuItem.getMethod("getItemId");
-                } catch (NoSuchMethodException ignore) {
-                    getItemId = IMenuItem.getMethod("a");
-                }
-                break;
-            } catch (ClassNotFoundException ignore) {
-            }
-        }
+        Class<?> tabLayoutTabClass = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab");
+        IMenuItem = Arrays.stream(BottomNavMenuView.getDeclaredMethods())
+                .filter(method -> method.getReturnType() == tabLayoutTabClass)
+                .map(method -> method.getParameterTypes()[0]).findFirst().get();
 
-        Tab_tabView = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab").getField("view");
+
+        getItemId = Arrays.stream(IMenuItem.getDeclaredMethods())
+                .filter(method -> method.getReturnType() == String.class).findFirst().get();
+
+
+        Tab_tabView = tabLayoutTabClass.getField("view");
     }
 
     @Override
