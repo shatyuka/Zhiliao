@@ -1,7 +1,6 @@
 package com.shatyuka.zhiliao.hooks;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,8 @@ public class Tag implements IHook {
     static Field ViewHolder_itemView;
     static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
+
+    private final int TAG_ID = 0xABCDEF;
 
     @Override
     public String getName() {
@@ -76,42 +77,64 @@ public class Tag implements IHook {
                     if (viewGroup == null) {
                         return;
                     }
+
                     TextView title = viewGroup.findViewById(Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage));
-
-                    if (title != null) {
-                        title.setText("　　 " + title.getText());
-
-                        Object templateFeed = SugarHolder_mData.get(thisObject);
-                        Object unique = TemplateRoot_unique.get(templateFeed);
-                        String type = (String) Helper.DataUnique_type.get(unique);
-
-                        RelativeLayout relativeLayout = new RelativeLayout(viewGroup.getContext());
-                        relativeLayout.setY((float) (Helper.scale * 3 + 0.5));
-                        relativeLayout.addView(buildTagView(viewGroup.getContext(), type));
-
-                        ViewGroup parent = (ViewGroup) title.getParent();
-                        View author = parent.getChildAt(1);
-
-                        ViewGroup.MarginLayoutParams authorLayoutParams = (ViewGroup.MarginLayoutParams) author.getLayoutParams();
-                        // tag对齐
-                        if (authorLayoutParams.leftMargin != 0) {
-                            relativeLayout.setX(authorLayoutParams.leftMargin);
-                        }
-
-                        parent.addView(relativeLayout);
+                    View author = viewGroup.findViewById(Helper.context.getResources().getIdentifier("author", "id", MainHook.hookPackage));
+                    if (title == null) {
+                        return;
                     }
+
+                    Object templateFeed = SugarHolder_mData.get(thisObject);
+                    Object unique = TemplateRoot_unique.get(templateFeed);
+                    String type = (String) Helper.DataUnique_type.get(unique);
+
+                    RelativeLayout tagLayout;
+                    TextView tag = viewGroup.findViewById(TAG_ID);
+                    if (tag == null) {
+                        tag = new TextView(viewGroup.getContext());
+                        tag.setId(TAG_ID);
+
+                        tagLayout = new RelativeLayout(viewGroup.getContext());
+                        tagLayout.addView(tag);
+                        ((ViewGroup) title.getParent()).addView(tagLayout);
+                    } else {
+                        tagLayout = (RelativeLayout) tag.getParent();
+                    }
+
+                    int baseX = ((ViewGroup.MarginLayoutParams) title.getLayoutParams()).leftMargin;
+                    if (baseX != 0) {
+                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = baseX;
+                    }
+
+                    postProcessTag(tagLayout, tag, type, baseX, title.getVisibility() == View.VISIBLE);
+
+                    // 有标题
+                    if (title.getVisibility() == View.VISIBLE) {
+                        title.setText("　　 " + title.getText());
+                    } else {
+                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = (int) (Helper.scale * 40 + 0.5 + baseX);
+                    }
+
                 }
             });
         }
     }
 
-    private View buildTagView(Context context, String type) {
-        TextView tag = new TextView(context);
+    private void postProcessTag(RelativeLayout relativeLayout, TextView tag, String type, int baseX, boolean hasTitle) {
         tag.setTextColor(-1);
         tag.setText(getType(type));
         tag.setBackground(getBackground(type));
 
-        return tag;
+        if (baseX != 0) {
+            relativeLayout.setX(baseX);
+        }
+
+        if (hasTitle) {
+            relativeLayout.setY((float) (Helper.scale * 3 + 0.5));
+        } else {
+            relativeLayout.setY(0);
+        }
+
     }
 
     static String getType(String type) {
