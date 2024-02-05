@@ -13,6 +13,7 @@ import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
 import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
 import com.shatyuka.zhiliao.hooks.FollowButton;
+import com.shatyuka.zhiliao.hooks.FollowButtonFeatureUI;
 import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
@@ -65,7 +66,8 @@ public class Hooks {
             new FeedTopHotBanner(),
             new HeadZoneBanner(),
             new MineHybridView(),
-            new FollowButton()
+            new FollowButton(),
+            new FollowButtonFeatureUI()
     };
 
     public static void init(final ClassLoader classLoader) {
