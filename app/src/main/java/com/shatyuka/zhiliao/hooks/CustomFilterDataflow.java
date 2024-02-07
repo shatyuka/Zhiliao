@@ -30,6 +30,8 @@ public class CustomFilterDataflow implements IHook {
 
     static Field adInfoField;
 
+    static Field searchWordsField;
+
     @Override
     public String getName() {
         return "自定义过滤(Dataflow)";
@@ -57,6 +59,9 @@ public class CustomFilterDataflow implements IHook {
         adInfoField = shortContent.getDeclaredField("adInfo");
         adInfoField.setAccessible(true);
 
+        searchWordsField = shortContent.getDeclaredField("searchWords");
+        searchWordsField.setAccessible(true);
+
     }
 
     @Override
@@ -75,7 +80,13 @@ public class CustomFilterDataflow implements IHook {
                 if (Helper.prefs.getBoolean("switch_feedad", true)) {
                     if (isAd(param.getResult())) {
                         param.setResult(null);
+                        return;
                     }
+                }
+
+                // 顶部搜索框搜索词(卡片视图 && feature UI)
+                if (param.getResult().getClass() == shortContent) {
+                    searchWordsField.set(param.getResult(), null);
                 }
 
             }
