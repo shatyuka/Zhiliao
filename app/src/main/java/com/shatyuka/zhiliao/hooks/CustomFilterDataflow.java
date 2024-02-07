@@ -6,6 +6,8 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -31,6 +33,14 @@ public class CustomFilterDataflow implements IHook {
     static Field adInfoField;
 
     static Field searchWordsField;
+
+    static Field relationShipTipsUINodeField;
+
+    static Class<?> UINodeConvert;
+
+    static Class<?> relatedQueries;
+
+    static Method UINodeConvert_convert;
 
     @Override
     public String getName() {
@@ -62,6 +72,20 @@ public class CustomFilterDataflow implements IHook {
         searchWordsField = shortContent.getDeclaredField("searchWords");
         searchWordsField.setAccessible(true);
 
+        relationShipTipsUINodeField = shortContent.getDeclaredField("relationShipTipsUINode");
+        relationShipTipsUINodeField.setAccessible(true);
+
+        UINodeConvert = classLoader.loadClass("com.zhihu.android.service.short_container_service.dataflow.repo.b.a");
+
+        UINodeConvert_convert = Arrays.stream(UINodeConvert.getDeclaredMethods())
+                .filter(method -> method.getReturnType() == List.class)
+                .filter(method -> method.getParameterCount() == 3)
+                .filter(method -> {
+                    Class<?>[] types = method.getParameterTypes();
+                    return types[0] == shortContent && types[1] == boolean.class && types[2] == boolean.class;
+                }).findFirst().get();
+
+        relatedQueries = classLoader.loadClass("com.zhihu.android.api.model.RelatedQueries");
     }
 
     @Override
@@ -84,9 +108,32 @@ public class CustomFilterDataflow implements IHook {
                     }
                 }
 
-                // 顶部搜索框搜索词(卡片视图 && feature UI)
                 if (param.getResult().getClass() == shortContent) {
+                    // 顶部搜索框搜索词(卡片视图 && feature UI)
                     searchWordsField.set(param.getResult(), null);
+                    // xxx等人赞同(首个回答另算)
+                    relationShipTipsUINodeField.set(param.getResult(), null);
+                }
+
+            }
+        });
+
+        XposedBridge.hookMethod(UINodeConvert_convert, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
+                    return;
+                }
+
+                List<?> UINodeList = (List<?>) param.getResult();
+
+                if (UINodeList != null && !UINodeList.isEmpty()) {
+                    List<?> proceedUINodeList = UINodeList.stream()
+                            // 去除相关搜索UINode
+                            .filter(node -> node.getClass() != relatedQueries)
+                            .collect(Collectors.toList());
+
+                    param.setResult(proceedUINodeList);
                 }
 
             }
