@@ -18,6 +18,7 @@ import com.shatyuka.zhiliao.hooks.FollowButtonFeatureUI;
 import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
+import com.shatyuka.zhiliao.hooks.HotListFilter;
 import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
@@ -69,7 +70,8 @@ public class Hooks {
             new MineHybridView(),
             new FollowButton(),
             new FollowButtonFeatureUI(),
-            new CustomFilterDataflow()
+            new CustomFilterDataflow(),
+            new HotListFilter()
     };
 
     public static void init(final ClassLoader classLoader) {
