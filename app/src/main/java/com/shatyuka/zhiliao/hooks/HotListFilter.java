@@ -43,7 +43,7 @@ public class HotListFilter implements IHook {
 
     static Field response_bodyField;
 
-    static Method feedsHotListFragment2_rankFeedListAutoPaging;
+    static Method feedsHotListFragment2_rankFeedListAutoPage;
 
     static Field rankFeedList_displayNumField;
 
@@ -93,7 +93,7 @@ public class HotListFilter implements IHook {
                 .filter(method -> method.getReturnType() == response)
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == response).collect(Collectors.toList());
-        feedsHotListFragment2_rankFeedListAutoPaging = retArgTypeQqResponseMethodList.get(retArgTypeQqResponseMethodList.size() - 1);
+        feedsHotListFragment2_rankFeedListAutoPage = retArgTypeQqResponseMethodList.get(retArgTypeQqResponseMethodList.size() - 1);
 
 
         rankFeedList_displayNumField = rankFeedList.getDeclaredField("display_num");
@@ -111,17 +111,13 @@ public class HotListFilter implements IHook {
                     return;
                 }
 
-                List<?> rankListData = (List<?>) ZHObjectListDataField.get(param.args[0]);
-                if (rankListData == null || rankListData.isEmpty()) {
-                    return;
-                }
+                filterRankFeed(param.args[0]);
 
-                rankListData.removeIf(hot -> hot.getClass() == rankFeedModule);
             }
 
         });
 
-        XposedBridge.hookMethod(feedsHotListFragment2_rankFeedListAutoPaging, new XC_MethodHook() {
+        XposedBridge.hookMethod(feedsHotListFragment2_rankFeedListAutoPage, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
@@ -137,21 +133,23 @@ public class HotListFilter implements IHook {
                     return;
                 }
 
-                rankFeedListData.removeIf(HotListFilter::shouldRemove);
-
                 // 热榜全部展示, 不折叠
                 rankFeedList_displayNumField.set(rankFeedList, rankFeedListData.size());
-
             }
         });
 
     }
 
-    private static boolean shouldRemove(Object rankFeedInstance) {
-        return isAd(rankFeedInstance);
+    private void filterRankFeed(Object rankFeedListInstance) throws IllegalAccessException {
+        List<?> rankListData = (List<?>) ZHObjectListDataField.get(rankFeedListInstance);
+        if (rankListData == null || rankListData.isEmpty()) {
+            return;
+        }
+
+        rankListData.removeIf(hot -> hot.getClass() == rankFeedModule || isAd(hot));
     }
 
-    private static boolean isAd(Object rankFeedInstance) {
+    private boolean isAd(Object rankFeedInstance) {
         if (rankFeedInstance.getClass() == rankFeed) {
             try {
                 Object target = rankFeed_targetField.get(rankFeedInstance);
