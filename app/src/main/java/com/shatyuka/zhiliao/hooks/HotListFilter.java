@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -42,7 +43,7 @@ public class HotListFilter implements IHook {
 
     static Field response_bodyField;
 
-    static Method feedsHotListFragment2_processRankFeedList;
+    static Method feedsHotListFragment2_rankFeedListAutoPaging;
 
     static Field rankFeedList_displayNumField;
 
@@ -88,10 +89,12 @@ public class HotListFilter implements IHook {
                 .filter(field -> field.getType() == Object.class).findFirst().get();
         response_bodyField.setAccessible(true);
 
-        feedsHotListFragment2_processRankFeedList = Arrays.stream(feedsHotListFragment2.getDeclaredMethods())
+        List<Method> retArgTypeQqResponseMethodList = Arrays.stream(feedsHotListFragment2.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == response)
                 .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == response).findFirst().get();
+                .filter(method -> method.getParameterTypes()[0] == response).collect(Collectors.toList());
+        feedsHotListFragment2_rankFeedListAutoPaging = retArgTypeQqResponseMethodList.get(retArgTypeQqResponseMethodList.size() - 1);
+
 
         rankFeedList_displayNumField = rankFeedList.getDeclaredField("display_num");
         rankFeedList_displayNumField.setAccessible(true);
@@ -118,7 +121,7 @@ public class HotListFilter implements IHook {
 
         });
 
-        XposedBridge.hookMethod(feedsHotListFragment2_processRankFeedList, new XC_MethodHook() {
+        XposedBridge.hookMethod(feedsHotListFragment2_rankFeedListAutoPaging, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
