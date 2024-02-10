@@ -3,6 +3,7 @@ package com.shatyuka.zhiliao.hooks;
 import com.shatyuka.zhiliao.Helper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -47,15 +48,26 @@ public class HotListFilter implements IHook {
 
     static Field rankFeedList_displayNumField;
 
+    static Class<?> templateCardModel;
+
+    static Field templateCardModel_dataField;
+
+    static Class<?> objectNode;
+
+    static Method objectNode_get;
+
+    static Class<?> basePagingFragment;
+
     static final Pattern QUESTION_URL_PATTERN = Pattern.compile("zhihu\\.com/question/");
 
     @Override
     public String getName() {
-        return "自定义热榜过滤";
+        return "热榜和底部推荐过滤";
     }
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
+        basePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
         feedsHotListFragment2 = classLoader.loadClass("com.zhihu.android.app.feed.ui.fragment.FeedsHotListFragment2");
 
         rankFeedList = classLoader.loadClass("com.zhihu.android.api.model.RankFeedList");
@@ -98,6 +110,13 @@ public class HotListFilter implements IHook {
 
         rankFeedList_displayNumField = rankFeedList.getDeclaredField("display_num");
         rankFeedList_displayNumField.setAccessible(true);
+
+        templateCardModel = classLoader.loadClass("com.zhihu.android.bean.TemplateCardModel");
+        templateCardModel_dataField = templateCardModel.getField("data");
+        templateCardModel_dataField.setAccessible(true);
+
+        objectNode = classLoader.loadClass("com.fasterxml.jackson.databind.node.ObjectNode");
+        objectNode_get = objectNode.getDeclaredMethod("get", String.class);
     }
 
 
@@ -112,6 +131,21 @@ public class HotListFilter implements IHook {
                 }
 
                 filterRankFeed(param.args[0]);
+
+            }
+
+        });
+
+        XposedBridge.hookAllMethods(basePagingFragment, "postLoadMoreSucceed", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
+                    return;
+                }
+
+                if (param.thisObject.getClass() == feedsHotListFragment2) {
+                    filterRankFeed(param.args[0]);
+                }
 
             }
 
@@ -146,7 +180,53 @@ public class HotListFilter implements IHook {
             return;
         }
 
-        rankListData.removeIf(hot -> hot.getClass() == rankFeedModule || isAd(hot));
+        rankListData.removeIf(feed -> {
+            try {
+                return preFilter(feed) || isAd(feed) || shouldFilterEveryoneSeeRankFeed(feed);
+            } catch (Exception e) {
+                XposedBridge.log(e);
+                return false;
+            }
+        });
+
+    }
+
+    private boolean preFilter(Object rankFeedInstance) {
+        return rankFeedInstance == null || rankFeedInstance.getClass() == rankFeedModule;
+    }
+
+    @SuppressWarnings("all")
+    private boolean shouldFilterEveryoneSeeRankFeed(Object rankFeedInstance) throws IllegalAccessException, InvocationTargetException {
+        if (rankFeedInstance == null || rankFeedInstance.getClass() != templateCardModel) {
+            return false;
+        }
+
+        Object data = templateCardModel_dataField.get(rankFeedInstance);
+        Object target = objectNode_get.invoke(data, "target");
+
+        if (Helper.regex_title != null) {
+            String title = objectNode_get.invoke(objectNode_get.invoke(target, "title_area"), "text").toString();
+            if (Helper.regex_title.matcher(title).find()) {
+                return true;
+            }
+        }
+
+        if (Helper.regex_author != null) {
+            String author = objectNode_get.invoke(objectNode_get.invoke(target, "author_area"), "name").toString();
+            if (Helper.regex_author.matcher(author).find()) {
+                return true;
+            }
+        }
+
+        if (Helper.regex_content != null) {
+            // not full content
+            String excerpt = (String) objectNode_get.invoke(objectNode_get.invoke(target, "excerpt_area"), "text").toString();
+            if (Helper.regex_content.matcher(excerpt).find()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isAd(Object rankFeedInstance) {
@@ -159,7 +239,8 @@ public class HotListFilter implements IHook {
 
                 return !QUESTION_URL_PATTERN.matcher(url).find();
 
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                XposedBridge.log(e);
             }
         }
 
