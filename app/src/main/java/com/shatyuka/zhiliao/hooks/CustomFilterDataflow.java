@@ -4,10 +4,10 @@ package com.shatyuka.zhiliao.hooks;
 import com.shatyuka.zhiliao.Helper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -30,6 +30,8 @@ public class CustomFilterDataflow implements IHook {
 
     static Method jsonNode_get;
 
+    static Method jsonNode_size;
+
     static Field adInfoField;
 
     static Field searchWordsField;
@@ -41,6 +43,12 @@ public class CustomFilterDataflow implements IHook {
     static Class<?> relatedQueries;
 
     static Method UINodeConvert_convert;
+
+    static Field bizTypeField;
+
+    static Class<?> shortContainerPagingFragment;
+
+    static boolean firstLoaded = true;
 
     @Override
     public String getName() {
@@ -60,6 +68,7 @@ public class CustomFilterDataflow implements IHook {
         jsonNode = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
 
         jsonNode_get = jsonNode.getDeclaredMethod("get", String.class);
+        jsonNode_size = jsonNode.getDeclaredMethod("size");
 
         mixupDataParser_jsonNodeConvert = Arrays.stream(mixupDataParser.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == Object.class)
@@ -75,6 +84,9 @@ public class CustomFilterDataflow implements IHook {
         relationShipTipsUINodeField = shortContent.getDeclaredField("relationShipTipsUINode");
         relationShipTipsUINodeField.setAccessible(true);
 
+        bizTypeField = shortContent.getDeclaredField("bizType");
+        bizTypeField.setAccessible(true);
+
         UINodeConvert = classLoader.loadClass("com.zhihu.android.service.short_container_service.dataflow.repo.b.a");
 
         UINodeConvert_convert = Arrays.stream(UINodeConvert.getDeclaredMethods())
@@ -86,10 +98,19 @@ public class CustomFilterDataflow implements IHook {
                 }).findFirst().get();
 
         relatedQueries = classLoader.loadClass("com.zhihu.android.api.model.RelatedQueries");
+
+        shortContainerPagingFragment = classLoader.loadClass("com.zhihu.android.feature.short_container_feature.ui.fragment.ShortContainerPagingFragment");
     }
 
     @Override
     public void hook() throws Throwable {
+
+        XposedBridge.hookAllMethods(shortContainerPagingFragment, "onViewCreated", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                firstLoaded = true;
+            }
+        });
 
         XposedBridge.hookMethod(mixupDataParser_jsonNodeConvert, new XC_MethodHook() {
             @Override
@@ -102,7 +123,7 @@ public class CustomFilterDataflow implements IHook {
                 }
 
                 if (Helper.prefs.getBoolean("switch_feedad", true)) {
-                    if (isAd(param.getResult())) {
+                    if (shouldFilterShortContent(param.getResult())) {
                         param.setResult(null);
                         return;
                     }
@@ -126,19 +147,33 @@ public class CustomFilterDataflow implements IHook {
                 }
 
                 List<?> UINodeList = (List<?>) param.getResult();
-
-                if (UINodeList != null && !UINodeList.isEmpty()) {
-                    List<?> proceedUINodeList = UINodeList.stream()
-                            // 去除相关搜索UINode
-                            .filter(node -> node.getClass() != relatedQueries)
-                            .collect(Collectors.toList());
-
-                    param.setResult(proceedUINodeList);
+                if (UINodeList == null || UINodeList.isEmpty()) {
+                    return;
                 }
-
+                // 首个回答下相关搜索
+                UINodeList.removeIf(node -> relatedQueries == node.getClass());
             }
         });
 
+    }
+
+    private boolean shouldFilterShortContent(Object shortContentInstance) {
+        // 避免从推荐页点击广告回答/文章显示空白
+        if (firstLoaded) {
+            firstLoaded = false;
+            return false;
+        }
+        try {
+            return isAd(shortContentInstance) || hasMoreBizType(shortContentInstance);
+        } catch (Exception e) {
+            XposedBridge.log(e);
+            return false;
+        }
+    }
+
+    private boolean hasMoreBizType(Object shortContentInstance) throws IllegalAccessException, InvocationTargetException {
+        Object bizTypeInstance = bizTypeField.get(shortContentInstance);
+        return (int) jsonNode_size.invoke(bizTypeInstance) > 1;
     }
 
     private boolean isAd(Object shortContentInstance) throws Exception {
