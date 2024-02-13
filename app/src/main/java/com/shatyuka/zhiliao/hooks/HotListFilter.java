@@ -175,6 +175,9 @@ public class HotListFilter implements IHook {
     }
 
     private void filterRankFeed(Object rankFeedListInstance) throws IllegalAccessException {
+        if (rankFeedListInstance == null) {
+            return;
+        }
         List<?> rankListData = (List<?>) ZHObjectListDataField.get(rankFeedListInstance);
         if (rankListData == null || rankListData.isEmpty()) {
             return;

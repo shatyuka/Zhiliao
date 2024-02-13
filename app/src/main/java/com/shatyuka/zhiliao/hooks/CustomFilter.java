@@ -97,9 +97,13 @@ public class CustomFilter implements IHook {
                                 if (Helper.regex_title == null && Helper.regex_author == null && Helper.regex_content == null)
                                     return;
                                 if (Helper.regex_title != null) {
-                                    String title = (String) ApiText_panel_text.get(ApiFeedContent_title.get(feed_content));
-                                    if (Helper.regex_title.matcher(title).find()) {
-                                        param.setResult(null);
+                                    Object apiFeedContent_title = ApiFeedContent_title.get(feed_content);
+                                    // 部分想法没有title
+                                    if (apiFeedContent_title != null) {
+                                        String title = (String) ApiText_panel_text.get(apiFeedContent_title);
+                                        if (Helper.regex_title.matcher(title).find()) {
+                                            param.setResult(null);
+                                        }
                                     }
                                 }
                                 if (Helper.regex_author != null) {

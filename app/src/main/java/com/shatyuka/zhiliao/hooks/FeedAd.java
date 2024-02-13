@@ -51,8 +51,7 @@ public class FeedAd implements IHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    if (param.thisObject.getClass() == FeedFragment) {
-
+                    if (param.thisObject.getClass() == FeedFragment && param.args[0] != null) {
                         filterFeedList((List<?>) FeedList_data.get(param.args[0]));
                     }
                 }
@@ -63,8 +62,7 @@ public class FeedAd implements IHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    if (param.thisObject.getClass() == FeedFragment) {
-
+                    if (param.thisObject.getClass() == FeedFragment && param.args[0] != null) {
                         filterFeedList((List<?>) FeedList_data.get(param.args[0]));
                     }
                 }

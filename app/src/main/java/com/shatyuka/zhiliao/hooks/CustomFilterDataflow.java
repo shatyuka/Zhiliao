@@ -163,6 +163,9 @@ public class CustomFilterDataflow implements IHook {
             firstLoaded = false;
             return false;
         }
+        if (shortContentInstance == null) {
+            return true;
+        }
         try {
             return isAd(shortContentInstance) || hasMoreBizType(shortContentInstance);
         } catch (Exception e) {
