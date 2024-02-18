@@ -50,6 +50,7 @@ public class Helper {
     static boolean init(ClassLoader classLoader) {
         try {
             init_class(classLoader);
+            JsonNodeOp.init(classLoader);
 
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
@@ -64,6 +65,7 @@ public class Helper {
             return true;
         } catch (Exception e) {
             XposedBridge.log("[Zhiliao] " + e);
+            XposedBridge.log(e);
             return false;
         }
     }
@@ -244,5 +246,35 @@ public class Helper {
             }
         }
         return null;
+    }
+
+    /**
+     * JsonNode ObjectNode
+     */
+    public static class JsonNodeOp {
+        public static Class<?> ObjectNode;
+
+        public static Method ObjectNode_put;
+
+        public static Class<?> JsonNode;
+
+        public static Method JsonNode_get;
+
+        public static Method JsonNode_size;
+
+        public static Method JsonNode_isArray;
+
+        public static Method JsonNode_iterator;
+
+        public static void init(ClassLoader classLoader) throws Exception {
+            JsonNode = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
+            JsonNode_get = JsonNode.getDeclaredMethod("get", String.class);
+            JsonNode_size = JsonNode.getDeclaredMethod("size");
+            JsonNode_isArray = JsonNode.getDeclaredMethod("isArray");
+            JsonNode_iterator = JsonNode.getDeclaredMethod("iterator");
+
+            ObjectNode = classLoader.loadClass("com.fasterxml.jackson.databind.node.ObjectNode");
+            ObjectNode_put = ObjectNode.getDeclaredMethod("put", String.class, JsonNode);
+        }
     }
 }
