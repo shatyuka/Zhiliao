@@ -149,6 +149,12 @@
             android:key="switch_thirdpartylogin"
             android:title="第三方登录"
             android:summary="解锁全部第三方登录方式"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_autorefresh"
+            android:title="关闭自动刷新"
+            android:summary="关闭首页推荐自动刷新"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference

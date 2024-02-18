@@ -5,6 +5,7 @@ import android.widget.Toast;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.AutoRefresh;
 import com.shatyuka.zhiliao.hooks.CardViewFeatureShortFilter;
 import com.shatyuka.zhiliao.hooks.CardViewMixShortFilter;
 import com.shatyuka.zhiliao.hooks.Cleaner;
@@ -73,7 +74,8 @@ public class Hooks {
             new FollowButtonFeatureUI(),
             new CardViewFeatureShortFilter(),
             new CardViewMixShortFilter(),
-            new HotListFilter()
+            new HotListFilter(),
+            new AutoRefresh(),
     };
 
     public static void init(final ClassLoader classLoader) {

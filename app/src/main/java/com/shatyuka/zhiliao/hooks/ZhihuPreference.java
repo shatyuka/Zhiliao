@@ -401,6 +401,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_autoclean = findPreference.invoke(thisObject, "switch_autoclean");
                 Object switch_feedtophot = findPreference.invoke(thisObject, "switch_feedtophot");
                 Object switch_minehybrid = findPreference.invoke(thisObject, "switch_minehybrid");
+                Object switch_autorefresh = findPreference.invoke(thisObject, "switch_autorefresh");
 
                 setOnPreferenceChangeListener.invoke(findPreference.invoke(thisObject, "accept_eula"), thisObject);
                 setOnPreferenceClickListener.invoke(switch_externlink, thisObject);
@@ -430,6 +431,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(preference_donate, thisObject);
                 setOnPreferenceClickListener.invoke(switch_feedtophot, thisObject);
                 setOnPreferenceClickListener.invoke(switch_minehybrid, thisObject);
+                setOnPreferenceClickListener.invoke(switch_autorefresh, thisObject);
 
                 String real_version = null;
                 try {
@@ -517,6 +519,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_donate, Helper.modRes.getDrawable(R.drawable.ic_monetization));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_feedtophot"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_minehybrid"), Helper.modRes.getDrawable(R.drawable.ic_viewcard));
+                setIcon.invoke(findPreference.invoke(thisObject, "switch_autorefresh"), Helper.modRes.getDrawable(R.drawable.ic_refresh));
 
                 if (Helper.prefs.getBoolean("accept_eula", false)) {
                     Object category_eula = findPreference.invoke(thisObject, "category_eula");
