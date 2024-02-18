@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
+import com.shatyuka.zhiliao.Helper.JsonNodeOp;
+
 public class HotListFilter implements IHook {
 
     static Class<?> feedsHotListFragment2;
@@ -51,10 +53,6 @@ public class HotListFilter implements IHook {
     static Class<?> templateCardModel;
 
     static Field templateCardModel_dataField;
-
-    static Class<?> objectNode;
-
-    static Method objectNode_get;
 
     static Class<?> basePagingFragment;
 
@@ -115,8 +113,6 @@ public class HotListFilter implements IHook {
         templateCardModel_dataField = templateCardModel.getField("data");
         templateCardModel_dataField.setAccessible(true);
 
-        objectNode = classLoader.loadClass("com.fasterxml.jackson.databind.node.ObjectNode");
-        objectNode_get = objectNode.getDeclaredMethod("get", String.class);
     }
 
 
@@ -205,17 +201,17 @@ public class HotListFilter implements IHook {
         }
 
         Object data = templateCardModel_dataField.get(rankFeedInstance);
-        Object target = objectNode_get.invoke(data, "target");
+        Object target = JsonNodeOp.JsonNode_get.invoke(data, "target");
 
         if (Helper.regex_title != null) {
-            String title = objectNode_get.invoke(objectNode_get.invoke(target, "title_area"), "text").toString();
+            String title = JsonNodeOp.JsonNode_get.invoke(JsonNodeOp.JsonNode_get.invoke(target, "title_area"), "text").toString();
             if (Helper.regex_title.matcher(title).find()) {
                 return true;
             }
         }
 
         if (Helper.regex_author != null) {
-            String author = objectNode_get.invoke(objectNode_get.invoke(target, "author_area"), "name").toString();
+            String author = JsonNodeOp.JsonNode_get.invoke(JsonNodeOp.JsonNode_get.invoke(target, "author_area"), "name").toString();
             if (Helper.regex_author.matcher(author).find()) {
                 return true;
             }
@@ -223,7 +219,7 @@ public class HotListFilter implements IHook {
 
         if (Helper.regex_content != null) {
             // not full content
-            String excerpt = (String) objectNode_get.invoke(objectNode_get.invoke(target, "excerpt_area"), "text").toString();
+            String excerpt = (String) JsonNodeOp.JsonNode_get.invoke(JsonNodeOp.JsonNode_get.invoke(target, "excerpt_area"), "text").toString();
             if (Helper.regex_content.matcher(excerpt).find()) {
                 return true;
             }
