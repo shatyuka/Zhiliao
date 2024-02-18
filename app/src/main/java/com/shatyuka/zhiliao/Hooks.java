@@ -6,6 +6,7 @@ import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
 import com.shatyuka.zhiliao.hooks.CardViewFeatureShortFilter;
+import com.shatyuka.zhiliao.hooks.CardViewMixShortFilter;
 import com.shatyuka.zhiliao.hooks.Cleaner;
 import com.shatyuka.zhiliao.hooks.ColorMode;
 import com.shatyuka.zhiliao.hooks.CommentAd;
@@ -71,6 +72,7 @@ public class Hooks {
             new FollowButton(),
             new FollowButtonFeatureUI(),
             new CardViewFeatureShortFilter(),
+            new CardViewMixShortFilter(),
             new HotListFilter()
     };
 

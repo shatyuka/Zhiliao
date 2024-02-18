@@ -86,7 +86,7 @@ public class CardViewFeatureShortFilter implements IHook {
         }
     }
 
-    private boolean shouldRemoveShortContent(Object shortContentJsonNode) {
+    public static boolean shouldRemoveShortContent(Object shortContentJsonNode) {
         try {
             return isAd(shortContentJsonNode) || hasMoreType(shortContentJsonNode);
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class CardViewFeatureShortFilter implements IHook {
         return false;
     }
 
-    private boolean isAd(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
+    private static boolean isAd(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
         if (JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "adjson") != null) {
             return true;
         }
@@ -116,12 +116,12 @@ public class CardViewFeatureShortFilter implements IHook {
     /**
      * todo: 有多个type的, 不一定全是推广/广告, 有概率被误去除
      */
-    private boolean hasMoreType(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
+    private static boolean hasMoreType(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
         Object bizTypeList = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "biz_type_list");
         return (int) JsonNodeOp.JsonNode_size.invoke(bizTypeList) > 1;
     }
 
-    private void preProcessShortContent(Object shortContentJsonNode) {
+    public static void preProcessShortContent(Object shortContentJsonNode) {
         try {
             Object searchWordJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "search_word");
             if (searchWordJsonNode != null) {
@@ -137,16 +137,18 @@ public class CardViewFeatureShortFilter implements IHook {
             XposedBridge.log(e);
         }
 
-        try {
-            Object thirdBusiness = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "third_business");
-            if (thirdBusiness != null) {
-                Object relatedQueries = JsonNodeOp.JsonNode_get.invoke(thirdBusiness, "related_queries");
-                if (relatedQueries != null) {
-                    JsonNodeOp.ObjectNode_put.invoke(relatedQueries, "queries", null);
+        if (Helper.prefs.getBoolean("switch_related", false)) {
+            try {
+                Object thirdBusiness = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "third_business");
+                if (thirdBusiness != null) {
+                    Object relatedQueries = JsonNodeOp.JsonNode_get.invoke(thirdBusiness, "related_queries");
+                    if (relatedQueries != null) {
+                        JsonNodeOp.ObjectNode_put.invoke(relatedQueries, "queries", null);
+                    }
                 }
+            } catch (Exception e) {
+                XposedBridge.log(e);
             }
-        } catch (Exception e) {
-            XposedBridge.log(e);
         }
 
     }
