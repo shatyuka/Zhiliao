@@ -12,6 +12,7 @@ import java.util.List;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
+import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
 /**
  * 卡片视图(FeatureUI)
@@ -22,16 +23,6 @@ public class CardViewFeatureShortFilter implements IHook {
 
     static Method mixupDataParser_jsonNode2List;
 
-    static Method objectNode_put;
-
-    static Method jsonNode_get;
-
-    static Method jsonNode_size;
-
-    static Method jsonNode_isArray;
-
-    static Method jsonNode_iterator;
-
     @Override
     public String getName() {
         return "卡片视图相关过滤(FeatureUI)";
@@ -40,25 +31,15 @@ public class CardViewFeatureShortFilter implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
 
-        // todo 工具类
-        Class<?> jsonNode = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
-        jsonNode_get = jsonNode.getDeclaredMethod("get", String.class);
-        jsonNode_size = jsonNode.getDeclaredMethod("size");
-        jsonNode_iterator = jsonNode.getDeclaredMethod("iterator");
-        jsonNode_isArray = jsonNode.getDeclaredMethod("isArray");
-
-        Class<?> objectNode = classLoader.loadClass("com.fasterxml.jackson.databind.node.ObjectNode");
-        objectNode_put = objectNode.getDeclaredMethod("put", String.class, jsonNode);
-
         Class<?> mixupDataParser = classLoader.loadClass("com.zhihu.android.service.short_container_service.dataflow.repo.c.c");
         mixupDataParser_jsonNode2Object = Arrays.stream(mixupDataParser.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == Object.class)
                 .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == jsonNode).findFirst().get();
+                .filter(method -> method.getParameterTypes()[0] == Helper.JsonNodeOp.JsonNode).findFirst().get();
         mixupDataParser_jsonNode2List = Arrays.stream(mixupDataParser.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == List.class)
                 .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == jsonNode).findFirst().get();
+                .filter(method -> method.getParameterTypes()[0] == Helper.JsonNodeOp.JsonNode).findFirst().get();
     }
 
     @Override
@@ -88,12 +69,12 @@ public class CardViewFeatureShortFilter implements IHook {
     }
 
     private void filterShortContent(Object shortContentListJsonNode) throws InvocationTargetException, IllegalAccessException {
-        Object dataJsonNode = jsonNode_get.invoke(shortContentListJsonNode, "data");
-        if (dataJsonNode == null || !(boolean) jsonNode_isArray.invoke(dataJsonNode)) {
+        Object dataJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentListJsonNode, "data");
+        if (dataJsonNode == null || !(boolean) JsonNodeOp.JsonNode_isArray.invoke(dataJsonNode)) {
             return;
         }
 
-        Iterator<?> shortContentIterator = (Iterator<?>) jsonNode_iterator.invoke(dataJsonNode);
+        Iterator<?> shortContentIterator = (Iterator<?>) JsonNodeOp.JsonNode_iterator.invoke(dataJsonNode);
         while (shortContentIterator != null && shortContentIterator.hasNext()) {
             Object shortContentJsonNode = shortContentIterator.next();
             if (shortContentJsonNode == null) {
@@ -115,16 +96,16 @@ public class CardViewFeatureShortFilter implements IHook {
     }
 
     private boolean isAd(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
-        if (jsonNode_get.invoke(shortContentJsonNode, "adjson") != null) {
+        if (JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "adjson") != null) {
             return true;
         }
 
-        Object adInfo = jsonNode_get.invoke(shortContentJsonNode, "ad_info");
+        Object adInfo = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "ad_info");
         if (adInfo == null) {
             XposedBridge.log(shortContentJsonNode.toString());
             return false;
         }
-        Object adInfoData = jsonNode_get.invoke(adInfo, "data");
+        Object adInfoData = JsonNodeOp.JsonNode_get.invoke(adInfo, "data");
         if (adInfoData != null) {
             // "" , "{}"
             return adInfoData.toString().length() > 4;
@@ -136,32 +117,32 @@ public class CardViewFeatureShortFilter implements IHook {
      * todo: 有多个type的, 不一定全是推广/广告, 有概率被误去除
      */
     private boolean hasMoreType(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
-        Object bizTypeList = jsonNode_get.invoke(shortContentJsonNode, "biz_type_list");
-        return (int) jsonNode_size.invoke(bizTypeList) > 1;
+        Object bizTypeList = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "biz_type_list");
+        return (int) JsonNodeOp.JsonNode_size.invoke(bizTypeList) > 1;
     }
 
     private void preProcessShortContent(Object shortContentJsonNode) {
         try {
-            Object searchWordJsonNode = jsonNode_get.invoke(shortContentJsonNode, "search_word");
+            Object searchWordJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "search_word");
             if (searchWordJsonNode != null) {
-                objectNode_put.invoke(searchWordJsonNode, "queries", null);
+                JsonNodeOp.ObjectNode_put.invoke(searchWordJsonNode, "queries", null);
             }
         } catch (Exception e) {
             XposedBridge.log(e);
         }
 
         try {
-            objectNode_put.invoke(shortContentJsonNode, "relationship_tips", null);
+            JsonNodeOp.ObjectNode_put.invoke(shortContentJsonNode, "relationship_tips", null);
         } catch (Exception e) {
             XposedBridge.log(e);
         }
 
         try {
-            Object thirdBusiness = jsonNode_get.invoke(shortContentJsonNode, "third_business");
+            Object thirdBusiness = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "third_business");
             if (thirdBusiness != null) {
-                Object relatedQueries = jsonNode_get.invoke(thirdBusiness, "related_queries");
+                Object relatedQueries = JsonNodeOp.JsonNode_get.invoke(thirdBusiness, "related_queries");
                 if (relatedQueries != null) {
-                    objectNode_put.invoke(relatedQueries, "queries", null);
+                    JsonNodeOp.ObjectNode_put.invoke(relatedQueries, "queries", null);
                 }
             }
         } catch (Exception e) {
