@@ -2,6 +2,7 @@ package com.shatyuka.zhiliao.hooks;
 
 
 import com.shatyuka.zhiliao.Helper;
+import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,8 +12,6 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-
-import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
 /**
  * 卡片视图(FeatureUI)

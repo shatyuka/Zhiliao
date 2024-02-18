@@ -1,6 +1,7 @@
 package com.shatyuka.zhiliao.hooks;
 
 import com.shatyuka.zhiliao.Helper;
+import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,8 +14,6 @@ import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-
-import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
 public class HotListFilter implements IHook {
 
