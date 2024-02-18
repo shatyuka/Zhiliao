@@ -5,11 +5,11 @@ import android.widget.Toast;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.CardViewFeatureShortFilter;
 import com.shatyuka.zhiliao.hooks.Cleaner;
 import com.shatyuka.zhiliao.hooks.ColorMode;
 import com.shatyuka.zhiliao.hooks.CommentAd;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
-import com.shatyuka.zhiliao.hooks.CustomFilterDataflow;
 import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
 import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
@@ -70,7 +70,7 @@ public class Hooks {
             new MineHybridView(),
             new FollowButton(),
             new FollowButtonFeatureUI(),
-            new CustomFilterDataflow(),
+            new CardViewFeatureShortFilter(),
             new HotListFilter()
     };
 
