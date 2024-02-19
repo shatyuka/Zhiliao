@@ -154,7 +154,7 @@
             android:dependency="switch_mainswitch"
             android:key="switch_autorefresh"
             android:title="关闭自动刷新"
-            android:summary="关闭首页推荐自动刷新"/>
+            android:summary="关闭首页自动刷新"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="界面净化" android:key="category_ui">
         <com.zhihu.android.app.ui.widget.SwitchPreference
