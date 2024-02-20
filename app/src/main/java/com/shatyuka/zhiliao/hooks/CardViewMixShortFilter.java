@@ -28,7 +28,7 @@ public class CardViewMixShortFilter implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Class<?> mixupDataParser = classLoader.loadClass("com.zhihu.android.mixshortcontainer.dataflow.b.b.a.d");
+        Class<?> mixupDataParser = findMixupDataParser(classLoader);
 
         mixupDataParser_jsonNode2List = Arrays.stream(mixupDataParser.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == List.class)
@@ -70,6 +70,14 @@ public class CardViewMixShortFilter implements IHook {
             } else {
                 preProcessShortContent(shortContentJsonNode);
             }
+        }
+    }
+
+    private Class<?> findMixupDataParser(ClassLoader classLoader) throws ClassNotFoundException {
+        try {
+            return classLoader.loadClass("com.zhihu.android.mixshortcontainer.t.b.b.b.d");
+        } catch (Exception ignore) {
+            return classLoader.loadClass("com.zhihu.android.mixshortcontainer.dataflow.b.b.a.d");
         }
     }
 

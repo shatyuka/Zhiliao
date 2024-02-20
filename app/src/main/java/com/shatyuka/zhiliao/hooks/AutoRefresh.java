@@ -21,7 +21,7 @@ public class AutoRefresh implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Class<?> feedAutoRefreshManager = classLoader.loadClass("com.zhihu.android.app.feed.util.j");
+        Class<?> feedAutoRefreshManager = findFeedAutoRefreshManager(classLoader);
 
         feedAutoRefreshManager_shouldRefresh = Arrays.stream(feedAutoRefreshManager.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == void.class)
@@ -31,7 +31,7 @@ public class AutoRefresh implements IHook {
                     return parameterTypes[0] == long.class && parameterTypes[1] == int.class;
                 }).findFirst().get();
 
-        Class<?> feedHotRefreshAbConfig = classLoader.loadClass("com.zhihu.android.app.feed.util.p");
+        Class<?> feedHotRefreshAbConfig = findFeedHotRefreshAbConfig(classLoader);
 
         feedHotRefreshAbConfig_shouldRefresh = Arrays.stream(feedHotRefreshAbConfig.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == boolean.class)
@@ -62,6 +62,23 @@ public class AutoRefresh implements IHook {
                 }
             }
         });
+
+    }
+
+    private Class<?> findFeedAutoRefreshManager(ClassLoader classLoader) throws ClassNotFoundException {
+        try {
+            return classLoader.loadClass("com.zhihu.android.app.feed.util.FeedAutoRefreshManager");
+        } catch (Exception ignore) {
+            return classLoader.loadClass("com.zhihu.android.app.feed.util.j");
+        }
+    }
+
+    private Class<?> findFeedHotRefreshAbConfig(ClassLoader classLoader) throws ClassNotFoundException {
+        try {
+            return classLoader.loadClass("com.zhihu.android.app.feed.util.p1");
+        } catch (Exception ignore) {
+            return classLoader.loadClass("com.zhihu.android.app.feed.util.p");
+        }
 
     }
 }
