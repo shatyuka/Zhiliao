@@ -1,6 +1,8 @@
 package com.shatyuka.zhiliao.hooks;
 
 
+import android.util.Pair;
+
 import com.shatyuka.zhiliao.Helper;
 import com.shatyuka.zhiliao.Helper.JsonNodeOp;
 
@@ -9,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -30,15 +33,9 @@ public class CardViewFeatureShortFilter implements IHook {
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
 
-        Class<?> mixupDataParser = findMixupDataParser(classLoader);
-        mixupDataParser_jsonNode2Object = Arrays.stream(mixupDataParser.getDeclaredMethods())
-                .filter(method -> method.getReturnType() == Object.class)
-                .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == Helper.JsonNodeOp.JsonNode).findFirst().get();
-        mixupDataParser_jsonNode2List = Arrays.stream(mixupDataParser.getDeclaredMethods())
-                .filter(method -> method.getReturnType() == List.class)
-                .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == Helper.JsonNodeOp.JsonNode).findFirst().get();
+        Pair<Method, Method> jsonNode2List_jsonNode2Object = findJsonNode2ListAndJsonNode2ObjectMethod(classLoader);
+        mixupDataParser_jsonNode2Object = jsonNode2List_jsonNode2Object.second;
+        mixupDataParser_jsonNode2List = jsonNode2List_jsonNode2Object.first;
     }
 
     @Override
@@ -152,11 +149,39 @@ public class CardViewFeatureShortFilter implements IHook {
 
     }
 
-    private static Class<?> findMixupDataParser(ClassLoader classLoader) throws ClassNotFoundException {
-        try {
-            return classLoader.loadClass("com.zhihu.android.service.short_container_service.dataflow.repo.e.c");
-        } catch (Exception ignore) {
-            return classLoader.loadClass("com.zhihu.android.service.short_container_service.dataflow.repo.c.c");
+    private Pair<Method, Method> findJsonNode2ListAndJsonNode2ObjectMethod(ClassLoader classLoader) throws NoSuchMethodException {
+        List<String> mixupDataParserClassNameList = Arrays.asList("com.zhihu.android.service.short_container_service.dataflow.repo.e.c",
+                "com.zhihu.android.service.short_container_service.dataflow.repo.c.c");
+
+        for (String className : mixupDataParserClassNameList) {
+            try {
+                Class<?> mixupDataParser = classLoader.loadClass(className);
+                Optional<Method> jsonNode2ObjectOpt = findJsonNode2ObjectMethod(mixupDataParser);
+                Optional<Method> jsonNode2ListOpt = findJsonNode2ListMethod(mixupDataParser);
+
+                if (jsonNode2ListOpt.isPresent() && jsonNode2ObjectOpt.isPresent()) {
+                    return new Pair<>(jsonNode2ListOpt.get(), jsonNode2ObjectOpt.get());
+                }
+
+            } catch (Exception ignore) {
+            }
         }
+
+        throw new NoSuchMethodException("MixupDataParser#jsonNode2List#jsonNode2Object");
     }
+
+    private Optional<Method> findJsonNode2ObjectMethod(Class<?> mixupDataParser) {
+        return Arrays.stream(mixupDataParser.getDeclaredMethods())
+                .filter(method -> method.getReturnType() == Object.class)
+                .filter(method -> method.getParameterCount() == 1)
+                .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode).findFirst();
+    }
+
+    private Optional<Method> findJsonNode2ListMethod(Class<?> mixupDataParser) {
+        return Arrays.stream(mixupDataParser.getDeclaredMethods())
+                .filter(method -> method.getReturnType() == List.class)
+                .filter(method -> method.getParameterCount() == 1)
+                .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode).findFirst();
+    }
+
 }

@@ -28,14 +28,7 @@ public class CardViewMixShortFilter implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        Class<?> mixupDataParser = findMixupDataParser(classLoader);
-
-        mixupDataParser_jsonNode2List = Arrays.stream(mixupDataParser.getDeclaredMethods())
-                .filter(method -> method.getReturnType() == List.class)
-                .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode)
-                .findFirst().get();
-
+        mixupDataParser_jsonNode2List = findJsonNode2List(classLoader);
     }
 
     @Override
@@ -73,12 +66,24 @@ public class CardViewMixShortFilter implements IHook {
         }
     }
 
-    private Class<?> findMixupDataParser(ClassLoader classLoader) throws ClassNotFoundException {
-        try {
-            return classLoader.loadClass("com.zhihu.android.mixshortcontainer.t.b.b.b.d");
-        } catch (Exception ignore) {
-            return classLoader.loadClass("com.zhihu.android.mixshortcontainer.dataflow.b.b.a.d");
+    private static Method findJsonNode2List(ClassLoader classLoader) throws NoSuchMethodException {
+        List<String> mixupDataParserClassNameList = Arrays.asList("com.zhihu.android.mixshortcontainer.t.b.b.b.d",
+                "com.zhihu.android.mixshortcontainer.dataflow.b.b.a.d");
+
+        for (String className : mixupDataParserClassNameList) {
+            try {
+                Class<?> mixupDataParser = classLoader.loadClass(className);
+                return Arrays.stream(mixupDataParser.getDeclaredMethods())
+                        .filter(method -> method.getReturnType() == List.class)
+                        .filter(method -> method.getParameterCount() == 1)
+                        .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode)
+                        .findFirst().get();
+
+            } catch (Exception ignore) {
+            }
         }
+
+        throw new NoSuchMethodException("MixupDataParser#JsonNode2List");
     }
 
 }
