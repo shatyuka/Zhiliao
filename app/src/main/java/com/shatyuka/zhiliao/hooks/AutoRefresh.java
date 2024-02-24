@@ -3,6 +3,7 @@ package com.shatyuka.zhiliao.hooks;
 import com.shatyuka.zhiliao.Helper;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,8 @@ public class AutoRefresh implements IHook {
 
     static Method feedHotRefreshAbConfig_shouldRefresh;
 
+    static Method mainPageFragment_getFragment;
+
     @Override
     public String getName() {
         return "关闭首页自动刷新";
@@ -24,6 +27,14 @@ public class AutoRefresh implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         feedAutoRefreshManager_shouldRefresh = findFeedAutoRefreshManagerShouldRefreshMethod(classLoader);
         feedHotRefreshAbConfig_shouldRefresh = findFeedHotRefreshAbConfigShouldRefreshMethod(classLoader);
+
+        Class<?> mainPageFragment = classLoader.loadClass("com.zhihu.android.app.feed.explore.view.MainPageFragment");
+        Class<?> fragment = classLoader.loadClass("androidx.fragment.app.Fragment");
+        mainPageFragment_getFragment = Arrays.stream(mainPageFragment.getDeclaredMethods())
+                .filter(method -> Modifier.isFinal(method.getModifiers()))
+                .filter(method -> method.getReturnType() == fragment)
+                .filter(method -> method.getParameterCount() == 0).findFirst().get();
+
     }
 
     @Override
@@ -44,6 +55,16 @@ public class AutoRefresh implements IHook {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false)
                         && Helper.prefs.getBoolean("switch_autorefresh", true)) {
                     param.setResult(false);
+                }
+            }
+        });
+
+        XposedBridge.hookMethod(mainPageFragment_getFragment, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false)
+                        && Helper.prefs.getBoolean("switch_autorefresh", true)) {
+                    param.setResult(null);
                 }
             }
         });
