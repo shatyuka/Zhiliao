@@ -45,7 +45,7 @@ public class HotListFilter implements IHook {
 
     static Field response_bodyField;
 
-    static Method feedsHotListFragment2_rankFeedListAutoPage;
+    static List<Method> retAndArgTypeQqResponseMethodList;
 
     static Field rankFeedList_displayNumField;
 
@@ -98,12 +98,10 @@ public class HotListFilter implements IHook {
                 .filter(field -> field.getType() == Object.class).findFirst().get();
         response_bodyField.setAccessible(true);
 
-        List<Method> retArgTypeQqResponseMethodList = Arrays.stream(feedsHotListFragment2.getDeclaredMethods())
+        retAndArgTypeQqResponseMethodList = Arrays.stream(feedsHotListFragment2.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == response)
                 .filter(method -> method.getParameterCount() == 1)
                 .filter(method -> method.getParameterTypes()[0] == response).collect(Collectors.toList());
-        feedsHotListFragment2_rankFeedListAutoPage = retArgTypeQqResponseMethodList.get(retArgTypeQqResponseMethodList.size() - 1);
-
 
         rankFeedList_displayNumField = rankFeedList.getDeclaredField("display_num");
         rankFeedList_displayNumField.setAccessible(true);
@@ -146,26 +144,29 @@ public class HotListFilter implements IHook {
 
         });
 
-        XposedBridge.hookMethod(feedsHotListFragment2_rankFeedListAutoPage, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
-                    return;
-                }
+        for (Method processRankList : retAndArgTypeQqResponseMethodList) {
+            XposedBridge.hookMethod(processRankList, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
+                        return;
+                    }
 
-                Object rankFeedList = response_bodyField.get(param.args[0]);
-                if (rankFeedList == null) {
-                    return;
-                }
-                List<?> rankFeedListData = (List<?>) ZHObjectListDataField.get(rankFeedList);
-                if (rankFeedListData == null || rankFeedListData.isEmpty()) {
-                    return;
-                }
+                    Object rankFeedList = response_bodyField.get(param.args[0]);
+                    if (rankFeedList == null) {
+                        return;
+                    }
+                    List<?> rankFeedListData = (List<?>) ZHObjectListDataField.get(rankFeedList);
+                    if (rankFeedListData == null || rankFeedListData.isEmpty()) {
+                        return;
+                    }
 
-                // 热榜全部展示, 不折叠
-                rankFeedList_displayNumField.set(rankFeedList, rankFeedListData.size());
-            }
-        });
+                    // 热榜全部展示, 不折叠
+                    rankFeedList_displayNumField.set(rankFeedList, rankFeedListData.size());
+                }
+            });
+        }
+
 
     }
 
