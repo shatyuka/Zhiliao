@@ -1,187 +1,191 @@
-package com.shatyuka.zhiliao.hooks;
+package com.shatyuka.zhiliao.hooks
 
-
-import android.util.Pair;
-
-import com.shatyuka.zhiliao.Helper;
-import com.shatyuka.zhiliao.Helper.JsonNodeOp;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import android.util.Pair
+import com.shatyuka.zhiliao.Helper
+import com.shatyuka.zhiliao.Helper.JsonNodeOp
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge
+import org.luckypray.dexkit.query.matchers.ClassMatcher
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.util.Arrays
+import java.util.Optional
 
 /**
  * 卡片视图(FeatureUI)
  */
-public class CardViewFeatureShortFilter implements IHook {
+class CardViewFeatureShortFilter : IHook {
 
-    static Method mixupDataParser_jsonNode2Object;
+    private lateinit var mixupDataParser_jsonNode2Object: Method
+    private lateinit var mixupDataParser_jsonNode2List: Method
 
-    static Method mixupDataParser_jsonNode2List;
-
-    @Override
-    public String getName() {
-        return "卡片视图相关过滤(FeatureUI)";
+    override fun getName(): String {
+        return "卡片视图相关过滤(FeatureUI)"
     }
 
-    @Override
-    public void init(ClassLoader classLoader) throws Throwable {
-
-        Pair<Method, Method> jsonNode2List_jsonNode2Object = findJsonNode2ListAndJsonNode2ObjectMethod(classLoader);
-        mixupDataParser_jsonNode2Object = jsonNode2List_jsonNode2Object.second;
-        mixupDataParser_jsonNode2List = jsonNode2List_jsonNode2Object.first;
+    @Throws(Throwable::class)
+    override fun init(classLoader: ClassLoader) {
+        val jsonNode2List_jsonNode2Object = findJsonNode2ListAndJsonNode2ObjectMethod(classLoader)
+        mixupDataParser_jsonNode2Object = jsonNode2List_jsonNode2Object.second
+        mixupDataParser_jsonNode2List = jsonNode2List_jsonNode2Object.first
     }
 
-    @Override
-    public void hook() throws Throwable {
-        XposedBridge.hookMethod(mixupDataParser_jsonNode2List, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+    @Throws(Throwable::class)
+    override fun hook() {
+        XposedBridge.hookMethod(mixupDataParser_jsonNode2List, object : XC_MethodHook() {
+            @Throws(Throwable::class)
+            override fun beforeHookedMethod(param: MethodHookParam) {
                 if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
-                    return;
+                    return
                 }
                 if (Helper.prefs.getBoolean("switch_feedad", true)) {
-                    filterShortContent(param.args[0]);
+                    filterShortContent(param.args[0])
                 }
             }
-        });
-
-        XposedBridge.hookMethod(mixupDataParser_jsonNode2Object, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
+        })
+        XposedBridge.hookMethod(mixupDataParser_jsonNode2Object, object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
                 if (!Helper.prefs.getBoolean("switch_mainswitch", false)) {
-                    return;
+                    return
                 }
-                preProcessShortContent(param.args[0]);
+                preProcessShortContent(param.args[0])
             }
-        });
-
+        })
     }
 
-    private void filterShortContent(Object shortContentListJsonNode) throws InvocationTargetException, IllegalAccessException {
-        Object dataJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentListJsonNode, "data");
-        if (dataJsonNode == null || !(boolean) JsonNodeOp.JsonNode_isArray.invoke(dataJsonNode)) {
-            return;
+    @Throws(InvocationTargetException::class, IllegalAccessException::class)
+    private fun filterShortContent(shortContentListJsonNode: Any) {
+        val dataJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentListJsonNode, "data")
+        if (dataJsonNode == null || !(JsonNodeOp.JsonNode_isArray.invoke(dataJsonNode) as Boolean)) {
+            return
         }
+        val shortContentIterator =
+            JsonNodeOp.JsonNode_iterator.invoke(dataJsonNode) as MutableIterator<*>
 
-        Iterator<?> shortContentIterator = (Iterator<?>) JsonNodeOp.JsonNode_iterator.invoke(dataJsonNode);
-        while (shortContentIterator != null && shortContentIterator.hasNext()) {
-            Object shortContentJsonNode = shortContentIterator.next();
-            if (shortContentJsonNode == null) {
-                continue;
-            }
+        while (shortContentIterator.hasNext()) {
+            val shortContentJsonNode = shortContentIterator.next() ?: continue
             if (shouldRemoveShortContent(shortContentJsonNode)) {
-                shortContentIterator.remove();
+                shortContentIterator.remove()
             }
         }
     }
 
-    public static boolean shouldRemoveShortContent(Object shortContentJsonNode) {
-        try {
-            return isAd(shortContentJsonNode) || hasMoreType(shortContentJsonNode);
-        } catch (Exception e) {
-            XposedBridge.log(e);
-        }
-        return false;
-    }
-
-    private static boolean isAd(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
-        if (JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "adjson") != null) {
-            return true;
-        }
-
-        Object adInfo = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "ad_info");
-        if (adInfo == null) {
-            XposedBridge.log(shortContentJsonNode.toString());
-            return false;
-        }
-        Object adInfoData = JsonNodeOp.JsonNode_get.invoke(adInfo, "data");
-        if (adInfoData != null) {
-            // "" , "{}"
-            return adInfoData.toString().length() > 4;
-        }
-        return false;
-    }
-
-    /**
-     * todo: 有多个type的, 不一定全是推广/广告, 有概率被误去除
-     */
-    private static boolean hasMoreType(Object shortContentJsonNode) throws InvocationTargetException, IllegalAccessException {
-        Object bizTypeList = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "biz_type_list");
-        return (int) JsonNodeOp.JsonNode_size.invoke(bizTypeList) > 1;
-    }
-
-    public static void preProcessShortContent(Object shortContentJsonNode) {
-        try {
-            Object searchWordJsonNode = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "search_word");
-            if (searchWordJsonNode != null) {
-                JsonNodeOp.ObjectNode_put.invoke(searchWordJsonNode, "queries", null);
+    private fun findJsonNode2ListAndJsonNode2ObjectMethod(classLoader: ClassLoader): Pair<Method, Method> {
+        val classMath: ClassMatcher = ClassMatcher.create().methods {
+            add {
+                returnType = Object::class.java.name
+                paramCount = 1
+                paramTypes(JsonNodeOp.JsonNode)
             }
-        } catch (Exception e) {
-            XposedBridge.log(e);
+            add {
+                returnType = List::class.java.name
+                paramCount = 1
+                paramTypes(JsonNodeOp.JsonNode)
+            }
         }
 
-        try {
-            JsonNodeOp.ObjectNode_put.invoke(shortContentJsonNode, "relationship_tips", null);
-        } catch (Exception e) {
-            XposedBridge.log(e);
-        }
+        val mixupDataParserClass = Helper.findClass(
+            listOf("com.zhihu.android.service.short_container_service.dataflow.repo"),
+            null,
+            classMath,
+            classLoader
+        )
+            ?: throw ClassNotFoundException("com.zhihu.android.service.short_container_service.dataflow.repo.*.MixupDataParser")
 
-        if (Helper.prefs.getBoolean("switch_related", false)) {
+        return Pair(
+            findJsonNode2ListMethod(mixupDataParserClass).get(),
+            findJsonNode2ObjectMethod(mixupDataParserClass).get()
+        )
+    }
+
+    private fun findJsonNode2ObjectMethod(mixupDataParser: Class<*>): Optional<Method> {
+        return Arrays.stream(mixupDataParser.getDeclaredMethods())
+            .filter { method: Method -> method.returnType == Object::class.java }
+            .filter { method: Method -> method.parameterCount == 1 }
+            .filter { method: Method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode }
+            .findFirst()
+    }
+
+    private fun findJsonNode2ListMethod(mixupDataParser: Class<*>): Optional<Method> {
+        return Arrays.stream(mixupDataParser.getDeclaredMethods())
+            .filter { method: Method -> method.returnType == List::class.java }
+            .filter { method: Method -> method.parameterCount == 1 }
+            .filter { method: Method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode }
+            .findFirst()
+    }
+
+    companion object {
+        @JvmStatic
+        fun shouldRemoveShortContent(shortContentJsonNode: Any): Boolean {
             try {
-                Object thirdBusiness = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "third_business");
-                if (thirdBusiness != null) {
-                    Object relatedQueries = JsonNodeOp.JsonNode_get.invoke(thirdBusiness, "related_queries");
-                    if (relatedQueries != null) {
-                        JsonNodeOp.ObjectNode_put.invoke(relatedQueries, "queries", null);
+                return isAd(shortContentJsonNode) || hasMoreType(shortContentJsonNode)
+            } catch (e: Exception) {
+                XposedBridge.log("[Zhiliao]")
+                XposedBridge.log(e)
+            }
+            return false
+        }
+
+        @Throws(InvocationTargetException::class, IllegalAccessException::class)
+        private fun isAd(shortContentJsonNode: Any): Boolean {
+            if (JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "adjson") != null) {
+                return true
+            }
+            val adInfo = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "ad_info")
+            if (adInfo == null) {
+                XposedBridge.log(shortContentJsonNode.toString())
+                return false
+            }
+            val adInfoData = JsonNodeOp.JsonNode_get.invoke(adInfo, "data")
+            return if (adInfoData != null) {
+                // "" , "{}"
+                adInfoData.toString().length > 4
+            } else false
+        }
+
+        /**
+         * todo: 有多个type的, 不一定全是推广/广告, 有概率被误去除
+         */
+        @Throws(InvocationTargetException::class, IllegalAccessException::class)
+        private fun hasMoreType(shortContentJsonNode: Any): Boolean {
+            val bizTypeList = JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "biz_type_list")
+            return JsonNodeOp.JsonNode_size.invoke(bizTypeList) as Int > 1
+        }
+
+        @JvmStatic
+        fun preProcessShortContent(shortContentJsonNode: Any?) {
+            try {
+                val searchWordJsonNode =
+                    JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "search_word")
+                if (searchWordJsonNode != null) {
+                    JsonNodeOp.ObjectNode_put.invoke(searchWordJsonNode, "queries", null)
+                }
+            } catch (e: Exception) {
+                XposedBridge.log("[Zhiliao]")
+                XposedBridge.log(e)
+            }
+            try {
+                JsonNodeOp.ObjectNode_put.invoke(shortContentJsonNode, "relationship_tips", null)
+            } catch (e: Exception) {
+                XposedBridge.log("[Zhiliao]")
+                XposedBridge.log(e)
+            }
+            if (Helper.prefs.getBoolean("switch_related", false)) {
+                try {
+                    val thirdBusiness =
+                        JsonNodeOp.JsonNode_get.invoke(shortContentJsonNode, "third_business")
+                    if (thirdBusiness != null) {
+                        val relatedQueries =
+                            JsonNodeOp.JsonNode_get.invoke(thirdBusiness, "related_queries")
+                        if (relatedQueries != null) {
+                            JsonNodeOp.ObjectNode_put.invoke(relatedQueries, "queries", null)
+                        }
                     }
+                } catch (e: Exception) {
+                    XposedBridge.log("[Zhiliao]")
+                    XposedBridge.log(e)
                 }
-            } catch (Exception e) {
-                XposedBridge.log(e);
             }
         }
-
     }
-
-    private Pair<Method, Method> findJsonNode2ListAndJsonNode2ObjectMethod(ClassLoader classLoader) throws NoSuchMethodException {
-        List<String> mixupDataParserClassNameList = Arrays.asList("com.zhihu.android.service.short_container_service.dataflow.repo.e.c",
-                "com.zhihu.android.service.short_container_service.dataflow.repo.c.c");
-
-        for (String className : mixupDataParserClassNameList) {
-            try {
-                Class<?> mixupDataParser = classLoader.loadClass(className);
-                Optional<Method> jsonNode2ObjectOpt = findJsonNode2ObjectMethod(mixupDataParser);
-                Optional<Method> jsonNode2ListOpt = findJsonNode2ListMethod(mixupDataParser);
-
-                if (jsonNode2ListOpt.isPresent() && jsonNode2ObjectOpt.isPresent()) {
-                    return new Pair<>(jsonNode2ListOpt.get(), jsonNode2ObjectOpt.get());
-                }
-
-            } catch (Exception ignore) {
-            }
-        }
-
-        throw new NoSuchMethodException("MixupDataParser#jsonNode2List#jsonNode2Object");
-    }
-
-    private Optional<Method> findJsonNode2ObjectMethod(Class<?> mixupDataParser) {
-        return Arrays.stream(mixupDataParser.getDeclaredMethods())
-                .filter(method -> method.getReturnType() == Object.class)
-                .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode).findFirst();
-    }
-
-    private Optional<Method> findJsonNode2ListMethod(Class<?> mixupDataParser) {
-        return Arrays.stream(mixupDataParser.getDeclaredMethods())
-                .filter(method -> method.getReturnType() == List.class)
-                .filter(method -> method.getParameterCount() == 1)
-                .filter(method -> method.getParameterTypes()[0] == JsonNodeOp.JsonNode).findFirst();
-    }
-
 }
