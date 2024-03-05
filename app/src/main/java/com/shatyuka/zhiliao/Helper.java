@@ -14,13 +14,21 @@ import android.content.res.Resources;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.luckypray.dexkit.DexKitBridge;
+import org.luckypray.dexkit.query.FindClass;
+import org.luckypray.dexkit.query.matchers.ClassMatcher;
+import org.luckypray.dexkit.result.ClassDataList;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XposedBridge;
 
@@ -46,6 +54,8 @@ public class Helper {
     public static PackageInfo packageInfo;
 
     public static Object settingsView;
+
+    public static DexKitBridge dexKitBridge;
 
     static boolean init(ClassLoader classLoader) {
         try {
@@ -189,6 +199,31 @@ public class Helper {
             }
         }
         return null;
+    }
+
+    public static Class<?> findClass(List<String> searchPackageList, List<String> excludePackageList, ClassMatcher matcher, ClassLoader classLoader) {
+        List<Class<?>> classList = findClassList(searchPackageList, excludePackageList, matcher, classLoader);
+        return classList.size() == 1 ? classList.get(0) : null;
+    }
+
+    public static List<Class<?>> findClassList(List<String> searchPackageList, List<String> excludePackageList, ClassMatcher matcher, ClassLoader classLoader) {
+        FindClass findClass = FindClass.create();
+        if (searchPackageList != null) {
+            findClass.searchPackages(searchPackageList);
+        }
+        if (excludePackageList != null) {
+            findClass.excludePackages(excludePackageList);
+        }
+        findClass.matcher(matcher);
+
+        ClassDataList classDataList = dexKitBridge.findClass(findClass);
+        return classDataList.stream().map(classData -> {
+            try {
+                return classData.getInstance(classLoader);
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     // a...z, aa...az, ba...bz

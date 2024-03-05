@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.widget.Toast;
 
+import org.luckypray.dexkit.DexKitBridge;
+
 import java.io.File;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -100,6 +102,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 protected void afterHookedMethod(MethodHookParam param) {
                     if (param.args[0] instanceof Application) {
                         Helper.context = ((Application) param.args[0]).getApplicationContext();
+                        Helper.dexKitBridge = createDexKitBridge(lpparam);
 
                         if (!Helper.init(lpparam.classLoader))
                             Helper.toast("知了初始化失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_SHORT);
@@ -122,6 +125,11 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 }
             });
         }
+    }
+
+    private DexKitBridge createDexKitBridge(XC_LoadPackage.LoadPackageParam lpparam) {
+        System.loadLibrary("dexkit");
+        return DexKitBridge.create(lpparam.appInfo.sourceDir);
     }
 
     @Override

@@ -1,3 +1,7 @@
+plugins {
+    id 'org.jetbrains.kotlin.android' version '1.9.22'
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -92,4 +96,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'de.robv.android.xposed:api:82'
     testImplementation 'de.robv.android.xposed:api:82'
+    implementation 'org.luckypray:dexkit:2.0.0'
+
 }
