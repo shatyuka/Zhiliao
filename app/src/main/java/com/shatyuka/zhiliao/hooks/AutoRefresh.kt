@@ -1,114 +1,119 @@
-package com.shatyuka.zhiliao.hooks;
+package com.shatyuka.zhiliao.hooks
 
-import com.shatyuka.zhiliao.Helper;
+import com.shatyuka.zhiliao.Helper
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge
+import org.luckypray.dexkit.query.matchers.MethodMatcher
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+import java.util.Arrays
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.List;
+class AutoRefresh : IHook {
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+    private lateinit var feedAutoRefreshManager_shouldRefresh: Method
 
-public class AutoRefresh implements IHook {
+    private lateinit var feedHotRefreshAbConfig_shouldRefresh: Method
 
-    static Method feedAutoRefreshManager_shouldRefresh;
+    private lateinit var mainPageFragment_getFragment: Method
 
-    static Method feedHotRefreshAbConfig_shouldRefresh;
-
-    static Method mainPageFragment_getFragment;
-
-    @Override
-    public String getName() {
-        return "关闭首页自动刷新";
+    override fun getName(): String {
+        return "关闭首页自动刷新"
     }
 
-    @Override
-    public void init(ClassLoader classLoader) throws Throwable {
-        feedAutoRefreshManager_shouldRefresh = findFeedAutoRefreshManagerShouldRefreshMethod(classLoader);
-        feedHotRefreshAbConfig_shouldRefresh = findFeedHotRefreshAbConfigShouldRefreshMethod(classLoader);
+    @Throws(Throwable::class)
+    override fun init(classLoader: ClassLoader) {
+        feedAutoRefreshManager_shouldRefresh =
+            findFeedAutoRefreshManagerShouldRefreshMethod(classLoader)
+        feedHotRefreshAbConfig_shouldRefresh =
+            findFeedHotRefreshAbConfigShouldRefreshMethod(classLoader)
 
-        Class<?> mainPageFragment = classLoader.loadClass("com.zhihu.android.app.feed.explore.view.MainPageFragment");
-        Class<?> fragment = classLoader.loadClass("androidx.fragment.app.Fragment");
+        val mainPageFragment =
+            classLoader.loadClass("com.zhihu.android.app.feed.explore.view.MainPageFragment")
+        val fragment = classLoader.loadClass("androidx.fragment.app.Fragment")
         mainPageFragment_getFragment = Arrays.stream(mainPageFragment.getDeclaredMethods())
-                .filter(method -> Modifier.isFinal(method.getModifiers()))
-                .filter(method -> method.getReturnType() == fragment)
-                .filter(method -> method.getParameterCount() == 0).findFirst().get();
-
+            .filter { method: Method -> Modifier.isFinal(method.modifiers) }
+            .filter { method: Method -> method.returnType == fragment }
+            .filter { method: Method -> method.parameterCount == 0 }.findFirst().get()
     }
 
-    @Override
-    public void hook() throws Throwable {
-        XposedBridge.hookMethod(feedAutoRefreshManager_shouldRefresh, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+    @Throws(Throwable::class)
+    override fun hook() {
+        XposedBridge.hookMethod(feedAutoRefreshManager_shouldRefresh, object : XC_MethodHook() {
+            @Throws(Throwable::class)
+            override fun beforeHookedMethod(param: MethodHookParam) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false)
-                        && Helper.prefs.getBoolean("switch_autorefresh", true)) {
-                    param.args[0] = 0;
+                    && Helper.prefs.getBoolean("switch_autorefresh", true)
+                ) {
+                    param.args[0] = 0
                 }
             }
-        });
-
-        XposedBridge.hookMethod(feedHotRefreshAbConfig_shouldRefresh, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+        })
+        XposedBridge.hookMethod(feedHotRefreshAbConfig_shouldRefresh, object : XC_MethodHook() {
+            @Throws(Throwable::class)
+            override fun beforeHookedMethod(param: MethodHookParam) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false)
-                        && Helper.prefs.getBoolean("switch_autorefresh", true)) {
-                    param.setResult(false);
+                    && Helper.prefs.getBoolean("switch_autorefresh", true)
+                ) {
+                    param.setResult(false)
                 }
             }
-        });
-
-        XposedBridge.hookMethod(mainPageFragment_getFragment, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+        })
+        XposedBridge.hookMethod(mainPageFragment_getFragment, object : XC_MethodHook() {
+            @Throws(Throwable::class)
+            override fun beforeHookedMethod(param: MethodHookParam) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false)
-                        && Helper.prefs.getBoolean("switch_autorefresh", true)) {
-                    param.setResult(null);
+                    && Helper.prefs.getBoolean("switch_autorefresh", true)
+                ) {
+                    param.setResult(null)
                 }
             }
-        });
-
+        })
     }
 
-    private Method findFeedHotRefreshAbConfigShouldRefreshMethod(ClassLoader classLoader) throws NoSuchMethodException {
-        List<String> feedHotRefreshAbConfigClassNameList = Arrays.asList("com.zhihu.android.app.feed.util.p1",
-                "com.zhihu.android.app.feed.util.p");
+    @Throws(NoSuchMethodException::class)
+    private fun findFeedHotRefreshAbConfigShouldRefreshMethod(classLoader: ClassLoader): Method {
+        val matcher: MethodMatcher = MethodMatcher.create()
+            .returnType(Boolean::class.javaPrimitiveType as Class<*>)
+            .paramCount(1)
+            .paramTypes(Long::class.javaPrimitiveType)
 
-        for (String className : feedHotRefreshAbConfigClassNameList) {
-            try {
-                Class<?> feedHotRefreshAbConfig = classLoader.loadClass(className);
-                return Arrays.stream(feedHotRefreshAbConfig.getDeclaredMethods())
-                        .filter(method -> method.getReturnType() == boolean.class)
-                        .filter(method -> method.getParameterCount() == 1)
-                        .filter(method -> method.getParameterTypes()[0] == long.class)
-                        .findFirst().get();
-            } catch (Exception ignore) {
-            }
+        val methodList = Helper.findMethodList(
+            listOf("com.zhihu.android.app.feed.util"),
+            null,
+            matcher,
+            classLoader
+        )
+        if (methodList.isEmpty()) {
+            throw NoSuchMethodException("com.zhihu.android.app.feed.util.FeedHotRefreshAbConfig#shouldRefresh")
+        }
+        if (methodList.size > 1) {
+            throw Exception("multi methods have bool(long)")
         }
 
-        throw new NoSuchMethodException("FeedHotRefreshAbConfig#shouldRefresh");
+        return methodList[0]
     }
 
-    private Method findFeedAutoRefreshManagerShouldRefreshMethod(ClassLoader classLoader) throws NoSuchMethodException {
-        List<String> feedAutoRefreshManagerClassNameList = Arrays.asList("com.zhihu.android.app.feed.util.FeedAutoRefreshManager",
-                "com.zhihu.android.app.feed.util.j");
+    @Throws(NoSuchMethodException::class)
+    private fun findFeedAutoRefreshManagerShouldRefreshMethod(classLoader: ClassLoader): Method {
+        val matcher: MethodMatcher = MethodMatcher.create()
+            .returnType(Void::class.javaPrimitiveType as Class<*>)
+            .paramCount(4)
+            .paramTypes(Long::class.javaPrimitiveType, Int::class.javaPrimitiveType, null, null)
 
-        for (String className : feedAutoRefreshManagerClassNameList) {
-            try {
-                Class<?> feedAutoRefreshManager = classLoader.loadClass(className);
-                return Arrays.stream(feedAutoRefreshManager.getDeclaredMethods())
-                        .filter(method -> method.getReturnType() == void.class)
-                        .filter(method -> method.getParameterCount() == 4)
-                        .filter(method -> {
-                            Class<?>[] parameterTypes = method.getParameterTypes();
-                            return parameterTypes[0] == long.class && parameterTypes[1] == int.class;
-                        }).findFirst().get();
-            } catch (Exception ignore) {
-            }
+        val methodList = Helper.findMethodList(
+            listOf("com.zhihu.android.app.feed.util"),
+            null,
+            matcher,
+            classLoader
+        )
+        if (methodList.isEmpty()) {
+            throw NoSuchMethodException("com.zhihu.android.app.feed.util.FeedAutoRefreshManager#shouldRefresh")
+        }
+        if (methodList.size > 1) {
+            throw Exception("multi methods have void(long,int,object,object)")
         }
 
-        throw new NoSuchMethodException("FeedAutoRefreshManager#shouldRefresh");
+        return methodList[0]
     }
 
 }
