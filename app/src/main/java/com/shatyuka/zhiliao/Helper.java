@@ -16,7 +16,9 @@ import android.widget.Toast;
 
 import org.luckypray.dexkit.DexKitBridge;
 import org.luckypray.dexkit.query.FindClass;
+import org.luckypray.dexkit.query.FindMethod;
 import org.luckypray.dexkit.query.matchers.ClassMatcher;
+import org.luckypray.dexkit.query.matchers.MethodMatcher;
 import org.luckypray.dexkit.result.ClassDataList;
 
 import java.io.File;
@@ -220,7 +222,26 @@ public class Helper {
         return classDataList.stream().map(classData -> {
             try {
                 return classData.getInstance(classLoader);
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException ignore) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public static List<Method> findMethodList(List<String> searchPackageList, List<String> excludePackageList, MethodMatcher matcher, ClassLoader classLoader) {
+        FindMethod findMethod = FindMethod.create();
+        if (searchPackageList != null) {
+            findMethod.searchPackages(searchPackageList);
+        }
+        if (excludePackageList != null) {
+            findMethod.excludePackages(excludePackageList);
+        }
+        findMethod.matcher(matcher);
+
+        return dexKitBridge.findMethod(findMethod).stream().map(methodData -> {
+            try {
+                return methodData.getMethodInstance(classLoader);
+            } catch (NoSuchMethodException ignore) {
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toList());
