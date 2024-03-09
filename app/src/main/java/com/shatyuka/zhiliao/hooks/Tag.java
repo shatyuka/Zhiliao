@@ -8,7 +8,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.shatyuka.zhiliao.Helper;
-import com.shatyuka.zhiliao.MainHook;
 import com.shatyuka.zhiliao.R;
 
 import java.lang.reflect.Field;
@@ -78,8 +77,8 @@ public class Tag implements IHook {
                         return;
                     }
 
-                    TextView title = viewGroup.findViewById(Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage));
-                    View author = viewGroup.findViewById(Helper.context.getResources().getIdentifier("author", "id", MainHook.hookPackage));
+                    TextView title = viewGroup.findViewById(Helper.context.getResources().getIdentifier("title", "id", Helper.hookPackage));
+                    View author = viewGroup.findViewById(Helper.context.getResources().getIdentifier("author", "id", Helper.hookPackage));
                     if (title == null) {
                         return;
                     }

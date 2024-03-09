@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
@@ -47,6 +49,11 @@ public class Helper {
     public static PackageInfo packageInfo;
 
     public static Object settingsView;
+
+    public static boolean officialZhihu = true;
+
+    public final static String hookPackage = "com.zhihu.android";
+    private final static byte[] signature = new byte[]{(byte) 0xB6, (byte) 0xF9, (byte) 0x97, (byte) 0xE3, (byte) 0x82, 0x7B, (byte) 0xE1, 0x1A, (byte) 0xF2, (byte) 0xFA, 0x4A, 0x15, 0x3F, (byte) 0xEA, 0x3F, (byte) 0xE6, 0x27, 0x68, 0x66, 0x02};
 
     static boolean init(ClassLoader classLoader) {
         try {
@@ -256,5 +263,33 @@ public class Helper {
         Field field = fieldOptional.get();
         field.setAccessible(true);
         return field;
+    }
+
+    private static Signature[] getSignatures(Context context) throws PackageManager.NameNotFoundException {
+        PackageManager pm = context.getPackageManager();
+        Signature[] sig;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            android.content.pm.SigningInfo sign = pm.getPackageInfo(hookPackage, PackageManager.GET_SIGNING_CERTIFICATES).signingInfo;
+            sig = sign.hasMultipleSigners() ? sign.getApkContentsSigners() : sign.getSigningCertificateHistory();
+        } else {
+            sig = pm.getPackageInfo(hookPackage, PackageManager.GET_SIGNATURES).signatures;
+        }
+        return sig;
+    }
+
+    public static boolean checkSignature(Context context) {
+        try {
+            Signature[] sig = getSignatures(context);
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            for (Signature s : sig) {
+                byte[] dig = md.digest(s.toByteArray());
+                if (Arrays.equals(dig, signature)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Throwable ignored) {
+            return false;
+        }
     }
 }

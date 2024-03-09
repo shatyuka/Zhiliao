@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="免责声明" android:key="category_eula">
         <Preference
-            android:summary="本软件仅用于技术交流, 请勿用于商业及非法用途，如产生法律纠纷与本人无关。&#x000A;&#x000A;本软件不会收集、上传您的个人信息，如有个人信息泄露与本人无关。" />
+            android:summary="本软件仅用于技术交流, 请勿用于商业及非法用途，如产生法律纠纷与作者本人无关。&#x000A;&#x000A;本软件不会收集、上传您的个人信息，如有个人信息泄露与作者本人无关。" />
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:key="accept_eula"

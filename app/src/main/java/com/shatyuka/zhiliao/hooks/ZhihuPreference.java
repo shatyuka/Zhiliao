@@ -431,34 +431,39 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_feedtophot, thisObject);
                 setOnPreferenceClickListener.invoke(switch_minehybrid, thisObject);
 
-                String real_version = null;
-                try {
-                    real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
-                } catch (Exception ignore) {
-                }
                 String loaded_version = Helper.modRes.getString(R.string.app_version);
                 setSummary.invoke(preference_version, loaded_version);
-                if (real_version == null || loaded_version.equals(real_version)) {
-                    setVisible.invoke(preference_status, false);
+
+                if (Helper.officialZhihu) {
+                    String real_version = null;
+                    try {
+                        real_version = Helper.context.getPackageManager().getResourcesForApplication(modulePackage).getString(R.string.app_version);
+                    } catch (Exception ignore) {
+                    }
+                    if (real_version == null || loaded_version.equals(real_version)) {
+                        setVisible.invoke(preference_status, false);
+                    } else {
+                        setOnPreferenceClickListener.invoke(preference_status, thisObject);
+                        Object category_eula = findPreference.invoke(thisObject, "category_eula");
+                        Object category_ads = findPreference.invoke(thisObject, "category_ads");
+                        Object category_misc = findPreference.invoke(thisObject, "category_misc");
+                        Object category_ui = findPreference.invoke(thisObject, "category_ui");
+                        Object category_swap_answers = findPreference.invoke(thisObject, "category_swap_answers");
+                        Object category_filter = findPreference.invoke(thisObject, "category_filter");
+                        Object category_webview = findPreference.invoke(thisObject, "category_webview");
+                        Object category_cleaner = findPreference.invoke(thisObject, "category_cleaner");
+                        setVisible.invoke(category_eula, false);
+                        setVisible.invoke(category_ads, false);
+                        setVisible.invoke(category_misc, false);
+                        setVisible.invoke(category_ui, false);
+                        setVisible.invoke(category_swap_answers, false);
+                        setVisible.invoke(category_filter, false);
+                        setVisible.invoke(category_webview, false);
+                        setVisible.invoke(category_cleaner, false);
+                        return null;
+                    }
                 } else {
-                    setOnPreferenceClickListener.invoke(preference_status, thisObject);
-                    Object category_eula = findPreference.invoke(thisObject, "category_eula");
-                    Object category_ads = findPreference.invoke(thisObject, "category_ads");
-                    Object category_misc = findPreference.invoke(thisObject, "category_misc");
-                    Object category_ui = findPreference.invoke(thisObject, "category_ui");
-                    Object category_swap_answers = findPreference.invoke(thisObject, "category_swap_answers");
-                    Object category_filter = findPreference.invoke(thisObject, "category_filter");
-                    Object category_webview = findPreference.invoke(thisObject, "category_webview");
-                    Object category_cleaner = findPreference.invoke(thisObject, "category_cleaner");
-                    setVisible.invoke(category_eula, false);
-                    setVisible.invoke(category_ads, false);
-                    setVisible.invoke(category_misc, false);
-                    setVisible.invoke(category_ui, false);
-                    setVisible.invoke(category_swap_answers, false);
-                    setVisible.invoke(category_filter, false);
-                    setVisible.invoke(category_webview, false);
-                    setVisible.invoke(category_cleaner, false);
-                    return null;
+                    setVisible.invoke(preference_status, false);
                 }
 
                 setIcon.invoke(preference_status, Helper.modRes.getDrawable(R.drawable.ic_refresh));
