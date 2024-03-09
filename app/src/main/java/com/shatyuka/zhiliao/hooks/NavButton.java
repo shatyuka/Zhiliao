@@ -28,16 +28,13 @@ public class NavButton implements IHook {
     public void init(ClassLoader classLoader) throws Throwable {
         BottomNavMenuView = classLoader.loadClass("com.zhihu.android.bottomnav.core.BottomNavMenuView");
 
-
         Class<?> tabLayoutTabClass = classLoader.loadClass("com.google.android.material.tabs.TabLayout$Tab");
         IMenuItem = Arrays.stream(BottomNavMenuView.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == tabLayoutTabClass)
                 .map(method -> method.getParameterTypes()[0]).findFirst().get();
 
-
         getItemId = Arrays.stream(IMenuItem.getDeclaredMethods())
                 .filter(method -> method.getReturnType() == String.class).findFirst().get();
-
 
         Tab_tabView = tabLayoutTabClass.getField("view");
     }

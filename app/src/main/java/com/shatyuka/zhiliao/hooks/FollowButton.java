@@ -18,15 +18,11 @@ import de.robv.android.xposed.XposedBridge;
  */
 public class FollowButton implements IHook {
     static Class<?> followWithAvatarView;
-
     static Class<?> bottomReactionView;
-
     static Class<?> followPeopleButton;
-
     static Class<?> zHAuthorInfoView;
 
     static Field followWithAvatarViewField;
-
     static Field followPeopleButtonField;
 
     @Override
@@ -48,7 +44,6 @@ public class FollowButton implements IHook {
 
     @Override
     public void hook() throws Throwable {
-
         XposedBridge.hookAllMethods(bottomReactionView, "setData", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {

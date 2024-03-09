@@ -49,7 +49,6 @@ public class WebView implements IHook {
 
     @Override
     public void hook() throws Throwable {
-
         if (Helper.prefs.getBoolean("switch_subscribe", false)) {
             // 禁用, 使用pre render时, js会失效
             XposedBridge.hookAllMethods(answerAppView, "canPreRender", XC_MethodReplacement.returnConstant(false));

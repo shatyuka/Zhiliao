@@ -11,9 +11,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
 public class MineHybridView implements IHook {
-
     static Class<?> mineTabFragment;
-
     static Class<?> mineHybridView;
 
     static Field mineHybridViewField;
@@ -30,12 +28,10 @@ public class MineHybridView implements IHook {
 
         mineHybridViewField = Arrays.stream(mineTabFragment.getDeclaredFields()).filter(field -> field.getType() == mineHybridView).findFirst().get();
         mineHybridViewField.setAccessible(true);
-
     }
 
     @Override
     public void hook() throws Throwable {
-
         XposedBridge.hookAllMethods(mineTabFragment, "onCreateView", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -47,7 +43,5 @@ public class MineHybridView implements IHook {
                 }
             }
         });
-
-
     }
 }

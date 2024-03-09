@@ -114,7 +114,6 @@ public class Tag implements IHook {
                     } else {
                         ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = (int) (Helper.scale * 40 + 0.5 + baseX);
                     }
-
                 }
             });
         }
@@ -134,7 +133,6 @@ public class Tag implements IHook {
         } else {
             relativeLayout.setY(0);
         }
-
     }
 
     static String getType(String type) {

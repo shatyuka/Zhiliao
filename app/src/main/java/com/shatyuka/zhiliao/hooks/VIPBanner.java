@@ -82,7 +82,6 @@ public class VIPBanner implements IHook {
             }
 
             XposedBridge.hookAllMethods(MoreVipData, "isLegal", XC_MethodReplacement.returnConstant(Boolean.FALSE));
-
         }
     }
 }
