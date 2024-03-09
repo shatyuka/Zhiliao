@@ -1,7 +1,5 @@
 package com.shatyuka.zhiliao.hooks;
 
-import android.content.Context;
-
 import com.shatyuka.zhiliao.Helper;
 
 import java.lang.reflect.Field;
@@ -9,9 +7,10 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class FeedAd implements IHook {
+
+    static Class<?> FeedFragment;
     static Class<?> BasePagingFragment;
     static Class<?> FeedAdvert;
     static Class<?> ListAd;
@@ -27,13 +26,15 @@ public class FeedAd implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
+        FeedFragment = classLoader.loadClass("com.zhihu.android.app.feed.ui2.feed.FeedFragment");
+
         BasePagingFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.paging.BasePagingFragment");
         try {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.api.model.FeedAdvert");
             ListAd = classLoader.loadClass("com.zhihu.android.api.model.ListAd");
             Advert = classLoader.loadClass("com.zhihu.android.api.model.Advert");
             Ad = classLoader.loadClass("com.zhihu.android.api.model.Ad");
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignore) {
             FeedAdvert = classLoader.loadClass("com.zhihu.android.adbase.model.FeedAdvert");
             ListAd = classLoader.loadClass("com.zhihu.android.adbase.model.ListAd");
             Advert = classLoader.loadClass("com.zhihu.android.adbase.model.Advert");
@@ -49,59 +50,25 @@ public class FeedAd implements IHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    if (param.args[0] == null)
-                        return;
-                    List<?> list = (List<?>) FeedList_data.get(param.args[0]);
-                    if (list == null || list.isEmpty())
-                        return;
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        if (list.get(i).getClass() == FeedAdvert) {
-                            list.remove(i);
-                        }
+                    if (param.thisObject.getClass() == FeedFragment && param.args[0] != null) {
+                        filterFeedList((List<?>) FeedList_data.get(param.args[0]));
                     }
                 }
             }
         });
-        XposedHelpers.findAndHookMethod(BasePagingFragment, "insertDataRangeToList", int.class, List.class, new XC_MethodHook() {
+
+        XposedBridge.hookAllMethods(BasePagingFragment, "postLoadMoreSucceed", new XC_MethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                    if (param.args[1] == null)
-                        return;
-                    List<?> list = (List<?>) param.args[1];
-                    if (list.isEmpty())
-                        return;
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        if (list.get(i).getClass() == FeedAdvert) {
-                            list.remove(i);
-                        }
+                    if (param.thisObject.getClass() == FeedFragment && param.args[0] != null) {
+                        filterFeedList((List<?>) FeedList_data.get(param.args[0]));
                     }
                 }
             }
         });
-        try {
-            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, FeedAdvert, boolean.class, Boolean.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                        param.setResult(false);
-                    }
-                }
-            });
-        } catch (NoSuchMethodError ignore) {
-        }
-        try {
-            XposedHelpers.findAndHookMethod(Helper.MorphAdHelper, "resolve", Context.class, ListAd, Boolean.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) {
-                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
-                        param.setResult(false);
-                    }
-                }
-            });
-        } catch (NoSuchMethodError ignore) {
-        }
-        XposedHelpers.findAndHookMethod(Advert, "isSlidingWindow", new XC_MethodHook() {
+
+        XposedBridge.hookAllMethods(Helper.MorphAdHelper, "resolveCommonAdParam", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
@@ -109,7 +76,8 @@ public class FeedAd implements IHook {
                 }
             }
         });
-        XposedHelpers.findAndHookMethod(Ad, "isFloatAdCard", new XC_MethodHook() {
+
+        XposedBridge.hookAllMethods(Helper.MorphAdHelper, "resolveAnswerAdParam", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
@@ -117,5 +85,45 @@ public class FeedAd implements IHook {
                 }
             }
         });
+
+        XposedBridge.hookAllMethods(Helper.MorphAdHelper, "resolve", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                    param.setResult(false);
+                }
+            }
+        });
+
+        XposedBridge.hookAllMethods(Advert, "isSlidingWindow", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                    param.setResult(false);
+                }
+            }
+        });
+
+        XposedBridge.hookAllMethods(Ad, "isFloatAdCard", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedad", true)) {
+                    param.setResult(false);
+                }
+            }
+        });
+
+    }
+
+    private void filterFeedList(List<?> feedListData) {
+        if (feedListData == null || feedListData.isEmpty()) {
+            return;
+        }
+
+        feedListData.removeIf(this::shouldFilterFeed);
+    }
+
+    private boolean shouldFilterFeed(Object feedData) {
+        return feedData.getClass() == FeedAdvert;
     }
 }

@@ -5,6 +5,9 @@ import android.widget.Toast;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.AutoRefresh;
+import com.shatyuka.zhiliao.hooks.CardViewFeatureShortFilter;
+import com.shatyuka.zhiliao.hooks.CardViewMixShortFilter;
 import com.shatyuka.zhiliao.hooks.Cleaner;
 import com.shatyuka.zhiliao.hooks.ColorMode;
 import com.shatyuka.zhiliao.hooks.CommentAd;
@@ -14,8 +17,13 @@ import com.shatyuka.zhiliao.hooks.FeedAd;
 import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
 import com.shatyuka.zhiliao.hooks.FollowButton;
 import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
+import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
+import com.shatyuka.zhiliao.hooks.FollowButton;
+import com.shatyuka.zhiliao.hooks.FollowButtonFeatureUI;
+import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
+import com.shatyuka.zhiliao.hooks.HotListFilter;
 import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
@@ -23,6 +31,7 @@ import com.shatyuka.zhiliao.hooks.MineHybridView;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
+import com.shatyuka.zhiliao.hooks.PanelBubble;
 import com.shatyuka.zhiliao.hooks.RedDot;
 import com.shatyuka.zhiliao.hooks.SearchAd;
 import com.shatyuka.zhiliao.hooks.ShareAd;
@@ -66,6 +75,16 @@ public class Hooks {
             new HeadZoneBanner(),
             new MineHybridView(),
             new FollowButton(),
+            new FeedTopHotBanner(),
+            new HeadZoneBanner(),
+            new MineHybridView(),
+            new FollowButton(),
+            new FollowButtonFeatureUI(),
+            new CardViewFeatureShortFilter(),
+            new CardViewMixShortFilter(),
+            new HotListFilter(),
+            new AutoRefresh(),
+            new PanelBubble(),
     };
 
     public static void init(final ClassLoader classLoader) {

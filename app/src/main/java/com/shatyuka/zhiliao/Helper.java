@@ -14,14 +14,24 @@ import android.content.res.Resources;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.luckypray.dexkit.DexKitBridge;
+import org.luckypray.dexkit.query.FindClass;
+import org.luckypray.dexkit.query.FindMethod;
+import org.luckypray.dexkit.query.matchers.ClassMatcher;
+import org.luckypray.dexkit.query.matchers.MethodMatcher;
+import org.luckypray.dexkit.result.ClassDataList;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import de.robv.android.xposed.XposedBridge;
 
@@ -48,9 +58,12 @@ public class Helper {
 
     public static Object settingsView;
 
+    public static DexKitBridge dexKitBridge;
+
     static boolean init(ClassLoader classLoader) {
         try {
             init_class(classLoader);
+            JsonNodeOp.init(classLoader);
 
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
@@ -190,6 +203,50 @@ public class Helper {
         return null;
     }
 
+    public static Class<?> findClass(List<String> searchPackageList, List<String> excludePackageList, ClassMatcher matcher, ClassLoader classLoader) {
+        List<Class<?>> classList = findClassList(searchPackageList, excludePackageList, matcher, classLoader);
+        return classList.size() == 1 ? classList.get(0) : null;
+    }
+
+    public static List<Class<?>> findClassList(List<String> searchPackageList, List<String> excludePackageList, ClassMatcher matcher, ClassLoader classLoader) {
+        FindClass findClass = FindClass.create();
+        if (searchPackageList != null) {
+            findClass.searchPackages(searchPackageList);
+        }
+        if (excludePackageList != null) {
+            findClass.excludePackages(excludePackageList);
+        }
+        findClass.matcher(matcher);
+
+        ClassDataList classDataList = dexKitBridge.findClass(findClass);
+        return classDataList.stream().map(classData -> {
+            try {
+                return classData.getInstance(classLoader);
+            } catch (ClassNotFoundException ignore) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public static List<Method> findMethodList(List<String> searchPackageList, List<String> excludePackageList, MethodMatcher matcher, ClassLoader classLoader) {
+        FindMethod findMethod = FindMethod.create();
+        if (searchPackageList != null) {
+            findMethod.searchPackages(searchPackageList);
+        }
+        if (excludePackageList != null) {
+            findMethod.excludePackages(excludePackageList);
+        }
+        findMethod.matcher(matcher);
+
+        return dexKitBridge.findMethod(findMethod).stream().map(methodData -> {
+            try {
+                return methodData.getMethodInstance(classLoader);
+            } catch (NoSuchMethodException ignore) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
     // a...z, aa...az, ba...bz
     private static String index2Str(int n) {
         StringBuilder result = new StringBuilder();
@@ -256,5 +313,35 @@ public class Helper {
         Field field = fieldOptional.get();
         field.setAccessible(true);
         return field;
+    }
+
+    /**
+     * JsonNode ObjectNode
+     */
+    public static class JsonNodeOp {
+        public static Class<?> ObjectNode;
+
+        public static Method ObjectNode_put;
+
+        public static Class<?> JsonNode;
+
+        public static Method JsonNode_get;
+
+        public static Method JsonNode_size;
+
+        public static Method JsonNode_isArray;
+
+        public static Method JsonNode_iterator;
+
+        public static void init(ClassLoader classLoader) throws Exception {
+            JsonNode = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
+            JsonNode_get = JsonNode.getDeclaredMethod("get", String.class);
+            JsonNode_size = JsonNode.getDeclaredMethod("size");
+            JsonNode_isArray = JsonNode.getDeclaredMethod("isArray");
+            JsonNode_iterator = JsonNode.getDeclaredMethod("iterator");
+
+            ObjectNode = classLoader.loadClass("com.fasterxml.jackson.databind.node.ObjectNode");
+            ObjectNode_put = ObjectNode.getDeclaredMethod("put", String.class, JsonNode);
+        }
     }
 }
