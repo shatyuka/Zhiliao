@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -244,5 +245,16 @@ public class Helper {
             }
         }
         return null;
+    }
+
+    public static Field findFieldByType(Class<?> clazz, Class<?> type) {
+        Optional<Field> fieldOptional = Arrays.stream(clazz.getDeclaredFields())
+                .filter(f -> f.getType() == type).findFirst();
+        if (!fieldOptional.isPresent())
+            return null;
+
+        Field field = fieldOptional.get();
+        field.setAccessible(true);
+        return field;
     }
 }

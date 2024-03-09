@@ -6,11 +6,15 @@ import com.shatyuka.zhiliao.hooks.Article;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
 import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
+import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
+import com.shatyuka.zhiliao.hooks.FollowButton;
+import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
 import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
+import com.shatyuka.zhiliao.hooks.MineHybridView;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
@@ -181,5 +185,25 @@ public class HookTest {
     @Test
     public void navResTest() {
         checkHook(new NavRes());
+    }
+
+    @Test
+    public void feedTopHotBannerTest() {
+        checkHook(new FeedTopHotBanner());
+    }
+
+    @Test
+    public void headZoneBannerTest() {
+        checkHook(new HeadZoneBanner());
+    }
+
+    @Test
+    public void mineHybridViewTest() {
+        checkHook(new MineHybridView());
+    }
+
+    @Test
+    public void followButtonTest() {
+        checkHook(new FollowButton());
     }
 }

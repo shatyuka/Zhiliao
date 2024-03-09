@@ -15,18 +15,23 @@ public class FeedTopHotBanner implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        feedTopHotAutoJacksonDeserializer = classLoader.loadClass("com.zhihu.android.api.model.FeedTopHotAutoJacksonDeserializer");
+        try {
+            feedTopHotAutoJacksonDeserializer = classLoader.loadClass("com.zhihu.android.api.model.FeedTopHotAutoJacksonDeserializer");
+        } catch (ClassNotFoundException ignore) {
+        }
     }
 
     @Override
     public void hook() throws Throwable {
-        XposedBridge.hookAllMethods(feedTopHotAutoJacksonDeserializer, "deserialize", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedtophot", false)) {
-                    param.setResult(null);
+        if (feedTopHotAutoJacksonDeserializer != null) {
+            XposedBridge.hookAllMethods(feedTopHotAutoJacksonDeserializer, "deserialize", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_feedtophot", false)) {
+                        param.setResult(null);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
