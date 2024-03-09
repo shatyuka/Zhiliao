@@ -11,11 +11,15 @@ import com.shatyuka.zhiliao.hooks.CommentAd;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
 import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
+import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
+import com.shatyuka.zhiliao.hooks.FollowButton;
+import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
 import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
+import com.shatyuka.zhiliao.hooks.MineHybridView;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
@@ -58,6 +62,10 @@ public class Hooks {
             new NavRes(),
             new WebView(),
             new Cleaner(),
+            new FeedTopHotBanner(),
+            new HeadZoneBanner(),
+            new MineHybridView(),
+            new FollowButton()
     };
 
     public static void init(final ClassLoader classLoader) {
@@ -68,6 +76,7 @@ public class Hooks {
             } catch (Throwable e) {
                 Helper.toast(hook.getName() + "功能加载失败，可能不支持当前版本知乎: " + Helper.packageInfo.versionName, Toast.LENGTH_LONG);
                 XposedBridge.log("[Zhiliao] " + e);
+                XposedBridge.log(e);
             }
         }
     }

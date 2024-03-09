@@ -39,7 +39,7 @@ public class VIPBanner implements IHook {
         }
 
         try {
-            MoreVipData = classLoader.loadClass("com.zhihu.android.profile.data.model.MoreVipData");
+            MoreVipData = classLoader.loadClass("com.zhihu.android.api.MoreVipData");
             NewMoreFragment = classLoader.loadClass("com.zhihu.android.app.ui.fragment.more.more.NewMoreFragment");
         } catch (ClassNotFoundException ignored) {
         }
@@ -80,6 +80,9 @@ public class VIPBanner implements IHook {
             if (MoreVipData != null && NewMoreFragment != null) {
                 XposedHelpers.findAndHookMethod(NewMoreFragment, "a", MoreVipData, XC_MethodReplacement.returnConstant(null));
             }
+
+            XposedBridge.hookAllMethods(MoreVipData, "isLegal", XC_MethodReplacement.returnConstant(Boolean.FALSE));
+
         }
     }
 }

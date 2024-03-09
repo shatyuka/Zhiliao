@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 public class Tag implements IHook {
     static Drawable[] backgrounds;
@@ -33,8 +32,7 @@ public class Tag implements IHook {
     static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
 
-    static int id_title;
-    static int id_author;
+    private final int TAG_ID = 0xABCDEF;
 
     @Override
     public String getName() {
@@ -68,57 +66,75 @@ public class Tag implements IHook {
     @SuppressLint("DiscouragedApi")
     @Override
     public void hook() throws Throwable {
-        id_title = Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage);
-        id_author = Helper.context.getResources().getIdentifier("author", "id", MainHook.hookPackage);
-
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
+
             XposedBridge.hookMethod(onBindData, new XC_MethodHook() {
                 @SuppressLint({"ResourceType", "SetTextI18n"})
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
-                    ViewGroup view = (ViewGroup) ViewHolder_itemView.get(thisObject);
-                    if (view == null)
+                    ViewGroup viewGroup = (ViewGroup) ViewHolder_itemView.get(thisObject);
+                    if (viewGroup == null) {
                         return;
-                    TextView title = view.findViewById(id_title);
-                    ViewGroup author = view.findViewById(id_author);
-                    if (title != null && author != null) {
-                        Object templateFeed = SugarHolder_mData.get(thisObject);
-                        Object unique = TemplateRoot_unique.get(templateFeed);
-                        String type = (String) Helper.DataUnique_type.get(unique);
-
-                        TextView tag = view.findViewById(0xABCDEF);
-                        if (tag == null) {
-                            RelativeLayout relativeLayout = new RelativeLayout(view.getContext());
-                            tag = new TextView(view.getContext());
-                            tag.setId(0xABCDEF);
-                            tag.setTextColor(-1);
-                            relativeLayout.addView(tag);
-                            relativeLayout.setY((int) (Helper.scale * 5 + 0.5));
-                            ((ViewGroup) title.getParent()).addView(relativeLayout);
-                        }
-                        assert type != null;
-                        if (tag.getText() != getType(type)) {
-                            tag.setText(getType(type));
-                            tag.setBackground(getBackground(type));
-                        }
-
-                        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) author.getLayoutParams();
-                        if (title.getVisibility() == View.VISIBLE) {
-                            if (title.getText().length() < 3 || title.getText().subSequence(0, 3) != "　　 ") {
-                                layoutParams.leftMargin = 0;
-                                ((RelativeLayout) tag.getParent()).setY((int) (Helper.scale * 5 + 0.5));
-                                title.setText("　　 " + title.getText());
-                            }
-                        } else {
-                            layoutParams.leftMargin = (int) (Helper.scale * 40 + 0.5);
-                            ((RelativeLayout) tag.getParent()).setY((int) (Helper.scale * 3 + 0.5));
-                        }
-                        author.setLayoutParams(layoutParams);
                     }
+
+                    TextView title = viewGroup.findViewById(Helper.context.getResources().getIdentifier("title", "id", MainHook.hookPackage));
+                    View author = viewGroup.findViewById(Helper.context.getResources().getIdentifier("author", "id", MainHook.hookPackage));
+                    if (title == null) {
+                        return;
+                    }
+
+                    Object templateFeed = SugarHolder_mData.get(thisObject);
+                    Object unique = TemplateRoot_unique.get(templateFeed);
+                    String type = (String) Helper.DataUnique_type.get(unique);
+
+                    RelativeLayout tagLayout;
+                    TextView tag = viewGroup.findViewById(TAG_ID);
+                    if (tag == null) {
+                        tag = new TextView(viewGroup.getContext());
+                        tag.setId(TAG_ID);
+
+                        tagLayout = new RelativeLayout(viewGroup.getContext());
+                        tagLayout.addView(tag);
+                        ((ViewGroup) title.getParent()).addView(tagLayout);
+                    } else {
+                        tagLayout = (RelativeLayout) tag.getParent();
+                    }
+
+                    int baseX = ((ViewGroup.MarginLayoutParams) title.getLayoutParams()).leftMargin;
+                    if (baseX != 0) {
+                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = baseX;
+                    }
+
+                    postProcessTag(tagLayout, tag, type, baseX, title.getVisibility() == View.VISIBLE);
+
+                    // 有标题
+                    if (title.getVisibility() == View.VISIBLE) {
+                        title.setText("　　 " + title.getText());
+                    } else {
+                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = (int) (Helper.scale * 40 + 0.5 + baseX);
+                    }
+
                 }
             });
         }
+    }
+
+    private void postProcessTag(RelativeLayout relativeLayout, TextView tag, String type, int baseX, boolean hasTitle) {
+        tag.setTextColor(-1);
+        tag.setText(getType(type));
+        tag.setBackground(getBackground(type));
+
+        if (baseX != 0) {
+            relativeLayout.setX(baseX);
+        }
+
+        if (hasTitle) {
+            relativeLayout.setY((float) (Helper.scale * 3 + 0.5));
+        } else {
+            relativeLayout.setY(0);
+        }
+
     }
 
     static String getType(String type) {
