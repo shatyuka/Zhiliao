@@ -47,6 +47,7 @@ public class Helper {
     public static SharedPreferences prefs;
     public static Resources modRes;
     public static PackageInfo packageInfo;
+    public static int versionCode;
 
     public static Object settingsView;
 
@@ -55,12 +56,15 @@ public class Helper {
     public final static String hookPackage = "com.zhihu.android";
     private final static byte[] signature = new byte[]{(byte) 0xB6, (byte) 0xF9, (byte) 0x97, (byte) 0xE3, (byte) 0x82, 0x7B, (byte) 0xE1, 0x1A, (byte) 0xF2, (byte) 0xFA, 0x4A, 0x15, 0x3F, (byte) 0xEA, 0x3F, (byte) 0xE6, 0x27, 0x68, 0x66, 0x02};
 
+    /** @noinspection RedundantSuppression*/
+    @SuppressWarnings("deprecation")
     static boolean init(ClassLoader classLoader) {
         try {
             init_class(classLoader);
 
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
+            versionCode = packageInfo.versionCode;
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
@@ -265,6 +269,8 @@ public class Helper {
         return field;
     }
 
+    /** @noinspection RedundantSuppression*/
+    @SuppressWarnings("deprecation")
     private static Signature[] getSignatures(Context context) throws PackageManager.NameNotFoundException {
         PackageManager pm = context.getPackageManager();
         Signature[] sig;

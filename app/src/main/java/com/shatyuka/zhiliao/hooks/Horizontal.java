@@ -70,7 +70,7 @@ public class Horizontal implements IHook {
         ActionSheetLayout_callbackList = ActionSheetLayout.getDeclaredField("z");
         ActionSheetLayout_callbackList.setAccessible(true);
 
-        if (Helper.packageInfo.versionCode > 2614) {
+        if (Helper.versionCode > 2614) {
             MixPagerContainer = classLoader.loadClass("com.zhihu.android.mix.widget.MixPagerContainer");
             Class<?> VerticalPagerContainer = classLoader.loadClass("com.zhihu.android.bootstrap.vertical_pager.VerticalPagerContainer");
             Helper.findClass(classLoader, "com.zhihu.android.bootstrap.vertical_pager.",
@@ -200,7 +200,7 @@ public class Horizontal implements IHook {
                 }
             });
 
-            if (Helper.packageInfo.versionCode > 2614) {
+            if (Helper.versionCode > 2614) {
                 XposedBridge.hookMethod(Helper.getMethodByParameterTypes(ContentMixPagerFragment, MotionEvent.class), new XC_MethodHook() {
                     float old_x = 0;
                     float old_y = 0;

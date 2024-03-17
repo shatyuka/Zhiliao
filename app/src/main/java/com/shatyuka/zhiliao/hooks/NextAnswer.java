@@ -30,7 +30,7 @@ public class NextAnswer implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        if (Helper.packageInfo.versionCode > 2614) {
+        if (Helper.versionCode > 2614) {
             NextContentAnimationView = classLoader.loadClass("com.zhihu.android.mix.widget.NextContentAnimationView");
             try {
                 NextContentAnimationView_short = classLoader.loadClass("com.zhihu.android.mixshortcontainer.function.next.NextContentAnimationView");
@@ -82,7 +82,7 @@ public class NextAnswer implements IHook {
                 });
             }
 
-            if (Helper.packageInfo.versionCode > 2614) {
+            if (Helper.versionCode > 2614) {
                 XposedHelpers.findAndHookMethod(ViewGroup.class, "addView", View.class, ViewGroup.LayoutParams.class, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) {

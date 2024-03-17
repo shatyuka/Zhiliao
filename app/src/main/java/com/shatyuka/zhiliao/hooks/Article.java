@@ -24,7 +24,7 @@ public class Article implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        if (Helper.packageInfo.versionCode > 2614) {
+        if (Helper.versionCode > 2614) {
             try {
                 ContentMixAdapter = classLoader.loadClass("com.zhihu.android.mix.a.a");
                 getItemCount = ContentMixAdapter.getMethod("getItemCount");
@@ -72,7 +72,7 @@ public class Article implements IHook {
 
     @Override
     public void hook() throws Throwable {
-        if (Helper.packageInfo.versionCode > 2614) { // after 6.61.0
+        if (Helper.versionCode > 2614) { // after 6.61.0
             if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_article", false)) {
                 XposedBridge.hookMethod(getItemCount, new XC_MethodHook() {
                     @Override
