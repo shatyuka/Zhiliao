@@ -48,7 +48,8 @@ public class NavButton implements IHook {
                     if (("market".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_vipnav", false)) ||
                             ("video".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_videonav", false)) ||
                             ("friend".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_friendnav", false)) ||
-                            ("panel".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_panelnav", false))) {
+                            ("panel".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_panelnav", false)) ||
+                            ("find".equals(getItemId.invoke(param.args[0])) && Helper.prefs.getBoolean("switch_findnav", false))) {
                         ((View) Tab_tabView.get(param.getResult())).setVisibility(View.GONE);
                     }
                 }

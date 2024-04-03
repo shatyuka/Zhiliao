@@ -392,6 +392,7 @@ public class ZhihuPreference implements IHook {
                 Object switch_videonav = findPreference.invoke(thisObject, "switch_videonav");
                 Object switch_friendnav = findPreference.invoke(thisObject, "switch_friendnav");
                 Object switch_panelnav = findPreference.invoke(thisObject, "switch_panelnav");
+                Object switch_findnav = findPreference.invoke(thisObject, "switch_findnav");
                 Object switch_article = findPreference.invoke(thisObject, "switch_article");
                 Object switch_navres = findPreference.invoke(thisObject, "switch_navres");
                 Object switch_nipple = findPreference.invoke(thisObject, "switch_nipple");
@@ -414,6 +415,7 @@ public class ZhihuPreference implements IHook {
                 setOnPreferenceClickListener.invoke(switch_videonav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_friendnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_panelnav, thisObject);
+                setOnPreferenceClickListener.invoke(switch_findnav, thisObject);
                 setOnPreferenceClickListener.invoke(switch_article, thisObject);
                 setOnPreferenceClickListener.invoke(switch_navres, thisObject);
                 setOnPreferenceClickListener.invoke(switch_nipple, thisObject);
@@ -448,6 +450,7 @@ public class ZhihuPreference implements IHook {
                         Object category_ads = findPreference.invoke(thisObject, "category_ads");
                         Object category_misc = findPreference.invoke(thisObject, "category_misc");
                         Object category_ui = findPreference.invoke(thisObject, "category_ui");
+                        Object category_nav = findPreference.invoke(thisObject, "category_nav");
                         Object category_swap_answers = findPreference.invoke(thisObject, "category_swap_answers");
                         Object category_filter = findPreference.invoke(thisObject, "category_filter");
                         Object category_webview = findPreference.invoke(thisObject, "category_webview");
@@ -456,6 +459,7 @@ public class ZhihuPreference implements IHook {
                         setVisible.invoke(category_ads, false);
                         setVisible.invoke(category_misc, false);
                         setVisible.invoke(category_ui, false);
+                        setVisible.invoke(category_nav, false);
                         setVisible.invoke(category_swap_answers, false);
                         setVisible.invoke(category_filter, false);
                         setVisible.invoke(category_webview, false);
@@ -496,6 +500,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(switch_videonav, Helper.modRes.getDrawable(R.drawable.ic_play_circle));
                 setIcon.invoke(switch_friendnav, Helper.modRes.getDrawable(R.drawable.ic_person_add_alt));
                 setIcon.invoke(switch_panelnav, Helper.modRes.getDrawable(R.drawable.ic_add_circle));
+                setIcon.invoke(switch_findnav, Helper.modRes.getDrawable(R.drawable.ic_cross_star));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_hotbanner"), Helper.modRes.getDrawable(R.drawable.ic_whatshot));
                 setIcon.invoke(switch_article, Helper.modRes.getDrawable(R.drawable.ic_article));
                 setIcon.invoke(switch_navres, Helper.modRes.getDrawable(R.drawable.ic_event));
@@ -609,6 +614,7 @@ public class ZhihuPreference implements IHook {
                     case "switch_videonav":
                     case "switch_friendnav":
                     case "switch_panelnav":
+                    case "switch_findnav":
                     case "switch_article":
                     case "switch_horizontal":
                     case "switch_nextanswer":

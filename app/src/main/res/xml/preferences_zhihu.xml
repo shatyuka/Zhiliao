@@ -172,6 +172,32 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
+            android:key="switch_hotbanner"
+            android:title="隐藏热点通知"
+            android:summary="隐藏顶部弹窗通知"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_article"
+            android:title="精简文章页面"
+            android:summary="隐藏相关推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_feedtophot"
+            android:title="隐藏置顶热门"
+            android:summary="隐藏推荐页顶部热门推荐"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
+            android:key="switch_minehybrid"
+            android:title="隐藏混合卡片"
+            android:summary="隐藏「我的」底部混合卡片"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="导航栏" android:key="category_nav">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
             android:key="switch_vipnav"
             android:title="隐藏会员按钮"
             android:summary="隐藏导航栏会员按钮"/>
@@ -196,15 +222,9 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
-            android:key="switch_hotbanner"
-            android:title="隐藏热点通知"
-            android:summary="隐藏顶部弹窗通知"/>
-        <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="false"
-            android:dependency="switch_mainswitch"
-            android:key="switch_article"
-            android:title="精简文章页面"
-            android:summary="隐藏相关推荐"/>
+            android:key="switch_findnav"
+            android:title="隐藏发现按钮"
+            android:summary="隐藏导航栏发现按钮"/>
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
@@ -217,18 +237,6 @@
             android:key="switch_nipple"
             android:title="隐藏导航栏突起"
             android:summary="隐藏奇奇怪怪的突出部"/>
-        <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="false"
-            android:dependency="switch_mainswitch"
-            android:key="switch_feedtophot"
-            android:title="隐藏置顶热门"
-            android:summary="隐藏推荐页顶部热门推荐"/>
-        <com.zhihu.android.app.ui.widget.SwitchPreference
-            android:defaultValue="false"
-            android:dependency="switch_mainswitch"
-            android:key="switch_minehybrid"
-            android:title="隐藏混合卡片"
-            android:summary="隐藏「我的」底部混合卡片"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="左右划" android:key="category_swap_answers">
         <com.zhihu.android.app.ui.widget.SwitchPreference
