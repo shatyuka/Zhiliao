@@ -23,6 +23,7 @@ import com.shatyuka.zhiliao.hooks.MineHybridView;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
+import com.shatyuka.zhiliao.hooks.FullScreen;
 import com.shatyuka.zhiliao.hooks.RedDot;
 import com.shatyuka.zhiliao.hooks.SearchAd;
 import com.shatyuka.zhiliao.hooks.ShareAd;
@@ -66,6 +67,7 @@ public class Hooks {
             new HeadZoneBanner(),
             new MineHybridView(),
             new FollowButton(),
+            new FullScreen(),
     };
 
     public static void init(final ClassLoader classLoader) {

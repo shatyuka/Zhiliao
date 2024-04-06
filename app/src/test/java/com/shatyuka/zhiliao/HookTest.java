@@ -8,6 +8,7 @@ import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
 import com.shatyuka.zhiliao.hooks.FeedTopHotBanner;
 import com.shatyuka.zhiliao.hooks.FollowButton;
+import com.shatyuka.zhiliao.hooks.FullScreen;
 import com.shatyuka.zhiliao.hooks.HeadZoneBanner;
 import com.shatyuka.zhiliao.hooks.Horizontal;
 import com.shatyuka.zhiliao.hooks.HotBanner;
@@ -205,5 +206,10 @@ public class HookTest {
     @Test
     public void followButtonTest() {
         checkHook(new FollowButton());
+    }
+
+    @Test
+    public void fullScreen() {
+        checkHook(new FullScreen());
     }
 }

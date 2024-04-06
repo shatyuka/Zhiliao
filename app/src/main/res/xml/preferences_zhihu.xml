@@ -146,6 +146,12 @@
         <com.zhihu.android.app.ui.widget.SwitchPreference
             android:defaultValue="false"
             android:dependency="switch_mainswitch"
+            android:key="switch_fullscreen"
+            android:title="禁止进入全屏模式"
+            android:summary="看看时间"/>
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+            android:defaultValue="false"
+            android:dependency="switch_mainswitch"
             android:key="switch_thirdpartylogin"
             android:title="第三方登录"
             android:summary="解锁全部第三方登录方式"/>
