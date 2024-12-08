@@ -75,7 +75,7 @@ public class VIPBanner implements IHook {
                 }
             }
             XposedHelpers.findAndHookMethod(VipEntranceView, "onClick", View.class, XC_MethodReplacement.returnConstant(null));
-            XposedHelpers.findAndHookMethod(VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
+            XposedBridge.hookAllMethods(VipEntranceView, "resetStyle", XC_MethodReplacement.returnConstant(null));
 
             if (MoreVipData != null && NewMoreFragment != null) {
                 XposedHelpers.findAndHookMethod(NewMoreFragment, "a", MoreVipData, XC_MethodReplacement.returnConstant(null));

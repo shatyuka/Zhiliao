@@ -206,7 +206,10 @@ public class ZhihuPreference implements IHook {
             if (SeekBarPreference_mSeekBarValueTextView.getType() != TextView.class) {
                 SeekBarPreference_mSeekBarValueTextView = SeekBarPreference.getDeclaredField("t0");
                 if (SeekBarPreference_mSeekBarValueTextView.getType() != TextView.class) {
-                    throw new NoSuchFieldException("mSeekBarValueTextView");
+                    SeekBarPreference_mSeekBarValueTextView = SeekBarPreference.getDeclaredField("u0");
+                    if (SeekBarPreference_mSeekBarValueTextView.getType() != TextView.class) {
+                        throw new NoSuchFieldException("mSeekBarValueTextView");
+                    }
                 }
             }
             SeekBarPreference_mSeekBarValueTextView.setAccessible(true);
