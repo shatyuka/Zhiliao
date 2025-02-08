@@ -18,6 +18,8 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
       - name: Retrieve version
         run: |
           echo VERSION=$(echo ${{ github.event.head_commit.id }} | head -c 10) >> $GITHUB_ENV
