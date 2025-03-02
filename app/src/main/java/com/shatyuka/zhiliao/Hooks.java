@@ -5,6 +5,7 @@ import android.widget.Toast;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.AutoRefresh;
 import com.shatyuka.zhiliao.hooks.Cleaner;
 import com.shatyuka.zhiliao.hooks.ColorMode;
 import com.shatyuka.zhiliao.hooks.CommentAd;
@@ -68,6 +69,7 @@ public class Hooks {
             new MineHybridView(),
             new FollowButton(),
             new FullScreen(),
+            new AutoRefresh(),
     };
 
     public static void init(final ClassLoader classLoader) {

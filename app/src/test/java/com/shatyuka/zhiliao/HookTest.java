@@ -3,6 +3,7 @@ package com.shatyuka.zhiliao;
 import com.shatyuka.zhiliao.hooks.AnswerAd;
 import com.shatyuka.zhiliao.hooks.AnswerListAd;
 import com.shatyuka.zhiliao.hooks.Article;
+import com.shatyuka.zhiliao.hooks.AutoRefresh;
 import com.shatyuka.zhiliao.hooks.CustomFilter;
 import com.shatyuka.zhiliao.hooks.ExternLink;
 import com.shatyuka.zhiliao.hooks.FeedAd;
@@ -181,6 +182,11 @@ public class HookTest {
     @Test
     public void thirdPartyLoginTest() {
         checkHook(new ThirdPartyLogin());
+    }
+
+    @Test
+    public void autoRefreshTest() {
+        checkHook(new AutoRefresh());
     }
 
     @Test
