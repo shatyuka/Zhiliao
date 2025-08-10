@@ -71,6 +71,8 @@ public class HookTest {
         }
     }
 
+    /** @noinspection RedundantSuppression*/
+    @SuppressWarnings("deprecation")
     void checkHook(IHook hook) {
         for (PackageInfo packageInfo : packageInfos) {
             try {
