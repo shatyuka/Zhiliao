@@ -56,7 +56,11 @@ public class Horizontal implements IHook {
         ActionSheetLayout = classLoader.loadClass("com.zhihu.android.content.widget.ActionSheetLayout");
         NestChildScrollChange = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNestChildScrollChange$1");
         AnswerContentView = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView");
-        NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
+        try {
+            NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
+        } catch (ClassNotFoundException e) {
+            NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.-$$Lambda$AnswerContentView$SBFuFAGPxjHvaUrSMTPD36DYH2w");
+        }
         Class<?> DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
         try {
             VerticalPageTransformer = classLoader.loadClass("com.zhihu.android.answer.pager.VerticalViewPager$VerticalPageTransformer");
