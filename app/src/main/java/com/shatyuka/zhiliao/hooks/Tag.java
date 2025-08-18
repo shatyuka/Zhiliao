@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -12,6 +13,8 @@ import com.shatyuka.zhiliao.R;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -24,12 +27,21 @@ public class Tag implements IHook {
     static Class<?> ViewHolder;
     static Class<?> SugarHolder;
     static Class<?> TemplateRoot;
+    static Class<?> Line;
+    static Class<?> Avatar;
 
     static Method onBindData;
+    static Method card_onBindData;
 
     static Field ViewHolder_itemView;
     static Field SugarHolder_mData;
     static Field TemplateRoot_unique;
+    static Field SDUICard_view;
+    static Field Card_elements;
+    static Field Card_extra;
+    static Field Card_Extra_contentType;
+    static Field Element_id;
+    static Field Line_elements;
 
     private final int TAG_ID = 0xABCDEF;
 
@@ -60,6 +72,37 @@ public class Tag implements IHook {
         } catch (NoSuchMethodException e) {
             onBindData = BaseTemplateNewFeedHolder.getDeclaredMethod("a", TemplateFeed);
         }
+
+        Class<?> SDUICard = null;
+        try {
+            SDUICard = classLoader.loadClass("com.zhihu.android.app.feed.ui.holder.template.optimal.SDUICard");
+        } catch (ClassNotFoundException ignored) {
+        }
+        if (SDUICard != null) {
+            card_onBindData = SDUICard.getMethod("onBindData", Object.class);
+
+            SDUICard_view = Helper.findFieldByType(SDUICard, View.class);
+            if (SDUICard_view == null) {
+                throw new NoSuchFieldException("view");
+            }
+            SDUICard_view.setAccessible(true);
+
+            Class<?> Card = classLoader.loadClass("com.zhihu.android.ui.shared.sdui.model.Card");
+            Card_elements = Card.getDeclaredField("elements");
+            Card_elements.setAccessible(true);
+            Card_extra = Card.getDeclaredField("extra");
+            Card_extra.setAccessible(true);
+            Card_Extra_contentType = Card_extra.getType().getDeclaredField("contentType");
+            Card_Extra_contentType.setAccessible(true);
+
+            Class<?> Element = classLoader.loadClass("com.zhihu.android.ui.shared.sdui.model.Element");
+            Element_id = Element.getDeclaredField("id");
+            Element_id.setAccessible(true);
+            Line = classLoader.loadClass("com.zhihu.android.ui.shared.sdui.model.Line");
+            Line_elements = Line.getDeclaredField("elements");
+            Line_elements.setAccessible(true);
+            Avatar = classLoader.loadClass("com.zhihu.android.ui.shared.sdui.model.Avatar");
+        }
     }
 
     @SuppressLint("DiscouragedApi")
@@ -68,7 +111,6 @@ public class Tag implements IHook {
         if (Helper.prefs.getBoolean("switch_mainswitch", false) && Helper.prefs.getBoolean("switch_tag", false)) {
 
             XposedBridge.hookMethod(onBindData, new XC_MethodHook() {
-                @SuppressLint({"ResourceType", "SetTextI18n"})
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     Object thisObject = param.thisObject;
@@ -87,50 +129,124 @@ public class Tag implements IHook {
                     Object unique = TemplateRoot_unique.get(templateFeed);
                     String type = (String) Helper.DataUnique_type.get(unique);
 
-                    RelativeLayout tagLayout;
-                    TextView tag = viewGroup.findViewById(TAG_ID);
-                    if (tag == null) {
-                        tag = new TextView(viewGroup.getContext());
-                        tag.setId(TAG_ID);
-
-                        tagLayout = new RelativeLayout(viewGroup.getContext());
-                        tagLayout.addView(tag);
-                        ((ViewGroup) title.getParent()).addView(tagLayout);
-                    } else {
-                        tagLayout = (RelativeLayout) tag.getParent();
-                    }
-
-                    int baseX = ((ViewGroup.MarginLayoutParams) title.getLayoutParams()).leftMargin;
-                    if (baseX != 0) {
-                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = baseX;
-                    }
-
-                    postProcessTag(tagLayout, tag, type, baseX, title.getVisibility() == View.VISIBLE);
-
-                    // 有标题
-                    if (title.getVisibility() == View.VISIBLE) {
-                        title.setText("　　 " + title.getText());
-                    } else {
-                        ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = (int) (Helper.scale * 40 + 0.5 + baseX);
-                    }
+                    postProcessTag(title, author, viewGroup, type, false);
                 }
             });
+
+            if (card_onBindData != null) {
+                XposedBridge.hookMethod(card_onBindData, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        Object thisObject = param.thisObject;
+                        Object card = param.args[0];
+                        Object extra = Card_extra.get(card);
+                        String type = (String) Card_Extra_contentType.get(extra);
+
+                        View view = (View) SDUICard_view.get(thisObject);
+                        if (!(view instanceof FrameLayout)) {
+                            return;
+                        }
+                        FrameLayout layout = (FrameLayout) view;
+                        if (layout.getChildCount() != 1) {
+                            return;
+                        }
+                        ViewGroup cardView = (ViewGroup) layout.getChildAt(0);
+
+                        List<?> elements = (List<?>) Card_elements.get(card);
+                        boolean hasReason = false;
+                        TextView title = null;
+                        View author = null;
+                        for (Object element : elements) {
+                            String id = (String) Element_id.get(element);
+                            if (id == null) {
+                                continue;
+                            }
+                            if (title == null && author == null && id.equals("Text")) {
+                                int index = elements.indexOf(element);
+                                if (index != 0) {
+                                    hasReason = true;
+                                }
+                                title = (TextView) cardView.getChildAt(index);
+                                continue;
+                            }
+                            if (author == null && element.getClass() == Line && id.equals("0")) {
+                                List<?> lineElements = (List<?>) Line_elements.get(element);
+                                if (!lineElements.isEmpty()) {
+                                    Object lineElement = lineElements.get(0);
+                                    if (lineElement.getClass() == Avatar) {
+                                        int index = elements.indexOf(element);
+                                        if (title == null && index != 0) {
+                                            hasReason = true;
+                                        }
+                                        author = cardView.getChildAt(index);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        postProcessTag(title, author, cardView, type, hasReason);
+                    }
+                });
+            }
         }
     }
 
-    private void postProcessTag(RelativeLayout relativeLayout, TextView tag, String type, int baseX, boolean hasTitle) {
+    @SuppressLint("SetTextI18n")
+    private void postProcessTag(TextView title, View author, ViewGroup viewGroup, String type, boolean hasReason) {
+        if (author == null) {
+            return;
+        }
+
+        // 按需创建tag
+        RelativeLayout tagLayout;
+        TextView tag = viewGroup.findViewById(TAG_ID);
+        if (tag == null) {
+            tag = new TextView(viewGroup.getContext());
+            tag.setId(TAG_ID);
+
+            tagLayout = new RelativeLayout(viewGroup.getContext());
+            tagLayout.addView(tag);
+            viewGroup.addView(tagLayout);
+        } else {
+            tagLayout = (RelativeLayout) tag.getParent();
+        }
+
+        // 设置tag属性
         tag.setTextColor(-1);
         tag.setText(getType(type));
         tag.setBackground(getBackground(type));
 
+        // 调整X坐标
+        int baseX = 0;
+        if (title != null) {
+            baseX = ((ViewGroup.MarginLayoutParams) title.getLayoutParams()).leftMargin;
+            if (baseX != 0) {
+                ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = baseX;
+            }
+        }
         if (baseX != 0) {
-            relativeLayout.setX(baseX);
+            tagLayout.setX(baseX);
         }
 
+        boolean hasTitle = title != null && title.getVisibility() == View.VISIBLE;
+
+        // 调整Y坐标
+        float baseY = 0;
+        if (hasReason) {
+            baseY = Helper.scale * 21;
+        }
         if (hasTitle) {
-            relativeLayout.setY((float) (Helper.scale * 3 + 0.5));
+            tagLayout.setY((float) (Helper.scale * 3 + 0.5) + baseY);
         } else {
-            relativeLayout.setY(0);
+            tagLayout.setY(baseY);
+        }
+
+        // 为tag留出空间
+        if (hasTitle) {
+            title.setText("　　 " + title.getText());
+        } else {
+            ((ViewGroup.MarginLayoutParams) author.getLayoutParams()).leftMargin = (int) (Helper.scale * 40 + 0.5 + baseX);
         }
     }
 
