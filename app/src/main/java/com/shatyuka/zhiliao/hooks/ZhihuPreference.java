@@ -83,6 +83,7 @@ public class ZhihuPreference implements IHook {
     static Method getContext;
     static Method getText;
     static Method addPreferencesFromResource;
+    static Method addPreferencesFromResourceAlt;
     static Method inflate;
     static Method setTooltipText;
     static Method startFragment;
@@ -181,6 +182,7 @@ public class ZhihuPreference implements IHook {
                 addPreferencesFromResource = PreferenceFragmentCompat.getMethod("b", int.class);
             } catch (NoSuchMethodException e2) {
                 addPreferencesFromResource = Helper.getMethodByParameterTypes(PreferenceFragmentCompat, int.class);
+                addPreferencesFromResourceAlt = Helper.getMethodByParameterTypes(PreferenceFragmentCompat, 1, int.class);
             }
             inflate = Helper.getMethodByParameterTypes(PreferenceInflater, XmlPullParser.class, PreferenceGroup);
         }
@@ -267,6 +269,16 @@ public class ZhihuPreference implements IHook {
                 }
             }
         });
+        if (addPreferencesFromResourceAlt != null) {
+            XposedBridge.hookMethod(addPreferencesFromResourceAlt, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    if (((int) param.args[0]) == settings_res_id) {
+                        addPreferencesFromResourceAlt.invoke(param.thisObject, 7355608);
+                    }
+                }
+            });
+        }
 
         XposedHelpers.findAndHookMethod(Preference, getResourceId_MethodName, new XC_MethodHook() {
             @Override
