@@ -32,7 +32,7 @@ jobs:
             echo releaseStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
             echo releaseKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
             echo releaseKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
-            echo releaseStoreFile='key.jks' >> gradle.properties
+            echo releaseStoreFile='${{ github.workspace }}/key.jks' >> gradle.properties
             echo ${{ secrets.KEY_STORE }} | base64 --decode > key.jks
           fi
       - name: Build with Gradle
