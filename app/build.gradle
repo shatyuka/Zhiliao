@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.shatyuka.zhiliao'
-    compileSdk 35
+    namespace = 'com.shatyuka.zhiliao'
+    compileSdkVersion 36
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 26
-        targetSdkVersion 35
-        ndkVersion "27.2.12479018"
+        targetSdkVersion 36
+        ndkVersion = "27.3.13750724"
         versionCode appVerCode.toInteger()
         versionName appVerName
         externalNativeBuild {
@@ -43,12 +43,12 @@ android {
                 signingConfig signingConfigs.config
             } else {
                 println("using debug sign")
-                signingConfig signingConfigs.debug
+                signingConfig = signingConfigs.debug
             }
         }
         release {
             minifyEnabled true
-            shrinkResources true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             externalNativeBuild {
                 cmake {
@@ -69,19 +69,24 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1+"
+            version = "3.22.1+"
         }
     }
     buildFeatures {
-        prefab true
+        prefab = true
     }
     packagingOptions {
         jniLibs {
             excludes += ['META-INF/**', 'kotlin/**', 'google/**']
-            useLegacyPackaging false
+            useLegacyPackaging = false
         }
         resources {
             excludes += ['META-INF/**', 'kotlin/**', 'google/**', '**.bin']
+        }
+    }
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs << "-Xlint:-options"
         }
     }
 }
