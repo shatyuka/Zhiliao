@@ -22,7 +22,9 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Retrieve version
         run: |
-          echo VERSION=$(echo ${{ github.event.head_commit.id }} | head -c 10) >> $GITHUB_ENV
+          COMMIT_HASH=$(echo ${{ github.event.head_commit.id }} | head -c 7)
+          APP_VER_NAME=$(grep '^appVerName=' gradle.properties | cut -d'=' -f2)
+          echo VERSION=${APP_VER_NAME}_${COMMIT_HASH} >> $GITHUB_ENV
       - name: Write key
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         run: |
