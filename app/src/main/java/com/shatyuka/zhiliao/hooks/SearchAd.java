@@ -15,6 +15,8 @@ public class SearchAd implements IHook {
     static Field SearchTopTabsItemList_commercialData;
     static Field PresetWords_preset;
     static Field SearchRecommendQuery_content;
+    static Field SearchRecommendQuery_recommendQueries;
+    static Field HotSearchBean_searchHotList;
 
     @Override
     public String getName() {
@@ -26,7 +28,9 @@ public class SearchAd implements IHook {
         String[] classNames = {
                 "com.zhihu.android.net.b.b",
                 "com.zhihu.android.net.c.b",
+                "com.zhihu.android.net.d.b",
                 "com.zhihu.android.c3.f.c",
+                "com.zhihu.android.e3.f.b",
                 "retrofit2.b.a.c",
                 "retrofit2.p.a.c",
                 "j.b.a.c"
@@ -36,7 +40,7 @@ public class SearchAd implements IHook {
             try {
                 JacksonResponseBodyConverter = classLoader.loadClass(className);
                 converts.add(JacksonResponseBodyConverter.getMethod("convert", Object.class));
-            } catch (Throwable ignored) {
+            } catch (ClassNotFoundException | NoSuchMethodException ignored) {
             }
         }
         if (converts.isEmpty()) {
@@ -51,12 +55,25 @@ public class SearchAd implements IHook {
 
         try {
             Class<?> SearchRecommendQuery = classLoader.loadClass("com.zhihu.android.api.model.SearchRecommendQuery");
-            SearchRecommendQuery_content = SearchRecommendQuery.getField("content");
-        } catch (ClassNotFoundException | NoSuchFieldException ignored) {
+            try {
+                SearchRecommendQuery_content = SearchRecommendQuery.getField("content");
+            } catch (NoSuchFieldException ignored) {
+            }
+            try {
+                SearchRecommendQuery_recommendQueries = SearchRecommendQuery.getField("recommendQueries");
+            } catch (NoSuchFieldException ignored) {
+            }
+        } catch (ClassNotFoundException ignored) {
         }
 
         Class<?> PresetWords = classLoader.loadClass("com.zhihu.android.api.model.PresetWords");
         PresetWords_preset = PresetWords.getField("preset");
+
+        try {
+            Class<?> HotSearchBean = classLoader.loadClass("com.zhihu.android.api.model.HotSearchBean");
+            HotSearchBean_searchHotList = HotSearchBean.getField("searchHotList");
+        } catch (ClassNotFoundException | NoSuchFieldException ignored) {
+        }
     }
 
     @Override
@@ -80,6 +97,13 @@ public class SearchAd implements IHook {
                             case "com.zhihu.android.api.model.SearchRecommendQuery": {
                                 if (SearchRecommendQuery_content != null)
                                     SearchRecommendQuery_content.set(result, null);
+                                if (SearchRecommendQuery_recommendQueries != null)
+                                    SearchRecommendQuery_recommendQueries.set(result, null);
+                                break;
+                            }
+                            case "com.zhihu.android.api.model.HotSearchBean": {
+                                if (HotSearchBean_searchHotList != null)
+                                    HotSearchBean_searchHotList.set(result, null);
                                 break;
                             }
                         }
