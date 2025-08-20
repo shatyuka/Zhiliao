@@ -32,6 +32,9 @@ import com.shatyuka.zhiliao.hooks.ZhihuPreference;
 import org.junit.Test;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
@@ -69,14 +72,28 @@ public class HookTest {
         }
     }
 
+    public static void resetState(Class<? extends IHook> clazz) throws IllegalAccessException {
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                Class<?> type = field.getType();
+                if (type == Class.class || type == Method.class || type == Field.class) {
+                    field.setAccessible(true);
+                    field.set(null, null);
+                }
+            }
+        }
+    }
+
     /** @noinspection RedundantSuppression*/
     @SuppressWarnings("deprecation")
     void checkHook(IHook hook) {
         for (PackageInfo packageInfo : packageInfos) {
             try {
+                resetState(hook.getClass());
                 Helper.packageInfo = new android.content.pm.PackageInfo();
                 Helper.packageInfo.versionCode = packageInfo.versionCode;
-                Helper.init_class(packageInfo.classLoader);
+                Helper.initSharedClasses(packageInfo.classLoader);
                 hook.init(packageInfo.classLoader);
             } catch (Throwable e) {
                 throw new AssertionError(hook.getName() + ", " + packageInfo.name, e);

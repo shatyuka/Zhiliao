@@ -58,7 +58,7 @@ public class Helper {
     @SuppressWarnings("deprecation")
     static boolean init(ClassLoader classLoader) {
         try {
-            init_class(classLoader);
+            initSharedClasses(classLoader);
 
             prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
@@ -78,7 +78,7 @@ public class Helper {
         }
     }
 
-    public static void init_class(ClassLoader classLoader) throws Exception {
+    public static void initSharedClasses(ClassLoader classLoader) throws Exception {
         MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
         AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
         try {
