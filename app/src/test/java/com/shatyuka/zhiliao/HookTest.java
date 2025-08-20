@@ -93,6 +93,7 @@ public class HookTest {
                 resetState(hook.getClass());
                 Helper.packageInfo = new android.content.pm.PackageInfo();
                 Helper.packageInfo.versionCode = packageInfo.versionCode;
+                Helper.versionCode = packageInfo.versionCode;
                 Helper.initSharedClasses(packageInfo.classLoader);
                 hook.init(packageInfo.classLoader);
             } catch (Throwable e) {
