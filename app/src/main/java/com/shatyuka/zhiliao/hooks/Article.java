@@ -43,17 +43,8 @@ public class Article implements IHook {
                 }
             }
             ContentMixPagerFragment = classLoader.loadClass("com.zhihu.android.mix.fragment.ContentMixPagerFragment");
-            String[] fragment_names = new String[]{"f", "g", "h", "B"};
-            for (String name : fragment_names) {
-                try {
-                    Field field = ContentMixAdapter.getDeclaredField(name);
-                    if (field.getType().getName().equals("androidx.fragment.app.Fragment")) {
-                        ContentMixAdapter_fragment = field;
-                        break;
-                    }
-                } catch (NoSuchFieldException ignore) {
-                }
-            }
+            Class<?> Fragment = classLoader.loadClass("androidx.fragment.app.Fragment");
+            ContentMixAdapter_fragment = Helper.findFieldByType(ContentMixAdapter, Fragment);
             if (ContentMixAdapter_fragment == null) {
                 throw new NoSuchFieldException("fragment");
             }

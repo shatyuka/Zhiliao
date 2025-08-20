@@ -59,7 +59,19 @@ public class Horizontal implements IHook {
         try {
             NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.AnswerContentView$mNextBtnClickListener$1");
         } catch (ClassNotFoundException e) {
-            NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.-$$Lambda$AnswerContentView$SBFuFAGPxjHvaUrSMTPD36DYH2w");
+            try {
+                NextBtnClickListener = classLoader.loadClass("com.zhihu.android.answer.module.content.-$$Lambda$AnswerContentView$SBFuFAGPxjHvaUrSMTPD36DYH2w");
+            } catch (ClassNotFoundException e2) {
+                Helper.findClass(classLoader, "com.zhihu.android.answer.module.content.", 1, 2,
+                        (Class<?> clazz) -> {
+                            clazz.getMethod("onClick", View.class);
+                            NextBtnClickListener = clazz;
+                            return true;
+                        });
+                if (NextBtnClickListener == null) {
+                    throw new ClassNotFoundException("com.zhihu.android.answer.module.content.AnswerContentView$NextBtnClickListener");
+                }
+            }
         }
         Class<?> DirectionBoundView = classLoader.loadClass("com.zhihu.android.answer.widget.DirectionBoundView");
         try {
