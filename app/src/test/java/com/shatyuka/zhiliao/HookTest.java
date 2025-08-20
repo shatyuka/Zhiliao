@@ -36,8 +36,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
 
-import static org.junit.Assert.fail;
-
 public class HookTest {
     static class PackageInfo {
         String name;
@@ -81,7 +79,7 @@ public class HookTest {
                 Helper.init_class(packageInfo.classLoader);
                 hook.init(packageInfo.classLoader);
             } catch (Throwable e) {
-                fail(hook.getName() + ", " + packageInfo.name);
+                throw new AssertionError(hook.getName() + ", " + packageInfo.name, e);
             }
         }
     }
