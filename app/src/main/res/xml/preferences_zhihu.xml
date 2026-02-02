@@ -330,6 +330,14 @@
                 android:title="静默清理"
                 android:summary="沉默是金"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="调试" android:key="category_debug">
+        <com.zhihu.android.app.ui.widget.SwitchPreference
+                android:defaultValue="false"
+                android:dependency="switch_mainswitch"
+                android:key="switch_hidetoast"
+                android:title="隐藏功能加载失败提示"
+                android:summary="无视风险，继续运行"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="关于">
         <Preference
             android:key="preference_version"

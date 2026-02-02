@@ -537,6 +537,7 @@ public class ZhihuPreference implements IHook {
                 setIcon.invoke(preference_clean, Helper.modRes.getDrawable(R.drawable.ic_delete));
                 setIcon.invoke(switch_autoclean, Helper.modRes.getDrawable(R.drawable.ic_auto_delete));
                 setIcon.invoke(findPreference.invoke(thisObject, "switch_silenceclean"), Helper.modRes.getDrawable(R.drawable.ic_notifications_off));
+                setIcon.invoke(findPreference.invoke(thisObject, "switch_hidetoast"), Helper.modRes.getDrawable(R.drawable.ic_tooltip));
                 setIcon.invoke(preference_version, Helper.modRes.getDrawable(R.drawable.ic_info));
                 setIcon.invoke(preference_author, Helper.modRes.getDrawable(R.drawable.ic_person));
                 setIcon.invoke(preference_help, Helper.modRes.getDrawable(R.drawable.ic_help));
