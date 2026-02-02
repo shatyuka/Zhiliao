@@ -25,7 +25,7 @@ public class LaunchAd implements IHook {
         if (AdNetworkManager == null) {
             throw new ClassNotFoundException("com.zhihu.android.sdk.launchad.AdNetworkManager");
         }
-        Helper.findClass(classLoader, "com.zhihu.android.app.util.", 1, 8,
+        Helper.findClass(classLoader, "com.zhihu.android.app.util.", 1, 9,
                 (Class<?> LaunchAdHelper) -> {
                     isShowLaunchAd = LaunchAdHelper.getMethod("isShowLaunchAd");
                     return true;
