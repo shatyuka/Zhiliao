@@ -1,5 +1,7 @@
 package com.shatyuka.zhiliao.hooks;
 
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.View;
 
@@ -28,28 +30,20 @@ public class StatusBar implements IHook {
 
     @Override
     public void init(ClassLoader classLoader) throws Throwable {
-        try {
-            CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.x$a");
-            StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.x$b");
-        } catch (ClassNotFoundException e) {
-            try {
-                CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$a");
-                StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.y$b");
-            } catch (ClassNotFoundException e2) {
-                try {
-                    CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$a");
-                    StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.z$b");
-                } catch (ClassNotFoundException e3) {
-                    try {
-                        CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$a");
-                        StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.aa$b");
-                    } catch (ClassNotFoundException e4) {
-                        CombinedDrawable = classLoader.loadClass("com.zhihu.android.base.util.m0$a");
-                        StatusBarDrawable = classLoader.loadClass("com.zhihu.android.base.util.m0$b");
-                    }
-                }
-            }
-        }
+        Helper.findClass(classLoader, "com.zhihu.android.base.util.", 0, 2,
+                (Class<?> StatusBarUtil) -> {
+                    String className = StatusBarUtil.getName();
+                    Class<?> combinedDrawable = classLoader.loadClass(className + "$a");
+                    Class<?> statusBarDrawable = classLoader.loadClass(className + "$b");
+                    if (!LayerDrawable.class.isAssignableFrom(combinedDrawable) || !Drawable.class.isAssignableFrom(statusBarDrawable))
+                        return false;
+                    CombinedDrawable = combinedDrawable;
+                    StatusBarDrawable = statusBarDrawable;
+                    return true;
+                });
+        if (CombinedDrawable == null)
+            throw new ClassNotFoundException("com.zhihu.android.base.util.StatusBarUtil$CombinedDrawable");
+
         ThemeChangedEvent = classLoader.loadClass("com.zhihu.android.app.event.ThemeChangedEvent");
 
         setColor = StatusBarDrawable.getMethod("a", int.class);
