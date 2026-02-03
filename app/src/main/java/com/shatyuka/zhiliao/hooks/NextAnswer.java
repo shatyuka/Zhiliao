@@ -42,7 +42,7 @@ public class NextAnswer implements IHook {
             initLayout = Helper.getMethodByParameterTypes(MixShortContainerFragment, 1, View.class);
 
             if (MixShortContainerFragment != null) {
-                String[] nextButton_names = new String[]{"t", "f", "e", "M", "L"};
+                String[] nextButton_names = new String[]{"t", "f", "e", "M", "L", "d"};
                 for (String name : nextButton_names) {
                     try {
                         Field field = MixShortContainerFragment.getDeclaredField(name);
