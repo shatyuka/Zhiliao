@@ -17,6 +17,7 @@ public class NextAnswer implements IHook {
     static Class<?> NextContentAnimationView;
     static Class<?> NextContentAnimationView_short;
     static Class<?> MixShortContainerFragment;
+    static Class<?> PopupMenuNextButton;
 
     static Method initView;
     static Method initLayout;
@@ -58,6 +59,11 @@ public class NextAnswer implements IHook {
                 }
                 nextButton.setAccessible(true);
             }
+
+            try {
+                PopupMenuNextButton = classLoader.loadClass("com.zhihu.android.feature.short_container_feature.ui.widget.next.PopupMenuNextButton");
+            } catch (ClassNotFoundException ignored) {
+            }
         }
     }
 
@@ -96,6 +102,17 @@ public class NextAnswer implements IHook {
                     protected void beforeHookedMethod(MethodHookParam param) {
                         if (NextContentAnimationView.isAssignableFrom(param.thisObject.getClass()) || (NextContentAnimationView_short != null && NextContentAnimationView_short.isAssignableFrom(param.args[0].getClass())))
                             param.args[0] = View.GONE;
+                    }
+                });
+            }
+
+            if (PopupMenuNextButton != null) {
+                XposedBridge.hookAllConstructors(PopupMenuNextButton, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        View button = (View) param.thisObject;
+                        button.setScaleX(0);
+                        button.setScaleY(0);
                     }
                 });
             }
