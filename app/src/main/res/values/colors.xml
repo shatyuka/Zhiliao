@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="module_primary">#146FD1</color>
+    <color name="module_background">#F7F8FA</color>
+    <color name="module_surface">#FFFFFF</color>
+    <color name="module_hero">#EAF3FF</color>
+    <color name="module_on_surface">#18202A</color>
+    <color name="module_on_surface_variant">#647080</color>
+</resources>

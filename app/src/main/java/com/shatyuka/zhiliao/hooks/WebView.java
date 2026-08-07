@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 
 import com.shatyuka.zhiliao.Helper;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XC_MethodReplacement;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XposedHelpers;
 
 public class WebView implements IHook {
     static final String script_hide_water_mark = "var styleWaterMark=document.createElement('style');styleWaterMark.innerHTML='.App{background-image:none!important}';document.body.append(styleWaterMark);";

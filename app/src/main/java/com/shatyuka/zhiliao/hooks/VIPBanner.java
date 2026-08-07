@@ -11,9 +11,9 @@ import com.shatyuka.zhiliao.R;
 
 import java.lang.reflect.Method;
 
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import com.shatyuka.zhiliao.xposed.XC_MethodReplacement;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XposedHelpers;
 
 public class VIPBanner implements IHook {
     static Class<?> VipEntranceView;

@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.shatyuka.zhiliao.Helper;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedHelpers;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedHelpers;
 
 public class CommentAd implements IHook {
     static Class<?> CommentListAd;

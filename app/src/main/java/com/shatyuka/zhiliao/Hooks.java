@@ -21,6 +21,7 @@ import com.shatyuka.zhiliao.hooks.IHook;
 import com.shatyuka.zhiliao.hooks.LaunchAd;
 import com.shatyuka.zhiliao.hooks.LiveButton;
 import com.shatyuka.zhiliao.hooks.MineHybridView;
+import com.shatyuka.zhiliao.hooks.MineToolbarEntry;
 import com.shatyuka.zhiliao.hooks.NavButton;
 import com.shatyuka.zhiliao.hooks.NavRes;
 import com.shatyuka.zhiliao.hooks.NextAnswer;
@@ -34,12 +35,12 @@ import com.shatyuka.zhiliao.hooks.ThirdPartyLogin;
 import com.shatyuka.zhiliao.hooks.VIPBanner;
 import com.shatyuka.zhiliao.hooks.WebView;
 import com.shatyuka.zhiliao.hooks.ZhihuPreference;
-
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class Hooks {
     static final IHook[] hooks = {
             new ZhihuPreference(),
+            new MineToolbarEntry(),
             new LaunchAd(),
             new CustomFilter(),
             new FeedAd(),
@@ -74,6 +75,10 @@ public class Hooks {
 
     public static void init(final ClassLoader classLoader) {
         for (IHook hook : hooks) {
+            if (hook instanceof ZhihuPreference && Helper.versionCode >= 40408)
+                continue;
+            if (hook instanceof MineToolbarEntry && Helper.versionCode < 40408)
+                continue;
             try {
                 hook.init(classLoader);
                 hook.hook();

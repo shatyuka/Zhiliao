@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class Helper {
     public static Class<?> MorphAdHelper;
@@ -46,6 +46,7 @@ public class Helper {
     public static Resources modRes;
     public static PackageInfo packageInfo;
     public static int versionCode;
+    public static String hostApkPath;
 
     public static Object settingsView;
 
@@ -56,13 +57,13 @@ public class Helper {
 
     /** @noinspection RedundantSuppression*/
     @SuppressWarnings("deprecation")
-    static boolean init(ClassLoader classLoader) {
+    static boolean init(ClassLoader classLoader, SharedPreferences remotePreferences) {
         try {
-            initSharedClasses(classLoader);
-
-            prefs = context.getSharedPreferences("zhiliao_preferences", Context.MODE_PRIVATE);
+            prefs = remotePreferences;
             packageInfo = context.getPackageManager().getPackageInfo("com.zhihu.android", 0);
             versionCode = packageInfo.versionCode;
+            DexResolver.open(hostApkPath, classLoader, prefs, versionCode);
+            initSharedClasses(classLoader);
 
             regex_title = compileRegex(prefs.getString("edit_title", ""));
             regex_author = compileRegex(prefs.getString("edit_author", ""));
@@ -79,19 +80,39 @@ public class Helper {
     }
 
     public static void initSharedClasses(ClassLoader classLoader) throws Exception {
-        MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
-        AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
+        try {
+            MorphAdHelper = classLoader.loadClass("com.zhihu.android.morph.ad.utils.MorphAdHelper");
+        } catch (Throwable ignored) {
+            MorphAdHelper = DexResolver.findClassByMethodName("morph_ad_helper",
+                    "com.zhihu.android.morph.ad", "resolveAnswerAdParam");
+        }
+        try {
+            AnswerPagerFragment = classLoader.loadClass("com.zhihu.android.answer.module.pager.AnswerPagerFragment");
+        } catch (Throwable ignored) {
+            AnswerPagerFragment = DexResolver.findClassByMethodName("answer_pager_fragment",
+                    "com.zhihu.android.answer", "setupNextAnswerBtn");
+        }
         try {
             IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.mercury.api.IZhihuWebView");
-        } catch (ClassNotFoundException ignore) {
-            IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout").getDeclaredField("c").getType();
+        } catch (Throwable ignored) {
+            try {
+                IZhihuWebView = classLoader.loadClass("com.zhihu.android.app.search.ui.widget.SearchResultLayout")
+                        .getDeclaredField("c").getType();
+            } catch (Throwable ignoredAgain) {
+                IZhihuWebView = null;
+            }
         }
         WebViewClientWrapper = findClass(classLoader, "com.zhihu.android.app.mercury.web.", 0, 2,
                 (Class<?> clazz) -> clazz.getSuperclass() == WebViewClient.class);
         if (WebViewClientWrapper == null)
-            throw new ClassNotFoundException("com.zhihu.android.app.mercury.web.WebViewClientWrapper");
-
-        DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique").getField("type");
+            WebViewClientWrapper = DexResolver.findClassBySuper("web_view_client_wrapper",
+                    "com.zhihu.android.app.mercury.web", WebViewClient.class);
+        try {
+            DataUnique_type = classLoader.loadClass("com.zhihu.android.api.model.template.DataUnique")
+                    .getField("type");
+        } catch (Throwable ignored) {
+            DataUnique_type = null;
+        }
     }
 
     public static Pattern compileRegex(String regex) {

@@ -2,8 +2,8 @@ package com.shatyuka.zhiliao.hooks;
 
 import com.shatyuka.zhiliao.Helper;
 
-import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedHelpers;
+import com.shatyuka.zhiliao.xposed.XC_MethodReplacement;
+import com.shatyuka.zhiliao.xposed.XposedHelpers;
 
 public class ThirdPartyLogin implements IHook {
     static Class<?> UiConfigImpl;

@@ -5,8 +5,8 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class Article implements IHook {
     static Class<?> ContentMixAdapter;

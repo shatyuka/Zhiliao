@@ -16,8 +16,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class Tag implements IHook {
     static Drawable[] backgrounds;

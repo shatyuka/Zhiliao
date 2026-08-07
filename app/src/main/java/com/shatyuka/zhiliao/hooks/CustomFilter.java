@@ -5,8 +5,8 @@ import com.shatyuka.zhiliao.Helper;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class CustomFilter implements IHook {
     static Class<?> InnerDeserializer;

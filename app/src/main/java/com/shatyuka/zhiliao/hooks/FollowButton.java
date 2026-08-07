@@ -10,8 +10,8 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 /**
  * 卡片视图去除关注按钮

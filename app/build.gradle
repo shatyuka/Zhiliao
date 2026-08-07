@@ -1,23 +1,16 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 android {
     namespace = 'com.shatyuka.zhiliao'
-    compileSdkVersion 36
+    compileSdkVersion 37
     defaultConfig {
         applicationId "com.shatyuka.zhiliao"
         minSdkVersion 26
-        targetSdkVersion 36
-        ndkVersion = "28.2.13676358"
+        targetSdkVersion 37
         versionCode appVerCode.toInteger()
         versionName appVerName
-        externalNativeBuild {
-            cmake {
-                abiFilters "arm64-v8a", "armeabi-v7a"
-                arguments "-DANDROID_STL=none"
-                cppFlags "-std=c++20", "-Qunused-arguments", "-Wno-gnu-string-literal-operator-template", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-fno-exceptions", "-fno-stack-protector", "-fomit-frame-pointer", "-Wno-builtin-macro-redefined", "-Wno-unused-value", "-D__FILE__=__FILE_NAME__"
-                cFlags "-std=c18", "-Qunused-arguments", "-Wno-gnu-string-literal-operator-template", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden", "-fno-exceptions", "-fno-stack-protector", "-fomit-frame-pointer", "-Wno-builtin-macro-redefined", "-Wno-unused-value", "-D__FILE__=__FILE_NAME__"
-            }
-        }
+        resValue "string", "app_version", appVerName
     }
     if (project.hasProperty('releaseStoreFile')) {
         signingConfigs {
@@ -30,7 +23,6 @@ android {
         }
     }
     applicationVariants.configureEach { variant ->
-        variant.resValue "string", "app_version", variant.versionName
         variant.outputs.configureEach { output ->
             if (variant.buildType.name == 'release') {
                 outputFileName = "Zhiliao_${defaultConfig.versionName}.apk"
@@ -50,30 +42,17 @@ android {
             minifyEnabled true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            externalNativeBuild {
-                cmake {
-                    cppFlags "-flto", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections", "-fno-unwind-tables", "-fno-asynchronous-unwind-tables", "-Wl,--exclude-libs,ALL"
-                    cFlags "-flto", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections", "-fno-unwind-tables", "-fno-asynchronous-unwind-tables", "-Wl,--exclude-libs,ALL"
-                    arguments "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CXX_FLAGS_RELEASE=-Oz -DNDEBUG", "-DCMAKE_C_FLAGS_RELEASE=-Oz -DNDEBUG"
-                }
-            }
         }
-        debug {
-            externalNativeBuild {
-                cmake {
-                    arguments "-DCMAKE_CXX_FLAGS_DEBUG=-Og", "-DCMAKE_C_FLAGS_DEBUG=-Og"
-                }
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version = "3.22.1+"
-        }
+        debug {}
     }
     buildFeatures {
-        prefab = true
+        compose = true
+        resValues = true
+    }
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     packagingOptions {
         jniLibs {
@@ -81,7 +60,7 @@ android {
             useLegacyPackaging = false
         }
         resources {
-            excludes += ['META-INF/**', 'kotlin/**', 'google/**', '**.bin']
+            excludes += ['kotlin/**', 'google/**', '**.bin']
         }
     }
     tasks.withType(JavaCompile).tap {
@@ -92,9 +71,18 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'dev.rikka.ndk.thirdparty:cxx:1.2.0'
+    implementation 'org.luckypray:dexkit:2.2.0'
+    implementation 'androidx.core:core:1.19.0'
+    implementation 'androidx.activity:activity-compose:1.13.0'
+    implementation platform('androidx.compose:compose-bom:2026.06.00')
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'io.github.libxposed:service:102.0.0'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
     testImplementation 'junit:junit:4.13.2'
-    compileOnly 'de.robv.android.xposed:api:82'
-    testImplementation 'de.robv.android.xposed:api:82'
+    compileOnly 'io.github.libxposed:api:102.0.0'
+    testImplementation 'io.github.libxposed:api:102.0.0'
 }

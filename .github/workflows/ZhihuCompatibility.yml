@@ -1,0 +1,107 @@
+name: Zhihu compatibility check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 2 * * 1,4'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: zhihu-compatibility
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Download official 64-bit Zhihu APK
+        id: apk
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://www.zhihu.com/client/download/1355/zhihuwap64'
+          curl --fail --location --retry 3 --user-agent 'Mozilla/5.0 (Linux; Android 16)' \
+            --output zhihu.apk "$url"
+          test "$(stat -c%s zhihu.apk)" -gt 50000000
+          unzip -tq zhihu.apk
+          badging="$(aapt dump badging zhihu.apk | head -n 1)"
+          package="$(sed -n "s/.*name='\([^']*\)'.*/\1/p" <<<"$badging")"
+          version_name="$(sed -n "s/.*versionName='\([^']*\)'.*/\1/p" <<<"$badging")"
+          version_code="$(sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" <<<"$badging")"
+          test "$package" = 'com.zhihu.android'
+          sha256sum zhihu.apk | tee zhihu-apk.sha256
+          printf 'version_name=%s\nversion_code=%s\n' "$version_name" "$version_code" | tee zhihu-version.txt
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
+          echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
+
+      - name: Convert APK dex files to a test jar
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            --output dex-tools.zip \
+            https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip
+          unzip -q dex-tools.zip -d dex-tools
+          java -Xms512m -Xmx6g -cp 'dex-tools/dex-tools-v2.4/lib/*' \
+            com.googlecode.dex2jar.tools.Dex2jarCmd --force \
+            --output 'Zhihu-current 2147483647.jar' zhihu.apk
+
+      - name: Run hook compatibility tests
+        id: tests
+        continue-on-error: true
+        env:
+          ZHILIAO_TEST_JAR: "${{ github.workspace }}/Zhihu-current 2147483647.jar"
+        run: ./gradlew --no-daemon --rerun-tasks -PskipNativeBuild testDebugUnitTest
+
+      - name: Write compatibility report
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '# Zhihu compatibility report'
+            echo
+            echo "- Version: ${{ steps.apk.outputs.version_name }} (${{ steps.apk.outputs.version_code }})"
+            echo "- Hook tests: ${{ steps.tests.outcome }}"
+            echo "- Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            cat zhihu-apk.sha256
+          } > zhihu-compatibility.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zhihu-compatibility-${{ steps.apk.outputs.version_code }}
+          path: |
+            zhihu-compatibility.md
+            app/build/reports/tests/testDebugUnitTest/
+
+      - name: Open an issue when adaptation breaks
+        if: steps.tests.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: Compatibility failed - Zhihu ${{ steps.apk.outputs.version_name }} (${{ steps.apk.outputs.version_code }})
+        shell: bash
+        run: |
+          existing="$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh issue create --title "$TITLE" --body-file zhihu-compatibility.md --label bug
+          else
+            gh issue comment "$existing" --body-file zhihu-compatibility.md
+          fi
+
+      - name: Fail workflow after reporting
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

@@ -2,8 +2,8 @@ package com.shatyuka.zhiliao.hooks;
 
 import com.shatyuka.zhiliao.Helper;
 
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
+import com.shatyuka.zhiliao.xposed.XC_MethodHook;
+import com.shatyuka.zhiliao.xposed.XposedBridge;
 
 public class FeedTopHotBanner implements IHook {
     static Class<?> feedTopHotAutoJacksonDeserializer;
